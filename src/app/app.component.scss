@@ -1,77 +1,98 @@
-.content{
-    height: 100vh;
-    width: 100%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
- 
-}
-
-nav{
+nav {
     padding-left: 80px;
     padding-right: 80px;
+    padding-top: 40px;
     width: 100%;
     box-sizing: border-box;
-    position: absolute;
-    top: 80px;
-    max-height: 250px;
-
     display: flex;
     justify-content: space-between;
-   
-   
-    img{
+
+
+    img {
         height: 80px;
         width: 80px;
-        
+
     }
 
-    .logo{
+    .logo {
         display: flex;
         align-items: center;
 
-        span{
+        span {
             padding-left: 16px;
             font-size: 24px;
             font-weight: bold;
         }
     }
 
-    .sing-up-container{
+    .sing-up-container {
         display: flex;
         flex-direction: column;
         justify-content: space-around;
         align-items: end;
-        >.info-text{
+
+        >.info-text {
             font-size: 20px;
 
         }
 
-        >.sign-up{
+        >.sign-up {
             font-size: 20px;
             color: #959AF6;
             padding: 12px;
-
-            &:hover{
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+            border-radius: 20px;
+            &:hover {
                 cursor: pointer;
-               
                 border-radius: 20px;
-
-
-                border: 2px solid lightgray;
+                border-color: lightgray;
             }
         }
     }
 }
 
-mat-card{
-    
-    max-width: 700px;
-    min-height: 400px;
-    margin-top: 100px;
+.content {
+    padding-top: 50px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
-mat-card-content{
+mat-card {
+    padding: 24px;
+    max-width: 700px;
+}
+
+mat-card-content {
+    padding-top: 80px;
     background-color: white;
 }
+
+.footer {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    font-size: 24px;
+    color: #959AF6;
+
+
+    a {
+        color: #959AF6;
+        padding: 12px;
+        border-radius: 20px;
+        border: 2px solid transparent;
+        transition: border-color 0.3s ease;
+        &:hover {
+            cursor: pointer;
+            border-radius: 20px;
+            border-color: lightgray;
+        }
+    }
+
+    
+}
+
