@@ -1,0 +1,121 @@
+section {
+    height: 100vh;
+    background-color: #ECEEFE;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-family: nunito, Arial, Helvetica, sans-serif;
+
+    .davspace {
+        height: 85vh;
+        width: 366px;
+        background-color: white;
+        border-radius: 30px;
+        position: absolute;
+        top: 120px;
+        left: 30px;
+
+        .davspace-menu {
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            margin-top: 20px;
+
+            h1 {
+                font-size: 24px;
+                background-color: transparent;
+                margin: 0;
+                cursor: default;
+            }
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+
+            &:hover {
+                color: rgba(83, 90, 241, 1);
+            }
+        }
+
+        .channels {
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            cursor: pointer;
+            margin-top: 20px;
+
+            .channels-block {
+                background-color: transparent;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+
+            }
+        }
+
+        .direct-messages {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            background-color: transparent;
+            margin-top: 20px;
+            cursor: pointer;
+
+            .direct-messages-box {
+                display: flex;
+                background-color: transparent;
+                gap: 10px;
+                img{
+                    height: 30px;
+                }
+            }
+
+        }
+
+        .solo-employees {
+            display: flex; /* Verwende Flexbox */
+            align-items: center; /* Zentriert den Inhalt vertikal, falls notwendig */
+            margin-top: 20px; /* Abstand zwischen den Zeilen */
+            gap: 20px;
+          }
+          
+          .solo-employees img {
+            margin-left: 100px; /* Abstand zwischen Bild und Name */
+          }
+          
+          .solo-employees {
+            flex-direction: row; /* Bild und Name in einer Reihe */
+          }
+            
+            img{
+                border-radius: 50%;
+            }
+        
+
+    }
+
+    header {
+        background-color: white;
+    }
+
+    img {
+        background-color: transparent;
+        cursor: pointer;
+    }
+
+    h2 {
+        background-color: transparent;
+        margin: 0;
+    }
+
+
+
+
+
+}
