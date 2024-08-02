@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { HeaderComponent } from '../main/header/header.component';
 
 @Component({
   selector: 'app-devspace',
   standalone: true,
-  imports: [MatSidenavModule,CommonModule],
+  imports: [MatSidenavModule, CommonModule, HeaderComponent],
   templateUrl: './devspace.component.html',
   styleUrl: './devspace.component.scss'
 })
@@ -17,10 +18,15 @@ export class DevspaceComponent {
 
   showFiller = true;
   openEmployees = true;
+  openChannels = true;
 
 
-  closeDirectMessages(){
-  this.openEmployees  = !this.openEmployees;
+  closeDirectMessages() {
+    this.openEmployees = !this.openEmployees;
+  }
+
+  closeChannels() {
+    this.openChannels = !this.openChannels
   }
 
 }
