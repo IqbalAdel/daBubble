@@ -1,0 +1,41 @@
+<section>
+    <app-header></app-header>
+    <div class="davspace">
+        <div class="davspace-menu">
+            <img src="assets/Workspace.png" alt="">
+            <h1>Devspace</h1>
+            <img src="assets/edit_square.png" alt="">
+        </div>
+
+        <div class="channels" (click)="closeChannels()">
+            <img *ngIf="openChannels" src="assets/arrow_drop_down.png" alt="">
+            <img *ngIf="!openChannels" src="assets/arrow_drop_down-right.png" alt="">
+            <div class="channels-block">
+                <img src="assets/workspaces.png" alt="">
+                <h2>Channels</h2>
+            </div>
+
+            <img src="assets/add.png" alt="">
+        </div>
+        <div *ngIf="openChannels">
+            # Enwicklerteam
+        </div>
+        <div (click)="closeDirectMessages()" class="direct-messages">
+
+            <img *ngIf="openEmployees" src="assets/arrow_drop_down.png" alt="">
+            <img *ngIf="!openEmployees" src="assets/arrow_drop_down-right.png" alt="">
+            <div class="direct-messages-box">
+                <img src="assets/account_circle.png" alt="">
+                <h2>Direktnachrichten</h2>
+            </div>
+        </div>
+        <div *ngIf="openEmployees">
+            <div class="solo-employees" *ngFor="let employee of employees">
+                <img [src]="employee.picture" alt="{{ employee.name }}">
+                {{ employee.name }}
+            </div>
+        </div>
+
+
+    </div>
+</section>
