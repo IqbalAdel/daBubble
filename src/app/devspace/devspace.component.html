@@ -17,11 +17,17 @@
 
             <img src="assets/add.png" alt="">
         </div>
-        <div *ngIf="openChannels">
-            # Enwicklerteam
+        <ng-container *ngIf="openChannels">
+            <div *ngFor="let groupChat of groupChats" class="group-chat">
+                # {{ groupChat.name }}
+            </div>
+        </ng-container>
+        <div class="new-channel">
+            <img src="assets/add_circle.png" alt="">
+            <span>Channel hinzufügen</span>
         </div>
-        <div (click)="closeDirectMessages()" class="direct-messages">
 
+        <div (click)="closeDirectMessages()" class="direct-messages">
             <img *ngIf="openEmployees" src="assets/arrow_drop_down.png" alt="">
             <img *ngIf="!openEmployees" src="assets/arrow_drop_down-right.png" alt="">
             <div class="direct-messages-box">
@@ -29,7 +35,7 @@
                 <h2>Direktnachrichten</h2>
             </div>
         </div>
-        <div *ngIf="openEmployees">
+        <div class="group-chat" *ngIf="openEmployees">
             <div class="solo-employees" *ngFor="let employee of employees">
                 <img [src]="employee.picture" alt="{{ employee.name }}">
                 {{ employee.name }}
