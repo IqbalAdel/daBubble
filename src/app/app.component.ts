@@ -11,20 +11,9 @@ import { DevspaceComponent } from "./devspace/devspace.component";
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  isVisible: boolean = true;
+ 
   title = 'daBubble';
   constructor(private router: Router) { }
   
-  ngOnInit() {
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        // Überprüfe den aktuellen Router-Link und setze den Zustand entsprechend
-        if (this.router.url === '/sign-up') {  // Passe die Route hier an
-          this.isVisible = false;
-        } else {
-          this.isVisible = true;
-        }
-      }
-    });
-  }
+
 }

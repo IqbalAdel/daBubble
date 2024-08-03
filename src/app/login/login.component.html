@@ -1,27 +1,19 @@
-<div class="login-container">
-    <h1>Anmeldung</h1>
-    <h2>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</h2>
-    <div class="input-container">
-        <img class="icon" src="assets/mail.png" alt="">
-        <input type="email" placeholder="beispielname@email.com">
+<nav>
+    <div class="logo">
+      <img src="assets/Logo.png" alt="">
+      <span>DABubble</span>
     </div>
-    <div class="input-container">
-        <img class="icon" src="assets/lock.png" alt="">
-        <input type="text" placeholder="Passwort">
+    <div *ngIf="isVisible" class="sing-up-container">
+      <span class="info-text">Neu bei DABubble?</span>
+      <span [routerLink]="['/sign-up']" class="sign-up">Konto erstellen</span>
     </div>
-    <div class="passwort">
-        <a href="">Passwort vergessen?</a>
+  </nav>
+  <div class="content">
+    <mat-card>
+      <mat-card-content><router-outlet></router-outlet></mat-card-content>
+    </mat-card>
+    <div class="footer">
+      <a href="">Impressum</a>
+      <a href="">Datenschutz</a>
     </div>
-    <div class="or-section">
-        <div class="left-line"></div>
-        <span>ODER</span>
-        <div class="right-line"></div>
-    </div>
-    <div class="google-container">
-        <img class="google-icon" src="assets/Google.png" alt="">
-        <button>Anmelden mit Google</button>
-    </div>
-    <div class="login-button">
-        <button class="login">Anmelden</button><button class="guest-login">Gäste-Login</button>
-    </div>
-</div>
+  </div>
