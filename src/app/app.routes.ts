@@ -14,6 +14,6 @@ export const routes: Routes = [
     ] 
   },
 
-//   { path: 'devspace', component: DevspaceComponent },
+  { path: 'devspace', component: DevspaceComponent },
 ];
 

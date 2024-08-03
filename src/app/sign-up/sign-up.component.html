@@ -1,8 +1,13 @@
 <div class="sign-up-container">
 
-    <div class="go-back-container">
-        <img class="go-back" src="assets/arrow_back.png" alt="Go back">
-    </div>
+  <button [routerLink]="['/']" class="go-back-container">
+    <img  class="go-back" src="assets/arrow_back.png" alt="Go back">
+  </button>
+ 
+
+  
+ 
+  
 
 
     <h1>Konto erstellen</h1>
@@ -25,5 +30,5 @@
         <input type="checkbox" id="checkbox">
         <label for="checkbox">Ich stimme der Datenschutzerklärung zu.</label>
     </div>
-    <button>Weiter</button>
+    <button class="button">Weiter</button>
 </div>
