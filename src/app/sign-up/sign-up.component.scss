@@ -1,5 +1,4 @@
-
-.sign-up-container{
+.sign-up-container {
     position: relative;
     padding-bottom: 36px;
     text-align: center;
@@ -7,6 +6,7 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+
     h1 {
         color: #444DF2;
         font-size: 36px;
@@ -20,10 +20,7 @@
     }
 }
 
-
-
-
-.go-back-container{
+.go-back-container {
     background-color: transparent;
     position: absolute;
     left: 0;
@@ -32,19 +29,22 @@
     border: 2px solid transparent;
     transition: border-color 0.3s ease;
     border-radius: 20px;
-    img{
+
+    img {
         width: 20px;
         height: 20px;
     }
+
     &:hover {
         cursor: pointer;
         border-radius: 20px;
         background-color: #ECEEFE;
-        }
+    }
 
-        &:hover img {
-            filter: invert(32%) sepia(68%) saturate(1312%) hue-rotate(208deg) brightness(99%) contrast(103%); /* Filter nur auf das Bild anwenden */
-        }
+    &:hover img {
+        filter: invert(32%) sepia(68%) saturate(1312%) hue-rotate(208deg) brightness(99%) contrast(103%);
+        /* Filter nur auf das Bild anwenden */
+    }
 }
 
 .input-container {
@@ -54,7 +54,7 @@
     justify-content: center;
 }
 
-input:not([type="checkbox"]){
+input:not([type="checkbox"]) {
     padding-left: 100px !important;
     padding: 12px;
     width: 80%;
@@ -78,7 +78,7 @@ input::placeholder {
     font-size: 16px;
 }
 
-.button{
+.button {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -88,7 +88,8 @@ input::placeholder {
     background-color: #444DF2;
     color: white;
     border: none;
-    &:hover{
+
+    &:hover {
         cursor: pointer;
         background-color: #797EF3;
     }
@@ -125,11 +126,11 @@ input::placeholder {
     position: absolute;
     left: 0;
     top: 0;
-    width: 14px; /* Größe der Checkbox */
-    height: 14px; /* Größe der Checkbox */
-    border: 2px solid #444DF2; /* Border-Farbe der Checkbox */
-    border-radius: 4px; /* Ecken-Rundung der Checkbox */
-    background-color: #fff; /* Hintergrundfarbe der Checkbox */
+    width: 14px;
+    height: 14px;
+    border: 2px solid #444DF2;
+    border-radius: 4px;
+    background-color: #fff;
     transition: background-color 0.3s ease;
 }
 
@@ -139,19 +140,19 @@ input::placeholder {
 }
 
 /* Hintergrundfarbe und Rahmenfarbe beim Aktivieren der Checkbox */
-.checkbox-container input[type="checkbox"]:checked + label::before {
+.checkbox-container input[type="checkbox"]:checked+label::before {
     background-color: #444DF2;
     border-color: #444DF2;
 }
 
 /* Haken für die ausgewählte Checkbox */
-.checkbox-container input[type="checkbox"]:checked + label::after {
+.checkbox-container input[type="checkbox"]:checked+label::after {
     content: '';
     position: absolute;
-    left: 5px; /* Angepasst für bessere Ausrichtung des Häkchens */
-    top: -1px; /* Angepasst für bessere Ausrichtung des Häkchens */
-    width: 7px; /* Größe des Häkchens */
-    height: 12px; /* Höhe des Häkchens */
+    left: 5px;
+    top: -1px;
+    width: 7px;
+    height: 12px;
     border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);

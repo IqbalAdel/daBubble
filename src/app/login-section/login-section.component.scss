@@ -93,7 +93,6 @@ input {
     transition: border-color 0.3s ease;
     border-radius: 25px;
     background-color: #ECEEFE;
-
     &:hover {
         cursor: pointer;
         border-color: black;
@@ -102,12 +101,10 @@ input {
 
 .passwort {
     padding-top: 24px;
-
     a {
         padding: 8px;
         font-size: 18px;
         color: #959AF6;
-
         &:hover {
             border-radius: 25px;
             font-weight: bold;
@@ -115,7 +112,6 @@ input {
             background-color: #ECEEFE;
         }
     }
-
 }
 
 .or-section {
@@ -123,7 +119,6 @@ input {
     display: flex;
     justify-content: center;
     padding-bottom: 24px;
-
     span {
         font-size: 20px;
     }
@@ -134,8 +129,6 @@ input {
     border-bottom: 2px solid lightgray;
     width: 35%;
 }
-
-
 
 .right-line {
     margin-left: 8px;
@@ -173,9 +166,7 @@ input {
     text-align: center;
     background-color: #fff;
     color: #444df2;
-    cursor: pointer;
     transition: ease-in-out 125ms;
-
     &:hover{
         cursor: pointer;
         background-color: #444DF2;

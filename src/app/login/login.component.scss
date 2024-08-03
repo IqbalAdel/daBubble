@@ -6,18 +6,14 @@ nav {
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
-
-
     img {
         height: 80px;
         width: 80px;
-
     }
 
     .logo {
         display: flex;
         align-items: center;
-
         span {
             padding-left: 16px;
             font-size: 24px;
@@ -30,12 +26,9 @@ nav {
         flex-direction: column;
         justify-content: space-around;
         align-items: end;
-
         >.info-text {
             font-size: 20px;
-
         }
-
         >.sign-up {
             font-size: 20px;
             color: #959AF6;
@@ -66,7 +59,6 @@ nav {
 
 mat-card {
     max-width: 700px;
-    
 }
 
 mat-card-content {
@@ -82,8 +74,6 @@ mat-card-content {
     padding-bottom: 24px;
     font-size: 24px;
     color: #959AF6;
-
-
     a {
         color: #959AF6;
         padding: 12px;
@@ -96,6 +86,4 @@ mat-card-content {
             border-color: lightgray;
         }
     }
-
-    
 }
