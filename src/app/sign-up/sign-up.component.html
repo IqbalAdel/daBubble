@@ -3,13 +3,6 @@
   <button [routerLink]="['/']" class="go-back-container">
     <img  class="go-back" src="assets/arrow_back.png" alt="Go back">
   </button>
- 
-
-  
- 
-  
-
-
     <h1>Konto erstellen</h1>
 
     <h2>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</h2>
@@ -30,5 +23,5 @@
         <input type="checkbox" id="checkbox">
         <label for="checkbox">Ich stimme der Datenschutzerklärung zu.</label>
     </div>
-    <button class="button">Weiter</button>
+    <button [routerLink]="['/create-avatar']" class="button">Weiter</button>
 </div>
