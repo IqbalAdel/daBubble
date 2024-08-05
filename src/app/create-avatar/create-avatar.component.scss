@@ -80,19 +80,26 @@
     }
 }
 
-.my-avatar-container{
+.my-avatar-container {
     justify-content: center;
     display: flex;
     background-color: #797EF3;
-    width: max-content;
+    width: 200px; /* Größe des Containers festlegen */
+    height: 200px; /* Größe des Containers festlegen */
     border-radius: 50%;
-    padding: 40px;
+    transition: box-shadow 0.3s ease;
+    overflow: hidden; /* Verhindert, dass das Bild über die Grenzen hinausgeht */
+    &:hover {
+        box-shadow: 0 4px 8px rgba(1, 1, 1, 1);
+        cursor: pointer;
+    }
 }
 
-.my-avatar{
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
+.my-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Passt das Bild an, damit es vollständig angezeigt wird */
+    border-radius: 50%; /* Bild bleibt rund */
 }
 
 .select-avatar{
@@ -107,14 +114,22 @@ font-size: 20px;
 
 .avatar-img{
     padding-top: 24px;
-
+    &:hover{
+        cursor: pointer;
+        
+    }
     img{
         width: 60px;
         height: 60px;
         margin-left: 16px;
         border-radius: 50%;
+
+        &:hover{
+            scale: (1.2);
+        }
     }
 }
+
 
 .own-img-container{
     padding-top: 24px;
@@ -122,23 +137,31 @@ font-size: 20px;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    button{
-        padding: 12px 25px;
-        gap: 10px;
-        border-radius: 25px;
-        border: 1px solid #797EF3;
-        font-size: 18px;
-        font-weight: 700;
-        line-height: 24.55px;
-        text-align: center;
-        background-color: #fff;
-        color: #444df2;
-        transition: ease-in-out 125ms;
-        &:hover{
-            cursor: pointer;
-            background-color: #444DF2;
-            color: white;
-        }
-    }
+   
+}
+
+.custom-file-upload {
+    padding: 12px 25px;
+    gap: 10px;
+    border-radius: 25px;
+    border: 1px solid #797EF3;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24.55px;
+    text-align: center;
+    background-color: #fff;
+    color: #444DF2;
+    transition: ease-in-out 125ms;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.custom-file-upload:hover {
+    background-color: #444DF2;
+    color: white;
+}
+
+input[type="file"] {
+    display: none; /* Versteckt das Datei-Input-Element */
 }
 
