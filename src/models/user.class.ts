@@ -1,11 +1,24 @@
-// export class User{
-//     firstName: string = "";
-//     lastName: string = "";
-//     email: string = "";
-//     id: string = "";
-//     photo: string ="";
-//     password: string ="";
-
+export class User {
+    name: string;
+    email: string;
+    id?: string;
+    photo: string;
+    password: string;
+  
+    constructor(
+      name: string = '',
+      email: string = '',
+      id: string = '',
+      photo: string = '',
+      password: string = ''
+    ) {
+      this.name = name;
+      this.email = email;
+      this.id = id;
+      this.photo = photo;
+      this.password = password;
+    }
+  }
 //     constructor(obj?: Partial<User>){
 //         if(obj){
 //             this.firstName = obj.firstName ?? "";
