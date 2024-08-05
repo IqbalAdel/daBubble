@@ -11,20 +11,39 @@ import { HeaderComponent } from '../main/header/header.component';
   styleUrl: './devspace.component.scss'
 })
 export class DevspaceComponent {
+  constructor() {
+    this.sortEmployees();
+    this.sortGroupChats();
+  }
+
   employees = [
     { name: 'Max Mustermann', picture: 'assets/Avatar.png' },
-    { name: 'Klaus Weber', picture: 'assets/00c.Charaters.png' }
+    { name: 'Klaus Weber', picture: 'assets/00c.Charaters.png' },
+    { name: 'Andreas Pflaum', picture: 'assets/00c.Charaters.png' }
   ];
 
   groupChats = [
-    {name:'Entwicklerteam'},
-    {name:'Test'}
+    { name: 'Entwicklerteam' },
+    { name: 'Vertieb' },
+    { name: 'Marketing' },
   ]
 
-  showFiller = true;
+  showFiller = false;
   openEmployees = true;
   openChannels = true;
+  isDavspaceVisible = true;
 
+  sortEmployees() {
+    this.employees.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  sortGroupChats() {
+    this.groupChats.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  devspaceCloseOpen() {
+    this.isDavspaceVisible = !this.isDavspaceVisible;
+  }
 
   closeDirectMessages() {
     this.openEmployees = !this.openEmployees;
