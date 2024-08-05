@@ -1,1 +1,20 @@
-<p>header works!</p>
+<nav class="navbar">
+    <div class="logo">
+      <img src="assets/Logo.png" alt="">
+      <span>DABubble</span>
+    </div>
+    <div class="search-container">
+        <form class="search-bar">
+          <input type="text" placeholder="Code learning durchsuchen">
+          <img class="icon" src="assets/img/search.png" alt="">
+          <!-- <mat-icon>add</mat-icon> -->
+        </form>
+      </div>
+    <div (click)="openDialog()" class="profile">
+        <span>Frederick Beck</span>
+        <div class="image">
+            <img src="assets/img/profiles/boy.png" alt="">
+            <div class="online-status"></div>
+        </div>
+    </div>
+  </nav>

@@ -2,11 +2,9 @@
 //     firstName: string = "";
 //     lastName: string = "";
 //     email: string = "";
-//     birthDate: number | Date = 0;
-//     street: string = "";
-//     zipCode: number = 0;
-//     city: string = "";
 //     id: string = "";
+//     photo: string ="";
+//     password: string ="";
 
 //     constructor(obj?: Partial<User>){
 //         if(obj){
