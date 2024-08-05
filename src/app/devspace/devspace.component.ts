@@ -16,6 +16,11 @@ export class DevspaceComponent {
     { name: 'Klaus Weber', picture: 'assets/00c.Charaters.png' }
   ];
 
+  groupChats = [
+    {name:'Entwicklerteam'},
+    {name:'Test'}
+  ]
+
   showFiller = true;
   openEmployees = true;
   openChannels = true;

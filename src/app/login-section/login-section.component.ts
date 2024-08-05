@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import {MatCardModule} from '@angular/material/card';
+import { Component } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
 @Component({
-  selector: 'app-login',
+  selector: 'app-login-section',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MatCardModule, RouterLink],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  imports: [MatCardModule,RouterModule, CommonModule, RouterOutlet ],
+  templateUrl: './login-section.component.html',
+  styleUrl: './login-section.component.scss'
 })
-export class LoginComponent {
+export class LoginSectionComponent {
   isVisible: boolean = true;
+
   constructor(private router: Router) { }
-  
+
   ngOnInit() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
