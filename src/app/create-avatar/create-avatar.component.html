@@ -1,1 +1,34 @@
-<p>create-avatar works!</p>
+<div class="create-avatar-container">
+    <button [routerLink]="['/sign-up']" class="go-back-container">
+        <img class="go-back" src="assets/img/arrow_back.png" alt="Go back">
+    </button>
+    <h1>Wähle deinen Avatar</h1>
+    <div class="centered-avatar-wrapper">
+        <div class="my-avatar-container">
+            <img class="my-avatar" src="assets/img/person.png" alt="">
+        </div>
+    </div>
+
+    <h2>Frederik Beck</h2>
+    <div class="select-avatar">
+        <span>Aus der Liste wählen</span>
+        <div class="avatar-img">
+            <img src="assets/img/avatar-1.png" alt="">
+            <img src="assets/img/avatar-2.png" alt="">
+            <img src="assets/img/avatar-3.png" alt="">
+            <img src="assets/img/avatar-4.png" alt="">
+            <img src="assets/img/avatar-5.png" alt="">
+            <img src="assets/img/avatar-6.png" alt="">
+          
+        </div>
+
+        <div class="own-img-container">
+            <span>eigenes Bild verwenden</span>
+            <button>Datei hochladen</button>
+        </div>
+    </div>
+
+
+
+    <button [routerLink]="['/']" class="button">Weiter</button>
+</div>
