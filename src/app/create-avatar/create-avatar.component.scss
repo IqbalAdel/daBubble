@@ -1,0 +1,144 @@
+.create-avatar-container {
+    position: relative;
+    padding-bottom: 36px;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+   
+    gap: 24px;
+    min-width: 700px;
+    h1 {
+        color: #444DF2;
+        font-size: 48px;
+        font-weight: bold;
+    }
+
+    h2 {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0 auto;
+        width: 80%;
+        padding-top: 12px;
+    }
+}
+
+.go-back-container {
+    background-color: transparent;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 8px;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease;
+    border-radius: 20px;
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+
+    &:hover {
+        cursor: pointer;
+        border-radius: 20px;
+        background-color: #ECEEFE;
+    }
+
+    &:hover img {
+        filter: invert(32%) sepia(68%) saturate(1312%) hue-rotate(208deg) brightness(99%) contrast(103%);
+        /* Filter nur auf das Bild anwenden */
+    }
+}
+
+.centered-avatar-wrapper {
+    display: flex; /* Macht Flexbox-Layout möglich */
+    justify-content: center; /* Zentriert den Inhalt horizontal */
+}
+
+
+.icon {
+    position: absolute;
+    left: 15%;
+}
+
+
+
+.button {
+    position: absolute;
+    right: 50px;
+    bottom: 0;
+    font-size: 24px;
+    border-radius: 25px;
+    padding: 12px;
+    background-color: #444DF2;
+    color: white;
+    border: none;
+
+    &:hover {
+        cursor: pointer;
+        background-color: #797EF3;
+    }
+}
+
+.my-avatar-container{
+    justify-content: center;
+    display: flex;
+    background-color: #797EF3;
+    width: max-content;
+    border-radius: 50%;
+    padding: 40px;
+}
+
+.my-avatar{
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.select-avatar{
+   text-align: start;
+   padding-left: 120px;
+   padding-right: 120px;
+}
+
+span{
+font-size: 20px;
+}
+
+.avatar-img{
+    padding-top: 24px;
+
+    img{
+        width: 60px;
+        height: 60px;
+        margin-left: 16px;
+        border-radius: 50%;
+    }
+}
+
+.own-img-container{
+    padding-top: 24px;
+    padding-bottom: 58px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    button{
+        padding: 12px 25px;
+        gap: 10px;
+        border-radius: 25px;
+        border: 1px solid #797EF3;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 24.55px;
+        text-align: center;
+        background-color: #fff;
+        color: #444df2;
+        transition: ease-in-out 125ms;
+        &:hover{
+            cursor: pointer;
+            background-color: #444DF2;
+            color: white;
+        }
+    }
+}
+
