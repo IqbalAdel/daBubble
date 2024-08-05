@@ -17,7 +17,7 @@ export class LoginComponent {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         // Überprüfe den aktuellen Router-Link und setze den Zustand entsprechend
-        if (this.router.url === '/sign-up') {  // Passe die Route hier an
+        if (this.router.url === '/sign-up' || this.router.url === '/create-avatar') {  // Passe die Route hier an
           this.isVisible = false;
         } else {
           this.isVisible = true;

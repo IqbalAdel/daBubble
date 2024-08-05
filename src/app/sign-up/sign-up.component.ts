@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterOutlet, RouterModule } from '@angular/router';
+import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, FormsModule],
+  imports: [RouterOutlet, RouterModule, FormsModule,],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss'
 })
@@ -17,7 +17,7 @@ export class SignUpComponent {
 
 
   isPrivacyChecked: boolean = false;
-
+ 
   // Methode zur Validierung des Formulars
   isFormValid(): boolean {
     return this.user.name.trim() !== '' &&
@@ -27,11 +27,13 @@ export class SignUpComponent {
   }
   onSubmit(): void {
     if (this.isFormValid()) {
-      console.log('Formular gültig, Benutzer:', this.user);
+     
       this.userService.setUser(this.user);
       this.router.navigate(['/create-avatar']);
     } else {
       console.warn('Formular ist nicht gültig');
     }
   }
+
+
 }

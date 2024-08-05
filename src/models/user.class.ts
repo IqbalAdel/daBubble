@@ -2,7 +2,7 @@ export class User {
     name: string;
     email: string;
     id?: string;
-    photo: string;
+    img: string;
     password: string;
   
     constructor(
@@ -15,7 +15,7 @@ export class User {
       this.name = name;
       this.email = email;
       this.id = id;
-      this.photo = photo;
+      this.img = photo;
       this.password = password;
     }
   }

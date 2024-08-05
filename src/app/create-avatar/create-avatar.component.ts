@@ -1,12 +1,12 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Router, RouterOutlet, RouterModule } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
 import { LoginComponent } from '../login/login.component';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service';
-
+import { Firestore, collection, addDoc } from '@angular/fire/firestore';
 @Component({
   selector: 'app-create-avatar',
   standalone: true,
@@ -24,9 +24,12 @@ export class CreateAvatarComponent {
     'assets/img/avatar-5.png',
     'assets/img/avatar-6.png'
   ];
+  firestore: Firestore = inject(Firestore);
 
   selectedAvatar: string = 'assets/img/person.png';
   constructor(private http: HttpClient, private router: Router, private userService: UserService) {}
+
+  
 
   ngOnInit(): void {
     this.user = this.userService.getUser()!;
@@ -37,8 +40,8 @@ export class CreateAvatarComponent {
       if (this.user) {
         console.log('Benutzerdaten geladen:', this.user);
         // Optional: Setze das Avatar-Bild, falls das bereits festgelegt wurde
-        if (this.user.photo) {
-          this.selectedAvatar = this.user.photo;
+        if (this.user.img) {
+          this.selectedAvatar = this.user.img;
         }
       } else {
         console.warn('Keine Benutzerdaten gefunden!');
@@ -48,7 +51,7 @@ export class CreateAvatarComponent {
 
   selectAvatar(avatarSrc: string): void {
     this.selectedAvatar = avatarSrc;
-    this.user.photo = avatarSrc;
+    this.user.img = avatarSrc;
   }
   selectedFile: File | null = null;
 
@@ -66,8 +69,24 @@ export class CreateAvatarComponent {
       reader.readAsDataURL(file);
     }
   }
+  isFormValid(): boolean {
+    return this.user.img.trim() !== '';
+  }
 
  
-}
+  async saveUser() {
+      try {
+        // Hinzufügen eines neuen Dokuments in der 'users'-Sammlung
+        const docRef = await addDoc(collection(this.firestore, 'users'), { ...this.user });
+        console.log('User added with ID: ', docRef.id);
+       
+      } catch (e) {
+        console.error('Error adding user: ', e);
+     
+      }
+    }
+  }
+ 
+
 
 
