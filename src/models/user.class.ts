@@ -7,8 +7,8 @@ export class User {
     id?: string;
     img: string;
     password: string;
-    channels: Channel[];
-    chats: Chat[];
+    channels?: Channel[];
+    chats?: Chat[];
 
   
     constructor(

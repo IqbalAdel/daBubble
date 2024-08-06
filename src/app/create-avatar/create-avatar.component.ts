@@ -73,16 +73,14 @@ export class CreateAvatarComponent {
     return this.user.img.trim() !== '';
   }
 
- 
   async saveUser() {
       try {
         // Hinzufügen eines neuen Dokuments in der 'users'-Sammlung
         const docRef = await addDoc(collection(this.firestore, 'users'), { ...this.user });
         console.log('User added with ID: ', docRef.id);
-       
       } catch (e) {
         console.error('Error adding user: ', e);
-     
+    
       }
     }
   }
