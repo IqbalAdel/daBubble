@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-devspace',

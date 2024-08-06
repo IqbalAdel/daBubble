@@ -5,3 +5,8 @@
     align-items: $ai;
   }
 
+@mixin widthHeight($w, $h){
+  width: $w;
+  height: $h;
+}
+

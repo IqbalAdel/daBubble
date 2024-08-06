@@ -1,0 +1,28 @@
+<mat-card class="user-profile">
+    <div class="profile-aot">
+        <span class="profile-txt" >Profil</span>
+        <img (click)="closeDialog()" class="close" [src]="imgSrc"
+        (mouseover)="imgSrc = 'assets/img/close_hover.png'"
+        (mouseout)="imgSrc = 'assets/img/close_default.png'" 
+        alt="">
+    </div>
+    <div class="avatar">
+        <img 
+        src="assets/img/profiles/boy.png" alt="">
+    </div>
+    <div class="user-txt">
+        <span>Frederik Beck</span>
+        <span>Bearbeiten</span>
+    </div>
+    <div class="active">
+        <div></div>
+        <span>Aktive</span>
+    </div>
+    <div class="email">
+        <img src="assets/img/mail.png" alt="">
+        <div>
+            <span>E-Mail-Adresse</span>
+            <span>fred&#46;beck&#64;email&#46;com</span>
+        </div>
+    </div>
+</mat-card>

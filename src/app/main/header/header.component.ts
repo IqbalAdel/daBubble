@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import {MatIcon, MatIconModule} from '@angular/material/icon';
+import {MatIcon} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
@@ -7,23 +8,26 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDialogModule, MatDialogRef, MatDialog} from '@angular/material/dialog';
 import { DialogProfileMenuComponent } from '../../dialogs/dialog-profile-menu/dialog-profile-menu.component';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
-    MatIconModule,
+    MatIcon,
     MatInputModule,
     MatFormFieldModule,
     FormsModule,
-    MatIcon,
     MatButtonModule,
-    MatMenuModule
+    MatMenuModule,
+    
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+
+  imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
 
   constructor( public dialog: MatDialog) {    
   }
@@ -34,10 +38,10 @@ export class HeaderComponent {
 
   openDialog(){
     let dialogRef = this.dialog.open(DialogProfileMenuComponent, {
-      panelClass: 'my-small-dialog',
+      panelClass: 'profile-menu',
       width: '200px',
       height: '130px',
-      position: {top: '80px', right: '10px'},
+      position: {top: '90px', right: '15px'},
 
     });
   }
