@@ -1,13 +1,34 @@
-// export class User{
-//     firstName: string = "";
-//     lastName: string = "";
-//     email: string = "";
-//     birthDate: number | Date = 0;
-//     street: string = "";
-//     zipCode: number = 0;
-//     city: string = "";
-//     id: string = "";
+import { Channel } from "./channel.class";
+import { Chat } from "./chat.class";
 
+export class User {
+    name: string;
+    email: string;
+    id?: string;
+    img: string;
+    password: string;
+    channels?: Channel[];
+    chats?: Chat[];
+
+  
+    constructor(
+      name: string = '',
+      email: string = '',
+      id: string = '',
+      photo: string = '',
+      password: string = '',
+      channels: Channel[] = [],
+      chats: Chat[] = [],
+    ) {
+      this.name = name;
+      this.email = email;
+      this.id = id;
+      this.img = photo;
+      this.password = password;
+      this.channels = channels;
+      this.chats = chats;
+    }
+  }
 //     constructor(obj?: Partial<User>){
 //         if(obj){
 //             this.firstName = obj.firstName ?? "";

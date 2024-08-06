@@ -12,20 +12,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login-section.component.scss'
 })
 export class LoginSectionComponent {
-  isVisible: boolean = true;
+
 
   constructor(private router: Router) { }
 
-  ngOnInit() {
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        // Überprüfe den aktuellen Router-Link und setze den Zustand entsprechend
-        if (this.router.url === '/sign-up') {  // Passe die Route hier an
-          this.isVisible = false;
-        } else {
-          this.isVisible = true;
-        }
-      }
-    });
-  }
+ 
 }

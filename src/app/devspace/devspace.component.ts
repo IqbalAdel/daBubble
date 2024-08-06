@@ -2,8 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
+<<<<<<< HEAD
 import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { Router } from '@angular/router';
+=======
+import { MatIcon } from '@angular/material/icon';
+
+>>>>>>> fa7127f689e3d4fb8ca657f85fa50054df8bbc4c
 @Component({
   selector: 'app-devspace',
   standalone: true,

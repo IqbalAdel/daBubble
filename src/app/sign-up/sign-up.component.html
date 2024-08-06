@@ -6,20 +6,20 @@
     <h2>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</h2>
     <div class="input-container">
         <img class="icon" src="assets/img/person_filled.png" alt="">
-        <input type="text" placeholder="Name und Nachname">
+        <input [(ngModel)]="user.name" type="text" placeholder="Name und Nachname">
     </div>
     <div class="input-container">
         <img class="icon" src="assets/img/mail.png" alt="">
-        <input type="text" placeholder="beispielname@email.com">
+        <input [(ngModel)]="user.email" type="email" placeholder="beispielname@email.com">
     </div>
     <div class="input-container">
         <img class="icon" src="assets/img/lock.png" alt="">
-        <input type="text" placeholder="Passwort">
+        <input [(ngModel)]="user.password" type="text" placeholder="Passwort">
     </div>
 
     <div class="checkbox-container">
-        <input type="checkbox" id="checkbox">
+        <input [(ngModel)]="isPrivacyChecked" type="checkbox" id="checkbox">
         <label for="checkbox">Ich stimme der Datenschutzerklärung zu.</label>
     </div>
-    <button [routerLink]="['/create-avatar']" class="button">Weiter</button>
+    <button [disabled]="!isFormValid()" (click)="onSubmit()" [routerLink]="['/create-avatar']" class="button">Weiter</button>
 </div>

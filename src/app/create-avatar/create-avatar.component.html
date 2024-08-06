@@ -5,30 +5,35 @@
     <h1>Wähle deinen Avatar</h1>
     <div class="centered-avatar-wrapper">
         <div class="my-avatar-container">
-            <img class="my-avatar" src="assets/img/person.png" alt="">
+            <img [src]="selectedAvatar" class="my-avatar" src="assets/img/person.png" alt="">
         </div>
     </div>
 
-    <h2>Frederik Beck</h2>
+    <h2 >{{user.name}}</h2>
     <div class="select-avatar">
         <span>Aus der Liste wählen</span>
         <div class="avatar-img">
-            <img src="assets/img/avatar-1.png" alt="">
-            <img src="assets/img/avatar-2.png" alt="">
-            <img src="assets/img/avatar-3.png" alt="">
-            <img src="assets/img/avatar-4.png" alt="">
-            <img src="assets/img/avatar-5.png" alt="">
-            <img src="assets/img/avatar-6.png" alt="">
-          
+            <img *ngFor="let avatar of avatars" [src]="avatar" alt="Avatar"
+            (click)="selectAvatar(avatar)">
         </div>
-
+        <!-- <div class="own-img-container">
+            <input type="file" (click)="uploadFile()" (change)="onFileSelected($event)"/>
+            <button >Datei hochladen</button>
+        </div> -->
+      
         <div class="own-img-container">
             <span>eigenes Bild verwenden</span>
-            <button>Datei hochladen</button>
+            <label for="file-upload" class="custom-file-upload">
+                Datei hochladen
+            </label>
+           
+            <input id="file-upload" type="file" (change)="onFileSelected($event)" />
+            
         </div>
+       
     </div>
 
 
 
-    <button [routerLink]="['/']" class="button">Weiter</button>
+    <button (click)="saveUser()" [disabled]="!isFormValid()" [routerLink]="['/']" class="button">Konto erstellen</button>
 </div>

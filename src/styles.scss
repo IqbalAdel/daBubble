@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import url(./fonts.scss);
+@import url(./mixins.scss);
 
 html, body { height: 100%; }
 
@@ -18,3 +19,11 @@ a{
 
 
 html, body { height: 100%; }
+
+@mixin d-flex($dir: row, $jc: center, $ai: center) {
+    display: flex;
+    flex-direction: $dir;
+    justify-content: $jc;
+    align-items: $ai;
+  }
+
