@@ -2,16 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
-
+import { GroupChatComponent } from '../group-chat/group-chat.component';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-devspace',
   standalone: true,
-  imports: [MatSidenavModule, CommonModule, HeaderComponent],
+  imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent],
   templateUrl: './devspace.component.html',
   styleUrl: './devspace.component.scss'
 })
 export class DevspaceComponent {
-  constructor() {
+  constructor( private router: Router) {
     this.sortEmployees();
     this.sortGroupChats();
   }
@@ -23,9 +24,9 @@ export class DevspaceComponent {
   ];
 
   groupChats = [
-    { name: 'Entwicklerteam' },
-    { name: 'Vertieb' },
-    { name: 'Marketing' },
+    { id: 1, name: 'Entwicklerteam' },
+    { id: 2, name: 'Vertieb' },
+    { id: 3, name: 'Marketing' },
   ]
 
   showFiller = false;
@@ -52,5 +53,10 @@ export class DevspaceComponent {
   closeChannels() {
     this.openChannels = !this.openChannels
   }
+
+  openGroupChat(groupChat: { id: number, name: string }): void {
+    this.router.navigate(['/group-chat', groupChat.id, groupChat.name]);
+  }
+  
 
 }

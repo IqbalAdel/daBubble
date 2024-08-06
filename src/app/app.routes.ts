@@ -4,6 +4,8 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { DevspaceComponent } from './devspace/devspace.component';
 import { LoginSectionComponent } from './login-section/login-section.component';
 import { CreateAvatarComponent } from './create-avatar/create-avatar.component';
+import { GroupChatComponent } from './group-chat/group-chat.component';
+import { MainComponent } from './main/main.component';
 
 export const routes: Routes = [
   { 
@@ -16,6 +18,6 @@ export const routes: Routes = [
     ] 
   },
 
-  { path: 'devspace', component: DevspaceComponent },
+  { path: 'main', component: MainComponent },
 ];
 

@@ -1,0 +1,119 @@
+.chat-group {
+    background-color: white;
+    height: 85vh;
+    width: 100%;
+    border-radius: 30px;
+    margin: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 3s ease-in-out;
+
+
+    .name {
+        height: 96px;
+        padding: 40px;
+        box-sizing: border-box;
+    }
+
+    .line {
+        border-bottom: 4px solid rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+    }
+
+
+
+    .center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        textarea {
+            height: 145px;
+            width: calc(100% - 40px);
+            border: 2px solid rgba(51, 38, 235, 0.2);
+            border-radius: 20px;
+            position: absolute;
+            bottom: 30px;
+            padding: 5px;
+
+            cursor: pointer;
+
+        }
+
+        .answer {
+            display: flex;
+            gap: 10px;
+            font-size: 18px;
+
+            .answers {
+                color: blue;
+                font-weight: 400;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .line-date {
+        display: flex;
+        align-items: center;
+        /* Vertikal zentrieren */
+        justify-content: center;
+        /* Horizontal zentrieren */
+        width: 100%;
+        /* Sicherstellen, dass die Linie die gesamte Breite einnimmt */
+        margin: 20px 0;
+
+        .line-two {
+            flex: 1;
+            /* Flex-Wachstum, um sich an die verfügbare Breite anzupassen */
+            border-bottom: 2px solid rgb(51, 38, 235, 0.2);
+            /* Dünnerer, grauer Rand */
+            margin: 0 10px;
+            /* Abstand zwischen der Linie und dem Datum */
+        }
+
+        .date {
+            border-radius: 30px;
+            border: 1px solid rgb(51, 38, 235, 0.2);
+            width: 100px;
+            text-align: center;
+        }
+
+        h2 {
+            font-weight: 700;
+        }
+    }
+
+    .group-news {
+        padding: 20px;
+        display: flex;
+        gap: 20px;
+        height: auto;
+        width: 100%;
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(236, 238, 254, 1);
+
+            span {
+                background-color: white;
+            }
+        }
+
+        span {
+            background-color: rgba(236, 238, 254, 1);
+            padding: 15px;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+
+        .current-time {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+    }
+}
