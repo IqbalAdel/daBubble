@@ -8,8 +8,6 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: all 3s ease-in-out;
-
 
     .name {
         height: 96px;
@@ -21,8 +19,6 @@
         border-bottom: 4px solid rgba(0, 0, 0, 0.1);
         margin: 20px 0;
     }
-
-
 
     .center {
         display: flex;

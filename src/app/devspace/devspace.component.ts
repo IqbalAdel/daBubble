@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { Router } from '@angular/router';
+import { collection, collectionData, Firestore } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+
 @Component({
   selector: 'app-devspace',
   standalone: true,
@@ -12,16 +15,15 @@ import { Router } from '@angular/router';
   styleUrl: './devspace.component.scss'
 })
 export class DevspaceComponent {
-  constructor( private router: Router) {
+  firestore: Firestore = inject(Firestore);
+  items$: Observable<any[]>;
+
+  constructor(private router: Router) {
     this.sortEmployees();
     this.sortGroupChats();
+    const aCollection = collection(this.firestore, 'users')
+    this.items$ = collectionData(aCollection);
   }
-
-  employees = [
-    { name: 'Max Mustermann', picture: 'assets/Avatar.png' },
-    { name: 'Klaus Weber', picture: 'assets/00c.Charaters.png' },
-    { name: 'Andreas Pflaum', picture: 'assets/00c.Charaters.png' }
-  ];
 
   groupChats = [
     { id: 1, name: 'Entwicklerteam' },
@@ -33,10 +35,10 @@ export class DevspaceComponent {
   openEmployees = true;
   openChannels = true;
   isDavspaceVisible = true;
-  imgSrc = 'assets/GroupClose.png';
+  imgSrc = ['assets/GroupClose.png', 'assets/Hide-navigation.png'];
 
   sortEmployees() {
-    this.employees.sort((a, b) => a.name.localeCompare(b.name));
+    // this.employees.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   sortGroupChats() {
@@ -58,6 +60,13 @@ export class DevspaceComponent {
   openGroupChat(groupChat: { id: number, name: string }): void {
     this.router.navigate(['/group-chat', groupChat.id, groupChat.name]);
   }
-  
+
+  changeImage(isHover: boolean) {
+    this.imgSrc[0] = isHover ? 'assets/groupCloseBlue.png' : 'assets/GroupClose.png';
+  }
+
+  changeImageTwo(isHover: boolean) {
+    this.imgSrc[0] = isHover ? 'assets/Hide-navigation-blue.png' : 'assets/Hide-navigation.png';
+  }
 
 }

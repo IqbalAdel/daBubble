@@ -1,7 +1,7 @@
 button {
     position: absolute;
     left: -135px;
-    top: 581px;
+    top: 60vh;
     transform: rotate(-90deg);
     height: 60px;
     width: 330px;
@@ -17,25 +17,15 @@ button {
     font-size: 20px;
     font-weight: 500;
     z-index: 999;
-    
-    .image-open{
+
+    .image-open {
         display: flex;
         align-items: center;
     }
 
-    .image-close{
-        .hover-img {
-            &:hover{
-                content: url('/assets/groupCloseBlue.png');
-            }
-        }
-    }
-
     &:hover {
         color: rgba(83, 90, 241, 1);
-
     }
-    
 
     img {
         rotate: (90deg);
@@ -51,10 +41,21 @@ button {
     margin-left: 30px;
     transition: left 1s ease-in-out, opacity 1s ease-in-out;
     opacity: 1;
+    display: flex;
+    flex-direction: column;
 
-    // ng-container {
-    //     display: flex;
-    // }
+    .solo-chat {
+        flex: 1; 
+        overflow-y: auto; 
+        max-height: 100%; 
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
 
     .davspace-hidden {
         left: -400px;
@@ -92,6 +93,8 @@ button {
             cursor: pointer;
         }
     }
+
+
 
     // .all-container {
     //     display: flex;
@@ -196,7 +199,6 @@ button {
                 }
             }
         }
-
     }
 
     .solo-employees {

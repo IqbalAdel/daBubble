@@ -46,23 +46,22 @@
             </div>
         </div>
         <div class="solo-chat" *ngIf="openEmployees">
-            <div class="solo-employees" *ngFor="let employee of employees">
-                <img [src]="employee.picture" alt="{{ employee.name }}">
-                {{ employee.name }}
+            <div class="solo-employees" *ngFor="let item of items$ | async">
+                <img [src]="item.img" alt="">
+                {{ item.name }}
             </div>
         </div>
     </div>
-    <button (click)="devspaceCloseOpen()">
-        <div class="image-close" *ngIf="isDavspaceVisible;">
-            Workspace-Menü schließen
-            <img [src]="imgSrc" 
-         (mouseover)="imgSrc = 'assets/groupCloseBlue.png'"
-         (mouseout)="imgSrc = 'assets/GroupClose.png'"
-         alt="Schließen">
+    <button *ngIf="isDavspaceVisible" (click)="devspaceCloseOpen()" (mouseover)="changeImage(true)" (mouseout)="changeImage(false)">
+        <div class="image-close" >
+            <span>Workspace-Menü schließen</span>
+            <img [src]="imgSrc[0]"  alt="Schließen">
         </div>
-        <div class="image-open" *ngIf="!isDavspaceVisible;">
+    </button>
+    <button *ngIf="!isDavspaceVisible;" (click)="devspaceCloseOpen()" (mouseover)="changeImageTwo(true)" (mouseout)="changeImageTwo(false)">
+        <div class="image-open" >
             Workspace-Menü öffnen
-            <img src="assets/Hide-navigation.png"  alt="Öffnen" >
+            <img [src]="imgSrc[0]" alt="Öffnen">
 
         </div>
     </button>
