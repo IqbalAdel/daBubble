@@ -1,6 +1,6 @@
 .chat-group {
     background-color: white;
-    height: 85vh;
+    height: 95vh;
     width: 100%;
     border-radius: 30px;
     margin: 20px;
@@ -36,10 +36,11 @@
             border-radius: 20px;
             position: absolute;
             bottom: 30px;
-            padding: 5px;
-
+            padding: 10px;
+            resize: none;
             cursor: pointer;
-
+            font-size: 18px;
+            font-weight: 400;
         }
 
         .answer {
