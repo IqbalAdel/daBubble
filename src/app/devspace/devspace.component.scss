@@ -43,6 +43,8 @@ button {
     opacity: 1;
     display: flex;
     flex-direction: column;
+    margin-top: 20px;
+    transition: all 0.3s ease-in-out;
 
     .solo-chat {
         flex: 1; 
@@ -210,10 +212,18 @@ button {
         cursor: pointer;
         width: auto;
         border-radius: 30px;
+        position: relative;
 
         &:hover {
             background-color: rgba(236, 238, 254, 1);
         }
+        .online-offline{
+            position: absolute;
+            bottom: 5px;
+            left: 70px;
+
+        }
+
     }
 
     .solo-employees {

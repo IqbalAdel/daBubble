@@ -28,10 +28,10 @@
         </div>
 
         <ng-container *ngIf="openChannels">
-            <div *ngFor="let groupChat of groupChats" class="group-chat" (click)="openGroupChat(groupChat)">
-                # {{ groupChat.name }}
+            <div *ngFor="let channel of channels$ | async" class="group-chat" (click)="openGroupChat(channel)">
+              # {{ channel.channel }}
             </div>
-        </ng-container>
+          </ng-container>
 
         <div class="new-channel">
             <!-- <img src="assets/img/add_circle.png" alt=""> -->
@@ -46,20 +46,25 @@
             </div>
         </div>
         <div class="solo-chat" *ngIf="openEmployees">
-            <div class="solo-employees" *ngFor="let item of items$ | async">
-                <img [src]="item.img" alt="">
-                {{ item.name }}
+            <div class="solo-employees" *ngFor="let user of users$ | async">
+                <img [src]="user.img" alt="">
+                <img class="online-offline" src="assets/img/Online.png" alt="">
+                {{ user.name }}
+                
             </div>
+            
         </div>
     </div>
-    <button *ngIf="isDavspaceVisible" (click)="devspaceCloseOpen()" (mouseover)="changeImage(true)" (mouseout)="changeImage(false)">
-        <div class="image-close" >
+    <button *ngIf="isDavspaceVisible" (click)="devspaceCloseOpen()" (mouseover)="changeImage(true)"
+        (mouseout)="changeImage(false)">
+        <div class="image-close">
             <span>Workspace-Menü schließen</span>
-            <img [src]="imgSrc[0]"  alt="Schließen">
+            <img [src]="imgSrc[0]" alt="Schließen">
         </div>
     </button>
-    <button *ngIf="!isDavspaceVisible;" (click)="devspaceCloseOpen()" (mouseover)="changeImageTwo(true)" (mouseout)="changeImageTwo(false)">
-        <div class="image-open" >
+    <button *ngIf="!isDavspaceVisible;" (click)="devspaceCloseOpen()" (mouseover)="changeImageTwo(true)"
+        (mouseout)="changeImageTwo(false)">
+        <div class="image-open">
             Workspace-Menü öffnen
             <img [src]="imgSrc[0]" alt="Öffnen">
 

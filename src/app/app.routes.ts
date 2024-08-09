@@ -5,6 +5,7 @@ import { DevspaceComponent } from './devspace/devspace.component';
 import { LoginSectionComponent } from './login-section/login-section.component';
 import { CreateAvatarComponent } from './create-avatar/create-avatar.component';
 import { MainComponent } from './main/main.component';
+import { GroupChatComponent } from './group-chat/group-chat.component';
 
 export const routes: Routes = [
   { 

@@ -1,7 +1,26 @@
 <div class="chat-group">
-    <div class="name">
-        <h2># Gruppenname</h2>
+    <div class="chat-header-group">
+        <div class="name">
+            <h2># {{groupName}}</h2>
+        </div>
+        <div class="persons-group">
+            <div class="display-flex header-group-img">
+                <div>
+                    <img src="assets/img/avatar-6.png" alt="">
+                    <img src="assets/img/avatar-6.png" alt="">
+                    <img src="assets/img/avatar-6.png" alt="">
+                </div>
+
+                <div>3</div>
+            </div>
+            <div class="invite-people">
+                <img (mouseover)="changeImageAddContat(true)" (mouseout)="changeImageAddContat(false)" [src]="imgSrc[2]"
+                    alt="">
+            </div>
+
+        </div>
     </div>
+
     <div class="line"></div>
     <div class="line-date">
         <div class="line-two"></div>
@@ -12,18 +31,49 @@
         <div class="group-news">
             <img src="assets/img/avatar-1.png" alt="">
             <div>
-                <div class="current-time">
-                    <h2>Name</h2>
-                    <p>{{ currentTime }} Uhr</p>
+                <div class="chat">
+                    <div class="current-time">
+                        <h2>Name</h2>
+                        <p>{{ currentTime }} Uhr</p>
+                    </div>
+                    <span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugiat atque obcaecati, architecto
+                        voluptatem ipsa laborum sit culpa eveniet incidunt assumenda beatae recusandae perspiciatis
+                        eaque adipisci id corrupti magni nostrum voluptas.</span>
                 </div>
-                <span>TEXT!</span>
+                <div class="answer">
+                    <div class="answers">2 Antworten</div>
+                    <div>Letze Antwort {{ currentTime }}</div>
+                </div>
+
+            </div>
+            <div class="add-smiley">
+                <img src="assets/img/smiley/check mark green.png" alt="">
+                <img src="assets/img/smiley/hands in celebration.png" alt="">
+                <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)" [src]="imgSrc[0]"
+                    alt="">
+                <img (mouseover)="changeImageComment(true)" (mouseout)="changeImageComment(false)" [src]="imgSrc[1]"
+                    alt="">
+            </div>
+
+
+        </div>
+
+
+        <div class="textarea">
+            <textarea rows="2" cols="50" placeholder="Nachricht an #Gruppenname"></textarea>
+            <div class="textarea-send">
+                <div class="textarea-add">
+                    <img (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)" [src]="imgTextarea[0]" alt=""> | </div>
+                <div>
+                    <img (mouseover)="addSmiley(true)" (mouseout)="addSmiley(false)" [src]="imgTextarea[1]"  alt="">
+                    <img (mouseover)="addEmailContact(true)" (mouseout)="addEmailContact(false)" [src]="imgTextarea[2]"  alt="">
+                </div>
+            </div>
+            <div class="send">
+                <img (mouseover)="sendNews(true)" (mouseout)="sendNews(false)" [src]="imgTextarea[3]"  alt="">
             </div>
         </div>
 
-        <div class="answer">
-            <div class="answers">Antworten</div>
-            <div>Letze Antwort {{ currentTime }}</div>
-        </div>
-        <textarea rows="2" cols="50" placeholder="Nachricht an #Gruppenname"></textarea>
     </div>
+
 </div>

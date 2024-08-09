@@ -6,6 +6,8 @@ import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { Router } from '@angular/router';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-devspace',
@@ -16,34 +18,26 @@ import { Observable } from 'rxjs';
 })
 export class DevspaceComponent {
   firestore: Firestore = inject(Firestore);
-  items$: Observable<any[]>;
+  users$: Observable<any[]>;
+  channels$: Observable<any[]>;
 
-  constructor(private router: Router) {
-    this.sortEmployees();
-    this.sortGroupChats();
-    const aCollection = collection(this.firestore, 'users')
-    this.items$ = collectionData(aCollection);
+  constructor(private router: Router, private firebase:FirebaseService) {
+    const fireUsers = collection(this.firestore, 'users');
+    this.users$ = collectionData(fireUsers).pipe(
+      map(users => users.sort((a, b) => a['name'].localeCompare(b['name'])))
+    );
+
+    const fireChannels = collection(this.firestore, 'channels');
+    this.channels$ = collectionData(fireChannels).pipe(
+      map(channels => channels.sort((a, b) => a['channel'].localeCompare(b['channel'])))
+    );
   }
-
-  groupChats = [
-    { id: 1, name: 'Entwicklerteam' },
-    { id: 2, name: 'Vertieb' },
-    { id: 3, name: 'Marketing' },
-  ]
 
   showFiller = false;
   openEmployees = true;
   openChannels = true;
   isDavspaceVisible = true;
   imgSrc = ['assets/GroupClose.png', 'assets/Hide-navigation.png'];
-
-  sortEmployees() {
-    // this.employees.sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  sortGroupChats() {
-    this.groupChats.sort((a, b) => a.name.localeCompare(b.name));
-  }
 
   devspaceCloseOpen() {
     this.isDavspaceVisible = !this.isDavspaceVisible;
@@ -57,10 +51,6 @@ export class DevspaceComponent {
     this.openChannels = !this.openChannels
   }
 
-  openGroupChat(groupChat: { id: number, name: string }): void {
-    this.router.navigate(['/group-chat', groupChat.id, groupChat.name]);
-  }
-
   changeImage(isHover: boolean) {
     this.imgSrc[0] = isHover ? 'assets/groupCloseBlue.png' : 'assets/GroupClose.png';
   }
@@ -69,4 +59,11 @@ export class DevspaceComponent {
     this.imgSrc[0] = isHover ? 'assets/Hide-navigation-blue.png' : 'assets/Hide-navigation.png';
   }
 
+  openGroupChat(channel: any): void {
+  if (channel && channel.id && channel.name) {
+    this.router.navigate(['/group-chat', channel.id, channel.name]);
+  } else {
+    console.error('Invalid channel data:', channel);
+  }
+}
 }
