@@ -27,7 +27,6 @@ export class SignUpComponent {
   }
   onSubmit(): void {
     if (this.isFormValid()) {
-     
       this.userService.setUser(this.user);
       this.router.navigate(['/create-avatar']);
     } else {
