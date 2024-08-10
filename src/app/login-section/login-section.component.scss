@@ -2,18 +2,29 @@
     background-color: white;
 }
 
-.login-container {
-    text-align: center;
 
+.login-container {
+  
+    text-align: center;
     h1 {
         color: #444DF2;
         font-size: 36px;
         font-weight: bold;
+        font-family: nunito;
     }
 
     h2 {
         padding-top: 12px;
+        width: 80%;
+        font-family: nunito;
     }
+}
+
+.headline{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .input-container {
@@ -90,7 +101,7 @@ input {
     padding-left: 100px !important;
     padding: 12px;
     width: 80%;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     transition: border-color 0.3s ease;
     border-radius: 25px;
     background-color: #ECEEFE;

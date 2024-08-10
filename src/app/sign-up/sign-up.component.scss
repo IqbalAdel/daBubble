@@ -11,12 +11,14 @@
         color: #444DF2;
         font-size: 36px;
         font-weight: bold;
+        font-family: nunito;
     }
 
     h2 {
         margin: 0 auto;
         width: 80%;
         padding-top: 12px;
+        font-family: nunito;
     }
 }
 
@@ -58,7 +60,7 @@ input:not([type="checkbox"]) {
     padding-left: 100px !important;
     padding: 12px;
     width: 80%;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     transition: border-color 0.3s ease;
     border-radius: 25px;
     background-color: #ECEEFE;
@@ -169,4 +171,12 @@ button:disabled {
     border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
+}
+
+.apolicy{
+    color: #444DF2;
+
+    &:hover{
+        font-weight: bold;
+    }
 }

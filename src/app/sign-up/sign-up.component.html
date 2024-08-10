@@ -19,7 +19,7 @@
 
     <div class="checkbox-container">
         <input [(ngModel)]="isPrivacyChecked" type="checkbox" id="checkbox">
-        <label for="checkbox">Ich stimme der Datenschutzerklärung zu.</label>
+        <label for="checkbox">Ich stimme der <span class="apolicy">Datenschutzerklärung</span> zu.</label>
     </div>
     <button [disabled]="!isFormValid()" (click)="onSubmit()" [routerLink]="['/create-avatar']" class="button">Weiter</button>
 </div>
