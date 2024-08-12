@@ -8,7 +8,7 @@
             </div>
 
             <div class="icon">
-                <img src="assets/edit_square.png" alt="">
+                <img src="assets/edit_square.svg" alt="">
             </div>
 
         </div>
@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <div class="add">
+            <div (click)="openDialog()" class="add">
                 <img src="assets/img/add.png" alt="">
             </div>
 
@@ -34,7 +34,7 @@
             </div>
           </ng-container>
 
-        <div class="new-channel">
+        <div (click)="openDialog()" class="new-channel">
             <!-- <img src="assets/img/add_circle.png" alt=""> -->
             <span>Channel hinzufügen</span>
         </div>

@@ -102,3 +102,7 @@
     --mdc-dialog-container-shape: 30px;
   }
 
+  ::ng-deep .border-30-right .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 30px 0px 30px 30px;
+}
+

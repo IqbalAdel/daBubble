@@ -1,10 +1,10 @@
 <div class="chat-group">
     <div class="chat-header-group">
-        <div class="name">
+        <div (click)="openDialog()" class="name">
             <h2># {{groupName}}</h2>
         </div>
         <div class="persons-group">
-            <div class="display-flex header-group-img">
+            <div (click)="openDialogMemberList()" class="display-flex header-group-img">
                 <div>
                     <img src="assets/img/avatar-6.png" alt="">
                     <img src="assets/img/avatar-6.png" alt="">
@@ -13,7 +13,7 @@
 
                 <div>3</div>
             </div>
-            <div class="invite-people">
+            <div (click)="openDialogAddMember()" class="invite-people">
                 <img (mouseover)="changeImageAddContat(true)" (mouseout)="changeImageAddContat(false)" [src]="imgSrc[2]"
                     alt="">
             </div>

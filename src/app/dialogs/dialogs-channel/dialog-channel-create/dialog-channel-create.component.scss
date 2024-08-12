@@ -85,3 +85,7 @@
     margin-top: 11px;
     font-size: 14px;
 }
+
+::ng-deep .border-30 .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 30px;
+}

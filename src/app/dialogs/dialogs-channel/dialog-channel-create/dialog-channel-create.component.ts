@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MatCard } from '@angular/material/card';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { DialogChannelCreateAddMembersComponent } from '../dialog-channel-create-add-members/dialog-channel-create-add-members.component';
 
 @Component({
   selector: 'app-dialog-channel-create',
@@ -15,11 +16,23 @@ export class DialogChannelCreateComponent {
 
   imgSrc: string = "assets/img/close_default.png";
 
-  constructor( public dialog: MatDialogRef<DialogChannelCreateComponent> ) {    
+  constructor( 
+    public dialogChannel: MatDialogRef<DialogChannelCreateComponent>, 
+    public dialogAddMembers: MatDialog,
+  ) {    
   }
 
 
   closeDialog(){
-    this.dialog.close();
+    this.dialogChannel.close();
+  }
+
+  openDialogAddMembers(){
+    this.dialogChannel.close();
+    let dialogRef = this.dialogAddMembers.open(DialogChannelCreateAddMembersComponent, {
+      panelClass: 'border-30',
+      width: '600px',
+      height: '200px',
+    });
   }
 }

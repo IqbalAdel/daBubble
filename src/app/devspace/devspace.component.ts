@@ -8,6 +8,8 @@ import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FirebaseService } from '../services/firebase.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogChannelCreateComponent } from '../dialogs/dialogs-channel/dialog-channel-create/dialog-channel-create.component';
 
 @Component({
   selector: 'app-devspace',
@@ -21,7 +23,11 @@ export class DevspaceComponent {
   users$: Observable<any[]>;
   channels$: Observable<any[]>;
 
-  constructor(private router: Router, private firebase:FirebaseService) {
+  constructor(
+    private router: Router,
+    private firebase:FirebaseService,
+    private dialog: MatDialog,
+  ) {
     const fireUsers = collection(this.firestore, 'users');
     this.users$ = collectionData(fireUsers).pipe(
       map(users => users.sort((a, b) => a['name'].localeCompare(b['name'])))
@@ -65,5 +71,13 @@ export class DevspaceComponent {
   } else {
     console.error('Invalid channel data:', channel);
   }
+}
+
+openDialog(){
+  let dialogRef = this.dialog.open(DialogChannelCreateComponent, {
+    panelClass: 'border-30',
+    width: '700px',
+    height: '400px',
+  });
 }
 }

@@ -1,7 +1,11 @@
 // src/app/group-chat/group-chat.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
+import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
+import { DialogChannelAddMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-add-members/dialog-channel-add-members.component';
 
 @Component({
   selector: 'app-group-chat',
@@ -21,7 +25,12 @@ export class GroupChatComponent implements OnInit {
   imgTextarea =['assets/img/add.png','assets/img/smiley/sentiment_satisfied.png','assets/img/smiley/alternate_email.png','assets/img/smiley/send.png']
 
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(
+    private route: ActivatedRoute,
+    private dialogChannel: MatDialog,
+    private dialogChannelMemberList: MatDialog,
+    private dialogChannelAddMember: MatDialog,
+  ) { }
 
   ngOnInit(): void {
     this.groupId = this.route.snapshot.paramMap.get('id') || '';
@@ -71,5 +80,31 @@ export class GroupChatComponent implements OnInit {
   }
   sendNews(isHover: boolean){
     this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
+  }
+
+  openDialog(){
+    let dialogRef = this.dialogChannel.open(DialogChannelEditComponent, {
+      panelClass: 'border-30',
+      width: '700px',
+      height: '400px',
+    });
+  }
+  openDialogMemberList(){
+    let dialogRef = this.dialogChannelMemberList.open(DialogChannelMembersComponent, {
+      panelClass: 'border-30-right',
+      width: '300px',
+      height: '300px',
+      position: {top: '200px', right: '100px'},
+
+    });
+  }
+  openDialogAddMember(){
+    let dialogRef = this.dialogChannelAddMember.open(DialogChannelAddMembersComponent, {
+      panelClass: 'border-30-right',
+      width: '400px',
+      height: '200px',
+      position: {top: '200px', right: '50px'},
+
+    });
   }
 }
