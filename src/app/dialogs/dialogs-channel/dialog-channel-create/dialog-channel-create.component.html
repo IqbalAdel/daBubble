@@ -1,0 +1,22 @@
+<mat-card class="user-profile">
+    <div class="profile-aot">
+        <span class="profile-txt" >Channel erstellen</span>
+        <img (click)="closeDialog()" class="close" [src]="imgSrc"
+        (mouseover)="imgSrc = 'assets/img/close_hover.png'"
+        (mouseout)="imgSrc = 'assets/img/close_default.png'" 
+        alt="">
+    </div>
+    <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum Beispiel.</p>
+    <div class="inputs">
+        <span>Channel Name</span>
+        <input placeholder="#  z.B. Kooperationsprojekte" type="text">
+        <span>Beschreibung <span>(optional)</span></span>
+        <input placeholder="Dein Text hier" type="text">
+    </div>
+    <div class="buttons">
+        <button>
+            <!-- <img src="" alt=""> -->
+            <span>Erstellen</span>
+        </button>
+    </div>
+</mat-card>

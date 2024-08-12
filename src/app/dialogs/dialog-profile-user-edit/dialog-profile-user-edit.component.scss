@@ -1,0 +1,106 @@
+@import './../../../mixins.scss';
+
+.user-profile{
+    padding: 30px 25px 30px 25px;
+    height: 100%;
+    // @include d-flex($dir: column);
+    input{
+        border-radius: 30px;
+        margin-bottom: 10px;
+        padding: 5px 0px 5px 10px;
+        border: solid 1px #ADB0D9;
+        cursor: pointer;
+        &:hover{
+            border: solid 1px #444DF2;
+        }
+        &:focus{
+            outline: none;
+        }
+    }
+   
+}
+.profile-aot{
+    @include d-flex($jc: space-between);
+    margin-bottom: 15px;
+    
+    span{
+        font-weight: bold;
+        font-size: 16px;
+    }
+    img{
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
+}
+
+.avatar{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    img{
+        width: 125px;
+        height: 125px;
+        border-radius: 100%;
+    }
+}
+
+.email{
+    @include d-flex($jc: flex-start, $dir: row, $ai: flex-start);
+    img{
+        &:first-child{
+            @include widthHeight($w: 20px, $h: 20px);
+            margin-right: 14px;
+        }
+        &:last-child{
+            @include widthHeight($w: 18px, $h: 15px);
+            margin-right: 14px;
+            margin-top: 4px;
+        }
+    }
+
+    div{
+        @include d-flex($dir: column, $ai: flex-start);
+        span{
+            &:first-child{
+                margin-bottom: 10px;
+                font-weight: bold;
+            }
+        }
+    }
+}
+
+.buttons{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    @include d-flex();
+    button{
+        cursor: pointer;
+        border-radius: 30px;
+        @include widthHeight($w: 100px, $h: 33px);
+        &:first-child{
+            color: #444DF2;
+            font-weight: bold;
+            border: 1px solid #444DF2;
+            background-color: white;
+            margin-right: 15px;
+            transition: background-color 125ms ease-in;
+            // transition: color 125ms ease-in-out;
+
+            &:hover{
+                background-color: #444DF2;
+                color: white;
+            }
+        }
+        &:last-child{
+            color: white;
+            background-color: #444DF2;
+            border: none;
+            transition: background-color 125ms ease-in-out;
+
+            &:hover{
+                background-color: #797EF3;
+            }
+        }
+    }
+}

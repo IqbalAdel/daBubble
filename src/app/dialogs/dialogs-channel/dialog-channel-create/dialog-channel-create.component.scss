@@ -1,0 +1,87 @@
+@import './../../../../mixins.scss';
+
+.user-profile{
+    padding: 30px 30px 30px 30px;
+    height: 100%;
+    // @include d-flex($dir: column);
+   
+}
+.profile-aot{
+    @include d-flex($jc: space-between);
+    margin-bottom: 15px;
+    
+    span{
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    img{
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
+    
+}
+
+.inputs{
+    @include d-flex($dir: column, $ai: flex-start);
+
+    >span{
+        font-weight: bold;
+        margin-bottom: 15px;
+        span{
+            color: grey;
+        }
+    }
+
+    input{
+        height: 50px;
+        width: 100%;
+        border-radius: 30px;
+        margin-bottom: 15px;
+        padding-left: 15px;
+        border: solid 1px;
+        &:hover{
+            border: solid 1px #444DF2;
+        }
+
+        &:focus{
+            outline: none;
+        }
+
+    }
+}
+
+
+
+
+::ng-deep .border-radius .mat-mdc-dialog-container {
+    box-shadow: none !important;/* Removes the box shadow */
+    --mdc-dialog-container-shape: 30px;
+  }
+
+.buttons{
+    margin-top: 25px;
+    @include d-flex($jc: flex-end);
+    span{
+        color: white;
+    }
+    button{
+        cursor: pointer;
+        border-radius: 30px;
+        @include widthHeight($w: 110px, $h: 33px);
+        background-color: #444DF2;
+        border: none;
+        @include d-flex();
+
+        &:hover{
+            background-color: #797EF3;
+        }
+    }
+}
+
+.icon-default{
+    color: white;
+    margin-top: 11px;
+    font-size: 14px;
+}

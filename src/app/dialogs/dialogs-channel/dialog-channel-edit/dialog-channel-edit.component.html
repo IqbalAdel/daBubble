@@ -1,0 +1,48 @@
+<mat-card class="user-profile">
+    <div class="profile-aot">
+        <span class="profile-txt" ># Entwicklerteam</span>
+        <img (click)="closeDialog()" class="close" [src]="imgSrc"
+        (mouseover)="imgSrc = 'assets/img/close_hover.png'"
+        (mouseout)="imgSrc = 'assets/img/close_default.png'" 
+        alt="">
+    </div>
+    <div class="channel-name">
+        <div>
+            <span>Channel Name</span>
+            <span>Bearbeiten</span>
+        </div>
+        <span># Entwicklerteam</span>
+    </div>
+    <div [@inputAppear]="inputState">
+        <input type="text" placeholder="Enter text" *ngIf="inputState === 'visible'" />
+      </div>
+    <div class="channel-description">
+        <div>
+            <span>Beschreibung</span>
+            <span>Bearbeiten</span>
+        </div>
+        <p>Dieser Channel ist für alles rund um #dfsdf vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.</p>
+        <div class="seperator"></div>
+        <div class="creator">
+            <span>Erstellt von</span>
+            <span>Noah Braun</span>
+        </div>
+    </div>
+
+    <button (click)="animate()">Animate</button>
+
+
+    <!-- <div class="inputs">
+        <span>Channel Name</span>
+        <input placeholder="#  z.B. Kooperationsprojekte" type="text">
+        <span>Beschreibung <span>(optional)</span></span>
+        <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum Beispiel.</p>
+        <input placeholder="Dein Text hier" type="text">
+    </div> -->
+    <div class="buttons">
+        <button>
+            <!-- <img src="" alt=""> -->
+            <span>Channel verlassen</span>
+        </button>
+    </div>
+</mat-card>

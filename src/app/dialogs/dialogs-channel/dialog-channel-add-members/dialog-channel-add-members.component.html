@@ -1,0 +1,21 @@
+<mat-card class="user-profile">
+    <div class="profile-aot">
+        <span class="profile-txt" >Leute hinzufügen</span>
+        <img (click)="closeDialog()" class="close" [src]="imgSrc"
+        (mouseover)="imgSrc = 'assets/img/close_hover.png'"
+        (mouseout)="imgSrc = 'assets/img/close_default.png'" 
+        alt="">
+    </div>
+    <span># Entwicklerteam</span>
+
+    <input type="text" placeholder="Name eingeben">
+
+    <div class="add-btn">
+        <button>
+            Hinzufügen
+        </button>
+    </div>
+
+    
+</mat-card>
+

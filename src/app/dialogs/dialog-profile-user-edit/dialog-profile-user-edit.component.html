@@ -1,6 +1,6 @@
 <mat-card class="user-profile">
     <div class="profile-aot">
-        <span class="profile-txt" >Profil</span>
+        <span class="profile-txt" >Dein Profil bearbeiten</span>
         <img (click)="closeDialog()" class="close" [src]="imgSrc"
         (mouseover)="imgSrc = 'assets/img/close_hover.png'"
         (mouseout)="imgSrc = 'assets/img/close_default.png'" 
@@ -10,19 +10,22 @@
         <img 
         src="assets/img/profiles/boy.png" alt="">
     </div>
-    <div class="user-txt">
-        <span>Frederik Beck</span>
-        <span (click)="openDialog()">Bearbeiten</span>
+    <div class="email">
+        <img src="assets/img/account_circle_default.png" alt="">
+        <div>
+            <span>Vollständiger Name</span>
+        </div>
     </div>
-    <div class="active">
-        <div></div>
-        <span>Aktive</span>
-    </div>
+    <input placeholder="Frederick Beck" type="text">
     <div class="email">
         <img src="assets/img/mail-profile.png" alt="">
         <div>
             <span>E-Mail-Adresse</span>
-            <span>fred&#46;beck&#64;email&#46;com</span>
         </div>
+    </div>
+    <input placeholder="fred-beck@emailc.com" type="text">
+    <div class="buttons">
+        <button (click)="closeDialog()">Abbrechen</button>
+        <button>Speichern</button>
     </div>
 </mat-card>

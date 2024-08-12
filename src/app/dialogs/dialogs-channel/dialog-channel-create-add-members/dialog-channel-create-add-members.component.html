@@ -1,0 +1,31 @@
+<mat-card class="user-profile">
+    <div class="profile-aot">
+        <span class="profile-txt" >Leute hinzufügen</span>
+        <img (click)="closeDialog()" class="close" [src]="imgSrc"
+        (mouseover)="imgSrc = 'assets/img/close_hover.png'"
+        (mouseout)="imgSrc = 'assets/img/close_default.png'" 
+        alt="">
+    </div>
+    <div class="option-container">
+        <div class="option">
+            <input type="radio" name="" id="" [value]="'option1'" [(ngModel)]="selectedValue" (change)="onRadioChange('option1')">
+            <span>Alle Mitglieder von <span class="channel">OfficeTeam</span> hinzufügen</span>
+        </div>
+        <div class="option">
+            <input type="radio" name="" id="" [value]="'option2'" [(ngModel)]="selectedValue" (change)="onRadioChange('option2')">
+            <span>Bestimmte Leute hinzufügen</span>
+        </div>
+        <div [@inputAppear]="inputState">
+          <input class="search-person" type="text" placeholder="Name eingeben" *ngIf="inputState === 'visible'" />
+        </div>
+    </div>
+
+    <div class="add-btn">
+        <button [ngClass]="{'colorPurple': inputState !== 'visible', 'colorGrey': inputState === 'visible'}">
+            Erstellen
+        </button>
+    </div>
+
+    
+</mat-card>
+

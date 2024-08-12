@@ -40,15 +40,6 @@
             font-size: 24px;
             font-weight: bold;
         }
-        &:last-child{
-            font-size: 12px;
-            color: #535AF1;
-            cursor: pointer;
-
-            &:hover{
-                font-weight: bold;
-            }
-        }
     }
 }
 
@@ -70,9 +61,8 @@
 .email{
     @include d-flex($jc: flex-start, $dir: row, $ai: flex-start);
     img{
-        @include widthHeight($w: 18px, $h: 15px);
+        @include widthHeight($w: 23px, $h: 20px);
         margin-right: 14px;
-        margin-top: 4px;
     }
 
     div{
@@ -93,3 +83,32 @@
     box-shadow: none !important;/* Removes the box shadow */
     --mdc-dialog-container-shape: 30px;
   }
+
+.buttons{
+    margin-top: 25px;
+    @include d-flex();
+    img{
+
+    }
+    span{
+        color: white;
+    }
+    button{
+        cursor: pointer;
+        border-radius: 30px;
+        @include widthHeight($w: 110px, $h: 33px);
+        background-color: #444DF2;
+        border: none;
+        @include d-flex();
+
+        &:hover{
+            background-color: #797EF3;
+        }
+    }
+}
+
+.icon-default{
+    color: white;
+    margin-top: 11px;
+    font-size: 14px;
+}
