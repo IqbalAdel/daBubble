@@ -1,12 +1,17 @@
 .main{
     display: flex;
     background-color: #ECEEFE;
-    height: 100vh;
+    height: 90vh;
     width: 100%;
     max-width: 100vw;
     
 }
 app-group-chat{
     width: 100%;
-    margin-right: 40px;
+    margin-right: 60px;
+}
+
+app-solo-chat{
+    width: 100%;
+    margin-right: 60px;
 }

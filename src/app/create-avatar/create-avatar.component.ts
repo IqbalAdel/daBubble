@@ -6,7 +6,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service';
-import { Firestore, collection, addDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, setDoc, doc } from '@angular/fire/firestore';
 @Component({
   selector: 'app-create-avatar',
   standalone: true,
@@ -74,15 +74,22 @@ export class CreateAvatarComponent {
   }
 
   async saveUser() {
-      try {
-        // Hinzufügen eines neuen Dokuments in der 'users'-Sammlung
-        const docRef = await addDoc(collection(this.firestore, 'users'), { ...this.user });
-        console.log('User added with ID: ', docRef.id);
-      } catch (e) {
-        console.error('Error adding user: ', e);
-    
-      }
+    try {
+      // Hinzufügen eines neuen Dokuments in der 'users'-Sammlung
+      const docRef = await addDoc(collection(this.firestore, 'users'), { ...this.user });
+      console.log('User added with ID: ', docRef.id);
+
+      // ID zum Benutzerobjekt hinzufügen
+      this.user.id = docRef.id;
+
+      // Aktualisieren des Dokuments in Firestore mit der neuen ID
+      await setDoc(doc(this.firestore, 'users', docRef.id), { ...this.user });
+      
+      console.log('User updated with ID: ', this.user.id);
+    } catch (e) {
+      console.error('Error adding or updating user: ', e);
     }
+  }
   }
  
 

@@ -1,8 +1,4 @@
 <section>
-<<<<<<< HEAD
-=======
-    <!-- <app-header></app-header> -->
->>>>>>> fa7127f689e3d4fb8ca657f85fa50054df8bbc4c
     <div *ngIf="isDavspaceVisible" class="davspace">
         <div class="davspace-menu">
             <div class="davspace-picture">
@@ -33,9 +29,9 @@
 
         <ng-container *ngIf="openChannels">
             <div *ngFor="let channel of channels$ | async" class="group-chat" (click)="openGroupChat(channel)">
-              # {{ channel.channel }}
+                # {{ channel.channel }}
             </div>
-          </ng-container>
+        </ng-container>
 
         <div class="new-channel">
             <!-- <img src="assets/img/add_circle.png" alt=""> -->
@@ -50,13 +46,12 @@
             </div>
         </div>
         <div class="solo-chat" *ngIf="openEmployees">
-            <div class="solo-employees" *ngFor="let user of users$ | async">
+            <div class="solo-employees" *ngFor="let user of users$ | async" (click)="selectUser(user.id)"
+                [ngClass]="{'selected': user.id === selectedUserId}">
                 <img [src]="user.img" alt="">
                 <img class="online-offline" src="assets/img/Online.png" alt="">
                 {{ user.name }}
-                
             </div>
-            
         </div>
     </div>
     <button *ngIf="isDavspaceVisible" (click)="devspaceCloseOpen()" (mouseover)="changeImage(true)"
@@ -75,8 +70,3 @@
         </div>
     </button>
 </section>
-<<<<<<< HEAD
-
-
-=======
->>>>>>> fa7127f689e3d4fb8ca657f85fa50054df8bbc4c

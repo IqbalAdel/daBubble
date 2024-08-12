@@ -8,20 +8,23 @@ import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FirebaseService } from '../services/firebase.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-devspace',
   standalone: true,
   imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent],
   templateUrl: './devspace.component.html',
-  styleUrl: './devspace.component.scss'
+  styleUrls: ['./devspace.component.scss'] // corrected styleUrl to styleUrls
 })
 export class DevspaceComponent {
   firestore: Firestore = inject(Firestore);
   users$: Observable<any[]>;
   channels$: Observable<any[]>;
+  
+  selectedUserId: string | null = null; // Variable to track the selected user
 
-  constructor(private router: Router, private firebase:FirebaseService) {
+  constructor(private router: Router, private firebase: FirebaseService, public userServes: UserService) {
     const fireUsers = collection(this.firestore, 'users');
     this.users$ = collectionData(fireUsers).pipe(
       map(users => users.sort((a, b) => a['name'].localeCompare(b['name'])))
@@ -37,6 +40,7 @@ export class DevspaceComponent {
   openEmployees = true;
   openChannels = true;
   isDavspaceVisible = true;
+  showGroupChat = true;
   imgSrc = ['assets/GroupClose.png', 'assets/Hide-navigation.png'];
 
   devspaceCloseOpen() {
@@ -48,7 +52,7 @@ export class DevspaceComponent {
   }
 
   closeChannels() {
-    this.openChannels = !this.openChannels
+    this.openChannels = !this.openChannels;
   }
 
   changeImage(isHover: boolean) {
@@ -60,10 +64,23 @@ export class DevspaceComponent {
   }
 
   openGroupChat(channel: any): void {
-  if (channel && channel.id && channel.name) {
-    this.router.navigate(['/group-chat', channel.id, channel.name]);
-  } else {
-    console.error('Invalid channel data:', channel);
+    this.userServes.groupChatOpen = true;
+    if (channel && channel.id && channel.name) {
+      this.router.navigate(['/group-chat', channel.id, channel.name]);
+    } else {
+      console.error('Invalid channel data:', channel);
+    }
   }
-}
+
+  // Function to handle the click on a user chat
+  selectUser(userId: string): void {
+    this.selectedUserId = userId;
+    this.userServes.groupChatOpen = false;
+  }
+
+  openSoloChat(channel: any): void {
+    // Navigiere zur SoloChat-Komponente mit der ID des Kanals
+    this.router.navigate(['/solo-chat', channel.id]);
+  }
+  
 }

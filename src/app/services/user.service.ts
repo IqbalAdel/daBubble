@@ -5,6 +5,9 @@ import { User } from '../../models/user.class';
   providedIn: 'root' // Oder spezifische Module, falls du modulare Bereitstellung nutzt
 })
 export class UserService {
+
+  groupChatOpen = true;
+
   private _user: User | null = null;
 
   setUser(user: User): void {
@@ -14,5 +17,6 @@ export class UserService {
   getUser(): User | null {
     return this._user;
   }
+  
 }
 
