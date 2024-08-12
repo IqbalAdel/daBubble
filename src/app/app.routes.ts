@@ -6,7 +6,12 @@ import { LoginSectionComponent } from './login-section/login-section.component';
 import { CreateAvatarComponent } from './create-avatar/create-avatar.component';
 import { MainComponent } from './main/main.component';
 import { GroupChatComponent } from './group-chat/group-chat.component';
+<<<<<<< HEAD
 import { SoloChatComponent } from './solo-chat/solo-chat.component';
+=======
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { NewPasswordComponent } from './new-password/new-password.component';
+>>>>>>> dff5a92ed4e6704850ec7740249c7780f23b6587
 
 export const routes: Routes = [
   { 
@@ -14,7 +19,10 @@ export const routes: Routes = [
     children: [
       { path: '', component: LoginSectionComponent },
       { path: 'sign-up', component: SignUpComponent },
-      { path: 'create-avatar', component: CreateAvatarComponent }
+      { path: 'create-avatar', component: CreateAvatarComponent },
+      { path: 'reset-password', component: ResetPasswordComponent },
+      { path: 'new-password', component: NewPasswordComponent }
+
     ] 
   },
 

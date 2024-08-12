@@ -17,10 +17,10 @@ export class LoginComponent {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         // Überprüfe den aktuellen Router-Link und setze den Zustand entsprechend
-        if (this.router.url === '/sign-up' || this.router.url === '/create-avatar') {  // Passe die Route hier an
-          this.isVisible = false;
-        } else {
+        if (this.router.url === '/' ) {  // Passe die Route hier an
           this.isVisible = true;
+        } else {
+          this.isVisible = false;
         }
       }
     });
