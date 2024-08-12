@@ -7,13 +7,7 @@ import { MainComponent } from './main/main.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    CommonModule, 
-    RouterOutlet, 
-    MatCardModule, 
-    RouterLink, 
-    DevspaceComponent, 
-    MainComponent],
+  imports: [CommonModule, RouterOutlet, MatCardModule, RouterLink, MainComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

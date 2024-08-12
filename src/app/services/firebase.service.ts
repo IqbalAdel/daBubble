@@ -14,8 +14,9 @@ export class FirebaseService {
   getUsersRef(){
     return collection(this.firestore, 'users');
   }
-  getChannelsRef(){
-    return collection(this.firestore, 'channels');
+  getChannels(): Observable<any[]> {
+    const channelsRef = collection(this.firestore, 'channels');
+    return collectionData(channelsRef);
   }
   getChatsRef(){
     return collection(this.firestore, 'chats');
@@ -25,6 +26,8 @@ export class FirebaseService {
     return doc(collection(this.firestore, collID), docID)
   }
 
-
-
+  getUsers(){
+    const usersRef = collection(this.firestore, 'users');
+    return collectionData(usersRef);
+  }
 }

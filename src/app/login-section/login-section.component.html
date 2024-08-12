@@ -1,6 +1,9 @@
 <div class="login-container">
-    <h1>Anmeldung</h1>
-    <h2>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</h2>
+    <div class="headline">
+        <h1>Anmeldung</h1>
+        <h2>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</h2>
+    </div>
+ 
     <div class="input-container">
         <img class="icon" src="assets/img/mail.png" alt="">
         <input type="email" placeholder="beispielname@email.com">
@@ -10,7 +13,7 @@
         <input type="text" placeholder="Passwort">
     </div>
     <div class="passwort">
-        <a href="">Passwort vergessen?</a>
+        <a [routerLink]="'/reset-password'" href="">Passwort vergessen?</a>
     </div>
     <div class="or-section">
         <div class="left-line"></div>

@@ -9,6 +9,9 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatDialogModule, MatDialogRef, MatDialog} from '@angular/material/dialog';
 import { DialogProfileMenuComponent } from '../../dialogs/dialog-profile-menu/dialog-profile-menu.component';
 import { MatCardModule } from '@angular/material/card';
+import { FirebaseService } from '../../services/firebase.service';
+import { User } from "./../../../models/user.class";
+
 
 @Component({
   selector: 'app-header',
@@ -20,7 +23,6 @@ import { MatCardModule } from '@angular/material/card';
     FormsModule,
     MatButtonModule,
     MatMenuModule,
-    
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -28,13 +30,36 @@ import { MatCardModule } from '@angular/material/card';
 export class HeaderComponent {
 
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
+  users: User[] = [];
 
-  constructor( public dialog: MatDialog) {    
+  constructor( 
+    public dialog: MatDialog,
+    private fire: FirebaseService
+  ) {    
+
+    // const fireUsers = fire.getUsers();
+    // this.users = fireUsers.subscribe((list) => {
+    //   list.forEach(element => {
+    //     console.log(element)
+    //   });
+    // })
+    
+    this.fire.getUsers().subscribe((list) => {
+      this.users = list.map(element => {
+        const data = element;
+        return new User(
+          data['name'] || '',
+          data['email'] || '',
+          data['id'] || '', // Falls `id` ein optionales Feld ist
+          data['img'] || '',
+          data['password'] || '',
+          data['channels'] || [],
+          data['chats'] || []
+        );
+      });
+      console.log(this.users)
+    });  
   }
-
-  // closeDialog(){
-  //   this.dialog.close();
-  // }
 
   openDialog(){
     let dialogRef = this.dialog.open(DialogProfileMenuComponent, {

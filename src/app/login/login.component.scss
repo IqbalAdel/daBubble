@@ -57,12 +57,16 @@ nav {
     align-items: center;
 }
 
+
 mat-card {
-    max-width: 700px;
+    padding-top: 24px;
+    max-width: 606px;
+    border-radius: 30px;
 }
 
 mat-card-content {
-   
+    border-radius: 30px !important;
+
     padding-top: 80px;
     background-color: white;
 }

@@ -1,9 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { Router } from '@angular/router';
+import { collection, collectionData, Firestore } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { FirebaseService } from '../services/firebase.service';
+
 @Component({
   selector: 'app-devspace',
   standalone: true,
@@ -12,35 +17,27 @@ import { Router } from '@angular/router';
   styleUrl: './devspace.component.scss'
 })
 export class DevspaceComponent {
-  constructor( private router: Router) {
-    this.sortEmployees();
-    this.sortGroupChats();
+  firestore: Firestore = inject(Firestore);
+  users$: Observable<any[]>;
+  channels$: Observable<any[]>;
+
+  constructor(private router: Router, private firebase:FirebaseService) {
+    const fireUsers = collection(this.firestore, 'users');
+    this.users$ = collectionData(fireUsers).pipe(
+      map(users => users.sort((a, b) => a['name'].localeCompare(b['name'])))
+    );
+
+    const fireChannels = collection(this.firestore, 'channels');
+    this.channels$ = collectionData(fireChannels).pipe(
+      map(channels => channels.sort((a, b) => a['channel'].localeCompare(b['channel'])))
+    );
   }
-
-  employees = [
-    { name: 'Max Mustermann', picture: 'assets/Avatar.png' },
-    { name: 'Klaus Weber', picture: 'assets/00c.Charaters.png' },
-    { name: 'Andreas Pflaum', picture: 'assets/00c.Charaters.png' }
-  ];
-
-  groupChats = [
-    { id: 1, name: 'Entwicklerteam' },
-    { id: 2, name: 'Vertieb' },
-    { id: 3, name: 'Marketing' },
-  ]
 
   showFiller = false;
   openEmployees = true;
   openChannels = true;
   isDavspaceVisible = true;
-
-  sortEmployees() {
-    this.employees.sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  sortGroupChats() {
-    this.groupChats.sort((a, b) => a.name.localeCompare(b.name));
-  }
+  imgSrc = ['assets/GroupClose.png', 'assets/Hide-navigation.png'];
 
   devspaceCloseOpen() {
     this.isDavspaceVisible = !this.isDavspaceVisible;
@@ -54,9 +51,19 @@ export class DevspaceComponent {
     this.openChannels = !this.openChannels
   }
 
-  openGroupChat(groupChat: { id: number, name: string }): void {
-    this.router.navigate(['/group-chat', groupChat.id, groupChat.name]);
+  changeImage(isHover: boolean) {
+    this.imgSrc[0] = isHover ? 'assets/groupCloseBlue.png' : 'assets/GroupClose.png';
   }
-  
 
+  changeImageTwo(isHover: boolean) {
+    this.imgSrc[0] = isHover ? 'assets/Hide-navigation-blue.png' : 'assets/Hide-navigation.png';
+  }
+
+  openGroupChat(channel: any): void {
+  if (channel && channel.id && channel.name) {
+    this.router.navigate(['/group-chat', channel.id, channel.name]);
+  } else {
+    console.error('Invalid channel data:', channel);
+  }
+}
 }

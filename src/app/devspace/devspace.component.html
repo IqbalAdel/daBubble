@@ -1,61 +1,74 @@
 <section>
+
     <div *ngIf="isDavspaceVisible" class="davspace">
         <div class="davspace-menu">
-            <img src="assets/Workspace.png" alt="">
-            <h1>Devspace</h1>
+            <div class="davspace-picture">
+                <img src="assets/Workspace.png" alt="">
+                <h1>Devspace</h1>
+            </div>
+
             <div class="icon">
                 <img src="assets/edit_square.png" alt="">
             </div>
 
         </div>
-        <div class="all-container">
-
-            <div class="channels" (click)="closeChannels()">
+        <div class="channels" (click)="closeChannels()">
+            <div class="channel-group">
                 <img [src]="openChannels ? 'assets/arrow_drop_down.png' : 'assets/arrow_drop_down-right.png'" alt="">
 
                 <div class="channels-block">
+
                     <h2>Channels</h2>
                 </div>
-                <div class="add">
-                    <img  src="assets/img/add.png" alt="">
-                </div>
-
             </div>
 
-            <ng-container *ngIf="openChannels">
-                <div *ngFor="let groupChat of groupChats" class="group-chat" (click)="openGroupChat(groupChat)">
-                  # {{ groupChat.name }}
-                </div>
-              </ng-container>
-
-            <div class="new-channel">
-                <!-- <img src="assets/img/add_circle.png" alt=""> -->
-                <span>Channel hinzufügen</span>
+            <div class="add">
+                <img src="assets/img/add.png" alt="">
             </div>
 
-            <div (click)="closeDirectMessages()" class="direct-messages">
-                <img [src]="openEmployees ? 'assets/arrow_drop_down.png' : 'assets/arrow_drop_down-right.png'" alt="">
-                <div class="direct-messages-box">
-                    <!-- <img src="assets/account_circle.png" alt=""> -->
-                    <h2>Direktnachrichten</h2>
-                </div>
+        </div>
+
+        <ng-container *ngIf="openChannels">
+            <div *ngFor="let channel of channels$ | async" class="group-chat" (click)="openGroupChat(channel)">
+              # {{ channel.channel }}
             </div>
-            <div class="solo-chat" *ngIf="openEmployees">
-                <div class="solo-employees" *ngFor="let employee of employees">
-                    <img [src]="employee.picture" alt="{{ employee.name }}">
-                    {{ employee.name }}
-                </div>
+          </ng-container>
+
+        <div class="new-channel">
+            <!-- <img src="assets/img/add_circle.png" alt=""> -->
+            <span>Channel hinzufügen</span>
+        </div>
+
+        <div (click)="closeDirectMessages()" class="direct-messages">
+            <img [src]="openEmployees ? 'assets/arrow_drop_down.png' : 'assets/arrow_drop_down-right.png'" alt="">
+            <div class="direct-messages-box">
+                <!-- <img src="assets/account_circle.png" alt=""> -->
+                <h2>Direktnachrichten</h2>
             </div>
+        </div>
+        <div class="solo-chat" *ngIf="openEmployees">
+            <div class="solo-employees" *ngFor="let user of users$ | async">
+                <img [src]="user.img" alt="">
+                <img class="online-offline" src="assets/img/Online.png" alt="">
+                {{ user.name }}
+                
+            </div>
+            
         </div>
     </div>
-    <button (click)="devspaceCloseOpen()">
-        <div class="image-close" *ngIf="isDavspaceVisible;">
-            Workspace-Menü schließen
-            <img src="assets/GroupClose.png" alt="Schließen">
+    <button *ngIf="isDavspaceVisible" (click)="devspaceCloseOpen()" (mouseover)="changeImage(true)"
+        (mouseout)="changeImage(false)">
+        <div class="image-close">
+            <span>Workspace-Menü schließen</span>
+            <img [src]="imgSrc[0]" alt="Schließen">
         </div>
-        <div class="image-open" *ngIf="!isDavspaceVisible;">
+    </button>
+    <button *ngIf="!isDavspaceVisible;" (click)="devspaceCloseOpen()" (mouseover)="changeImageTwo(true)"
+        (mouseout)="changeImageTwo(false)">
+        <div class="image-open">
             Workspace-Menü öffnen
-            <img src="assets/Hide-navigation.png" alt="Öffnen">
+            <img [src]="imgSrc[0]" alt="Öffnen">
+
         </div>
     </button>
 </section>
