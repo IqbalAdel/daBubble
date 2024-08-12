@@ -1,5 +1,9 @@
 <app-header></app-header>
- <div class="main">
-    <app-devspace></app-devspace>
-    <app-group-chat></app-group-chat>
- </div>
+<div class="main">
+   <app-devspace></app-devspace>
+   @if (userService.groupChatOpen) {
+   <app-group-chat></app-group-chat>
+   }@else {<app-solo-chat></app-solo-chat>}
+
+
+</div>

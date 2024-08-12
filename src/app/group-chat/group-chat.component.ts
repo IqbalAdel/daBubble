@@ -1,8 +1,8 @@
-// src/app/group-chat/group-chat.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
 import { DialogChannelAddMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-add-members/dialog-channel-add-members.component';
@@ -15,7 +15,7 @@ import { DialogChannelAddMembersComponent } from '../dialogs/dialogs-channel/dia
   styleUrls: ['./group-chat.component.scss']
 })
 export class GroupChatComponent implements OnInit {
-  groupId!: string; // Typ auf string geändert, da URL-Parameter normalerweise als string kommen
+  groupId!: string; 
   groupName!: string;
 
   currentDate!: string;
@@ -24,28 +24,33 @@ export class GroupChatComponent implements OnInit {
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png','assets/person_add.png'];
   imgTextarea =['assets/img/add.png','assets/img/smiley/sentiment_satisfied.png','assets/img/smiley/alternate_email.png','assets/img/smiley/send.png']
 
-
   constructor(
     private route: ActivatedRoute,
+    public userServes: UserService,
     private dialogChannel: MatDialog,
     private dialogChannelMemberList: MatDialog,
     private dialogChannelAddMember: MatDialog,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.groupId = this.route.snapshot.paramMap.get('id') || '';
-    this.groupName = this.route.snapshot.paramMap.get('name') || '';
+    // Observing paramMap to update component when route params change
+    this.route.paramMap.subscribe(params => {
+      this.groupId = params.get('id') || '';
+      this.groupName = params.get('name') || '';
 
-    console.log('groupId:', this.groupId);
-    console.log('groupName:', this.groupName);
+      console.log('groupId:', this.groupId);
+      console.log('groupName:', this.groupName);
 
-    // Formatierung der Zeit und des Datums
+      // Update any other component logic that depends on groupId or groupName
+      this.updateDateTime();
+    });
+  }
+
+  updateDateTime(): void {
     const today = new Date();
     this.currentDate = today.toLocaleDateString();
     this.currentTime = this.formatTime(today);
     this.displayDate = this.isToday(today) ? 'Heute' : this.currentDate;
-
-    // Hier könntest du auch weitere Logik einfügen, um Daten für den Kanal zu laden
   }
 
   isToday(date: Date): boolean {
@@ -66,18 +71,23 @@ export class GroupChatComponent implements OnInit {
   changeImageComment(isHover: boolean) {
     this.imgSrc[1] = isHover ? 'assets/img/smiley/comment-blue.png' : 'assets/img/smiley/comment.png';
   }
+
   changeImageAddContat(isHover: boolean){
     this.imgSrc[2] = isHover ? 'assets/person_add_blue.png' : 'assets/person_add.png';
   }
+
   changeAdd(isHover: boolean){
     this.imgTextarea[0] = isHover ? 'assets/img/smiley/add-blue.png' : 'assets/img/add.png';
   }
+
   addSmiley(isHover: boolean){
     this.imgTextarea[1] = isHover ? 'assets/img/smiley/sentiment_satisfied-blue.png' : 'assets/img/smiley/sentiment_satisfied.png';
   }
+
   addEmailContact(isHover: boolean){
     this.imgTextarea[2] = isHover ? 'assets/img/smiley/alternate_email-blue.png' : 'assets/img/smiley/alternate_email.png';
   }
+
   sendNews(isHover: boolean){
     this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
   }

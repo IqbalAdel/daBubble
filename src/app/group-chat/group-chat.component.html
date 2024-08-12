@@ -1,4 +1,4 @@
-<div class="chat-group">
+<div class="chat-group" *ngIf="userServes.groupChatOpen">
     <div class="chat-header-group">
         <div (click)="openDialog()" class="name">
             <h2># {{groupName}}</h2>
@@ -59,7 +59,7 @@
         </div>
 
 
-        <div class="textarea">
+        <div class="textarea" #autoScrollTextarea>
             <textarea rows="2" cols="50" placeholder="Nachricht an #Gruppenname"></textarea>
             <div class="textarea-send">
                 <div class="textarea-add">

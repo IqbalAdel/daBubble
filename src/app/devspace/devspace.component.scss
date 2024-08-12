@@ -34,7 +34,7 @@ button {
 }
 
 .davspace {
-    height: 95vh;
+    height: 85vh;
     width: 366px;
     background-color: white;
     border-radius: 30px;
@@ -95,14 +95,6 @@ button {
             cursor: pointer;
         }
     }
-
-
-
-    // .all-container {
-    //     display: flex;
-    //     flex-direction: column;
-    //     align-items: center;
-    // }
 
     h2 {
         font-size: 20px;
@@ -223,6 +215,11 @@ button {
             left: 70px;
 
         }
+        &.selected {
+            background-color: rgba(236, 238, 254, 1); // Hintergrundfarbe für ausgewählten Chat
+            color: blue; // Optional: Textfarbe für bessere Lesbarkeit
+            font-weight: 600;
+          }
 
     }
 

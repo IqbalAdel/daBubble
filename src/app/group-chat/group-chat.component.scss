@@ -1,6 +1,6 @@
 .chat-group {
     background-color: white;
-    height: 95vh;
+    height: 85vh;
     width: 100%;
     border-radius: 30px;
     margin: 20px 30px;
@@ -9,6 +9,7 @@
     flex-direction: column;
     position: relative;
     transition: all 0.3s ease-in-out;
+    // display: none;
 
     &.collapsed {
         width: 300px;
@@ -59,17 +60,15 @@
 
                 img {
                     height: 70px;
-                    border: 4px solid white;
                     border-radius: 100%;
                     margin-left: -25px;
+                    background-color: white;
                 }
 
                 &:hover {
                     background-color: rgba(236, 238, 254, 1);
                 }
             }
-
-
         }
     }
 
@@ -96,12 +95,14 @@
             border-radius: 20px;
             position: absolute;
             bottom: 30px;
-            padding: 10px;
+            padding: 10px 10px 55px 10px;
             resize: none;
             cursor: pointer;
             font-size: 18px;
             font-weight: 400;
             outline: none;
+            overflow-y: auto;
+            scrollbar-width: none;
         }
 
 
@@ -227,6 +228,7 @@
 .textarea {
     display: flex;
     justify-content: center;
+    padding-bottom: 30px;
 
     .textarea-send {
         font-size: 24px;
@@ -237,10 +239,11 @@
         position: absolute;
         left: 30px;
         bottom: 50px;
-        .textarea-add{
+
+        .textarea-add {
             display: flex;
             align-items: center;
-            color:lightgray;
+            color: lightgray;
             font-size: 40px;
         }
 
@@ -257,7 +260,7 @@
         }
     }
 
-    .send{
+    .send {
         position: absolute;
         right: 40px;
         bottom: 50px;

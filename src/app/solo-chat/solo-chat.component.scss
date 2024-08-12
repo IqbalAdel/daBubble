@@ -1,0 +1,38 @@
+.solo-group {
+    background-color: white;
+    height: 85vh;
+    width: 100%;
+    border-radius: 30px;
+    margin: 20px 30px;
+    box-sizing: border-box; /* Wichtig für das Padding und die Border */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.3s ease-in-out;
+  
+
+    .line {
+        border-bottom: 4px solid rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+    }
+
+    .chat-header-group {
+        padding: 20px 20px 0px 30px;
+
+        .name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            h2{
+                margin: 0;
+            }
+        }
+    }
+
+    .center{
+        padding: 30px;
+    }
+
+    
+
+}

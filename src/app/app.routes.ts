@@ -8,6 +8,7 @@ import { MainComponent } from './main/main.component';
 import { GroupChatComponent } from './group-chat/group-chat.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { NewPasswordComponent } from './new-password/new-password.component';
+import { SoloChatComponent } from './solo-chat/solo-chat.component';
 
 export const routes: Routes = [
   // { 
@@ -31,5 +32,7 @@ export const routes: Routes = [
   },
 
   { path: 'main', component: MainComponent },
+  { path: 'group-chat/:id/:name', component: GroupChatComponent },
+  { path: 'solo-chat/:id', component: SoloChatComponent },
 ];
 
