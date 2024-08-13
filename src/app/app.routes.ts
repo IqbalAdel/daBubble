@@ -9,6 +9,8 @@ import { GroupChatComponent } from './group-chat/group-chat.component';
 import { SoloChatComponent } from './solo-chat/solo-chat.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { NewPasswordComponent } from './new-password/new-password.component';
+import { TestComponent } from './main/test/test.component';
+
 
 export const routes: Routes = [
   // { 
@@ -34,14 +36,13 @@ export const routes: Routes = [
   { 
     path: 'main', component: MainComponent, 
     children: [
-      { path: '', redirectTo: 'group-chat', pathMatch: 'full' },  // Redirect to group chat list or default
-      { path: 'group-chat', redirectTo: 'group-chat/1S28fQQEdf7LfxdJASzJ', pathMatch: 'full' },  // Example default redirect
-      { path: 'group-chat/:id', component: GroupChatComponent },  // Route with ID parameter
+      { path: '', redirectTo: 'group-chat/1S28fQQEdf7LfxdJASzJ', pathMatch: 'full' },  // Redirect to group chat list or default
+      
+      { path: 'group-chat/:id', component: TestComponent },  // Route with ID parameter
     ],
   },
-  
-  
-  // { path: 'group-chat/:id/:name', component: GroupChatComponent },
-  // { path: 'solo-chat/:userId', component: SoloChatComponent },
+
+  // { path: 'main', component: MainComponent },
+
 ];
 

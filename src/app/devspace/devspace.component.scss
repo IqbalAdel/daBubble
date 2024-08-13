@@ -152,7 +152,7 @@ button {
             text-align: center;
             height: 30px;
             width: 30px;
-
+            display: flex;
             &:hover {
                 background-color: rgba(236, 238, 254, 1);
             }
@@ -196,15 +196,15 @@ button {
     }
 
     .solo-employees {
-        display: flex;
+        display: inline-flex; /* Macht das Element so breit wie sein Inhalt */
         align-items: center;
-        margin: 10px 50px;
         gap: 20px;
         font-size: 18px;
         cursor: pointer;
-        width: auto;
-        border-radius: 30px;
+        width: auto; /* Breite richtet sich nach dem Inhalt */
+        border-radius:50px;
         position: relative;
+        margin-left: 30px;
 
         &:hover {
             background-color: rgba(236, 238, 254, 1);
@@ -285,11 +285,19 @@ button {
     gap: 13px;
     padding: 4px 20px;
     margin-bottom: 10px;
+    &.selected {
+        background-color: rgba(0, 0, 255, 0.1); /* Blau als Hintergrundfarbe für ausgewählten Zustand */
+        color: blue; /* Textfarbe für ausgewählten Zustand */
+        font-weight: 600; /* Optional: Text fetter machen */
+    }
+    
 
     &:hover {
         background-color: rgba(236, 238, 254, 1);
         color: blue;
+        
     }
+    
 }
 
 header {

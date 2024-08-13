@@ -27,8 +27,8 @@ export class DevspaceComponent {
   channels$: Observable<any[]>;
   channelsIqbal: Channel[] = [];
   user = new User();
-  test = [];
-  
+  selectedChannelId: string | null = null;
+
   showFiller = false;
   openEmployees = true;
   openChannels = true;
@@ -97,6 +97,13 @@ export class DevspaceComponent {
     this.selectedUserId = userId;
     this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
     this.userServes.groupChatOpen = false;
+    this.selectedChannelId = null;
+  }
+
+  selectChannel(channel: any) {
+    this.selectedChannelId = channel.id; // Setzt den ID des ausgewählten Channels
+    this.openGroupChat(channel); // Öffnet den Gruppenchat für den ausgewählten Channel
+    this.selectedUserId = null;
   }
 
   openSoloChat(channel: any): void {

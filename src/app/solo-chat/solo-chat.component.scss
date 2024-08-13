@@ -44,6 +44,10 @@
         padding: 30px;
         font-size: 20px;
         gap: 10px;
+        height: calc(100% - 330px);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end        
     }
 
     .solo-chat {
@@ -56,8 +60,15 @@
             margin: 0;
             display: flex;
             align-items: flex-end;
+            cursor: pointer;
+            
             h2{
                 margin: 0;
+                font-size: 24px;
+                font-weight: 700;
+                &:hover{
+                    color: blue;
+                }
             }
         }
     }
@@ -65,6 +76,12 @@
     b{
         color: blue;
         cursor: pointer;
+        font-weight: 400;
+        font-size: 20px;
+        &:hover{
+            font-weight: 700;
+
+        }
     }
     .chat{
         margin-top: 20px;

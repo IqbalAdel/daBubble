@@ -11,8 +11,8 @@
             </div>
 
         </div>
-        <div class="channels" (click)="closeChannels()">
-            <div class="channel-group">
+        <div class="channels" >
+            <div class="channel-group"(click)="closeChannels()">
                 <img [src]="openChannels ? 'assets/arrow_drop_down.png' : 'assets/arrow_drop_down-right.png'" alt="">
 
                 <div class="channels-block">
@@ -27,18 +27,28 @@
 
         </div>
 
-        <!-- <ng-container *ngIf="openChannels">
+         <!-- <ng-container *ngIf="openChannels">
             <div *ngFor="let channel of channelsIqbal" class="group-chat" (click)="openGroupChat(channel)"
             [routerLink]="['main/group-chat/', channel.id]">
                 # {{ channel.name }}
             </div>
         </ng-container> -->
         <ng-container *ngIf="openChannels">
-            <div *ngFor="let channel of channelsIqbal" class="group-chat" >
+            <div *ngFor="let channel of channelsIqbal" class="group-chat"
+            [ngClass]="{'selected': selectedChannelId === channel.id}" 
+            (click)="selectChannel(channel)" >
               <a [routerLink]="['/main/group-chat', channel.id]"># {{ channel.name }}</a>
             </div>
           </ng-container>
-          
+
+        <!-- <ng-container *ngIf="openChannels">
+            <div *ngFor="let channel of channels$ | async" 
+                 class="group-chat" 
+                 [ngClass]="{'selected': selectedChannelId === channel.id}" 
+                 (click)="selectChannel(channel)">
+              # {{ channel.name }}
+            </div>
+          </ng-container> -->
 
         <div (click)="openDialog()" class="new-channel">
             <!-- <img src="assets/img/add_circle.png" alt=""> -->
