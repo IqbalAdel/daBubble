@@ -1,0 +1,34 @@
+<mat-card class="user-profile">
+    <div class="profile-aot">
+        <span class="profile-txt" >Profil</span>
+        <img (click)="closeDialog()" class="close" [src]="imgSrc"
+        (mouseover)="imgSrc = 'assets/img/close_hover.png'"
+        (mouseout)="imgSrc = 'assets/img/close_default.png'" 
+        alt="">
+    </div>
+    <div class="avatar">
+        <img 
+        src={{image}} alt="">
+    </div>
+    <div class="user-txt">
+        <span>{{username}}</span>
+    </div>
+    <div class="active">
+        <div></div>
+        <span>Aktive</span>
+    </div>
+    <div class="email">
+        <img src="assets/img/mail-profile.png" alt="">
+        <div>
+            <span>E-Mail-Adresse</span>
+            <span>{{email}}</span>
+        </div>
+    </div>
+    <div class="buttons">
+        <button>
+            <!-- <img src="" alt=""> -->
+             <mat-icon class="icon-default">mode_comment</mat-icon>
+            <span>Nachricht</span>
+        </button>
+    </div>
+</mat-card>

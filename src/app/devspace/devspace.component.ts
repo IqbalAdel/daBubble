@@ -3,13 +3,15 @@ import { Component, inject } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { collection, collectionData, DocumentData, Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UserService } from '../services/user.service';
 import { User } from '../../models/user.class';
 import { FirebaseService } from '../services/firebase.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogChannelCreateComponent } from '../dialogs/dialogs-channel/dialog-channel-create/dialog-channel-create.component';
 
 @Component({
   selector: 'app-devspace',
@@ -34,10 +36,15 @@ export class DevspaceComponent {
   selectedUserId: string | null = null; // Variable to track the selected user
 
   constructor(
-    private router: Router,
+    
+    private router: Router, 
+   
+    
     public userServes: UserService,
     private firebaseService: FirebaseService,
     private userService: UserService 
+  ,
+    private dialog: MatDialog,
   ) {
     const fireUsers = collection(this.firestore, 'users');
     this.users$ = collectionData(fireUsers).pipe(
@@ -87,8 +94,22 @@ export class DevspaceComponent {
     this.selectedUserId = userId;
     this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
     this.userServes.groupChatOpen = false;
-
   }
+
+  openSoloChat(channel: any): void {
+    // Navigiere zur SoloChat-Komponente mit der ID des Kanals
+    this.router.navigate(['/solo-chat', channel.id]);
+  }
+
+  openDialog(){
+    let dialogRef = this.dialog.open(DialogChannelCreateComponent, {
+      panelClass: 'border-30',
+      width: '700px',
+      height: '400px',
+    });
+  }
+  
+
 
   loadChannels() {
     this.channels$ = this.firebaseService.getChannels();

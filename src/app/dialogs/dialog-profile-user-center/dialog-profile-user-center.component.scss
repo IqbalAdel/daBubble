@@ -1,0 +1,118 @@
+@import './../../../mixins.scss';
+
+.user-profile{
+    padding: 30px 25px 30px 25px;
+    height: 100%;
+    // @include d-flex($dir: column);
+   
+}
+.profile-aot{
+    @include d-flex($jc: space-between);
+    margin-bottom: 15px;
+    
+    span{
+        font-weight: bold;
+        font-size: 16px;
+    }
+    img{
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
+}
+
+.avatar{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    img{
+        width: 125px;
+        height: 125px;
+        border-radius: 100%;
+    }
+}
+
+.user-txt{
+    @include d-flex($jc: space-between);
+    margin-bottom: 20px;
+    span{
+        &:first-child{
+            font-size: 24px;
+            font-weight: bold;
+        }
+    }
+}
+
+.active{
+    @include d-flex($jc: flex-start);
+    margin-bottom: 25px;
+    div{
+        background-color: #92C83E;
+        border-radius: 100%;
+        width: 10px;
+        height: 10px;
+        margin-right: 10px;
+    }
+    span{
+        color: #92C83E;
+    }
+}
+
+.email{
+    @include d-flex($jc: flex-start, $dir: row, $ai: flex-start);
+    img{
+        @include widthHeight($w: 23px, $h: 20px);
+        margin-right: 14px;
+    }
+
+    div{
+        @include d-flex($dir: column, $ai: flex-start);
+        span{
+            &:first-child{
+                margin-bottom: 10px;
+                font-weight: bold;
+            }
+            &:last-child{
+                color: #1381FF;
+            }
+        }
+    }
+}
+
+::ng-deep .border-radius .mat-mdc-dialog-container {
+    box-shadow: none !important;/* Removes the box shadow */
+    --mdc-dialog-container-shape: 30px;
+  }
+
+.buttons{
+    margin-top: 25px;
+    @include d-flex();
+    img{
+
+    }
+    span{
+        color: white;
+    }
+    button{
+        cursor: pointer;
+        border-radius: 30px;
+        @include widthHeight($w: 110px, $h: 33px);
+        background-color: #444DF2;
+        border: none;
+        @include d-flex();
+
+        &:hover{
+            background-color: #797EF3;
+        }
+        &:focus{
+            border: none;
+            outline: none;
+        }
+    }
+}
+
+.icon-default{
+    color: white;
+    margin-top: 11px;
+    font-size: 14px;
+}

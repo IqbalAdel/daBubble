@@ -31,4 +31,5 @@ export class FirebaseService {
   getSingleDocRef(collID: string, docID: string){
     return doc(collection(this.firestore, collID), docID)
   }
+
 }

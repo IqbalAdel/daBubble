@@ -1,5 +1,4 @@
-@import url('./../../../mixins.scss');
-// @import url('./../../../styles.scss');
+@import './../../../mixins.scss';
 
 .logo {
     display: flex;
@@ -8,10 +7,17 @@
         padding-left: 16px;
         font-size: 24px;
         font-weight: bold;
+
+        @media (width < 400px) {
+            font-size: 20px;;
+        }
     }
     img{
-        width: 70px;
-        height: 70px;
+        @include widthHeight($w: 70px, $h: 70px);
+
+        @media (width < 400px) {
+            @include widthHeight($w: 50px, $h: 50px);
+        }
     }
 }
 
@@ -56,6 +62,9 @@
         padding-right: 10px;
         transition: color ease-in 125ms;
 
+        @media (width < 992px) {
+            display: none;
+        }
     }
 }
 
@@ -98,6 +107,9 @@
         position: absolute;
         right: 75px;
         transform: scale(1.2);
+        @media (width < 992px) {
+            display: none;
+        }
     }
 
     input{
@@ -108,6 +120,10 @@
         border: none;
         outline: none;
         border-radius: 42px;
+
+        @media (width < 992px) {
+            display: none;
+        }
     }
     ::placeholder{
         font-size: 20px;
@@ -119,6 +135,10 @@
     width: 30px;
     height: 30px;
     margin-left: 10px;
+
+    @media (width < 992px) {
+        display: none;
+    }
 }
 
 // ::ng-deep .mat-mdc-menu-content {

@@ -44,6 +44,10 @@
             font-size: 12px;
             color: #535AF1;
             cursor: pointer;
+
+            &:hover{
+                font-weight: bold;
+            }
         }
     }
 }
@@ -84,3 +88,8 @@
         }
     }
 }
+
+::ng-deep .border-radius .mat-mdc-dialog-container {
+    box-shadow: none !important;/* Removes the box shadow */
+    --mdc-dialog-container-shape: 30px;
+  }

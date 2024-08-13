@@ -11,8 +11,16 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { NewPasswordComponent } from './new-password/new-password.component';
 
 export const routes: Routes = [
+  // { 
+  //   path: '', component: LoginComponent, 
+  //   children: [
+  //     { path: '', component: LoginSectionComponent },
+  //     { path: 'sign-up', component: SignUpComponent },
+  //     { path: 'create-avatar', component: CreateAvatarComponent }
+  //   ] 
+  // },
   { 
-    path: '', component: LoginComponent, 
+    path: '', component: MainComponent, 
     children: [
       { path: '', component: LoginSectionComponent },
       { path: 'sign-up', component: SignUpComponent },

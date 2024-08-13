@@ -4,12 +4,13 @@
     width: 100%;
     border-radius: 30px;
     margin: 20px 30px;
-    box-sizing: border-box; /* Wichtig für das Padding und die Border */
+    box-sizing: border-box;
+    /* Wichtig für das Padding und die Border */
     display: flex;
     flex-direction: column;
     position: relative;
     transition: all 0.3s ease-in-out;
-  
+
 
     .line {
         border-bottom: 4px solid rgba(0, 0, 0, 0.1);
@@ -23,16 +24,40 @@
             display: flex;
             align-items: center;
             gap: 10px;
+
+            h2 {
+                margin: 0;
+            }
+        }
+    }
+
+    .center {
+        padding: 30px;
+        font-size: 20px;
+        gap: 10px;
+    }
+
+    .solo-chat {
+        margin: 0;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+
+        .solo-name {
+            margin: 0;
+            display: flex;
+            align-items: flex-end;
             h2{
                 margin: 0;
             }
         }
     }
 
-    .center{
-        padding: 30px;
+    b{
+        color: blue;
+        cursor: pointer;
     }
-
-    
-
+    .chat{
+        margin-top: 20px;
+    }
 }
