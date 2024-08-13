@@ -6,11 +6,12 @@ import { DevspaceComponent } from '../devspace/devspace.component';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
 import { SoloChatComponent } from '../solo-chat/solo-chat.component';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [DevspaceComponent, GroupChatComponent,MainComponent,HeaderComponent,CommonModule,SoloChatComponent],
+  imports: [DevspaceComponent, GroupChatComponent,MainComponent,HeaderComponent,CommonModule,SoloChatComponent, RouterModule],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })

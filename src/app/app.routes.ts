@@ -19,19 +19,28 @@ export const routes: Routes = [
   //     { path: 'create-avatar', component: CreateAvatarComponent }
   //   ] 
   // },
+  // { 
+  //   path: '', component: MainComponent, 
+  //   children: [
+  //     { path: '', component: LoginSectionComponent },
+  //     { path: 'sign-up', component: SignUpComponent },
+  //     { path: 'create-avatar', component: CreateAvatarComponent },
+  //     { path: 'reset-password', component: ResetPasswordComponent },
+  //     { path: 'new-password', component: NewPasswordComponent }
+
+  //   ] 
+  // },
+
   { 
-    path: '', component: MainComponent, 
+    path: 'main', component: MainComponent, 
     children: [
-      { path: '', component: LoginSectionComponent },
-      { path: 'sign-up', component: SignUpComponent },
-      { path: 'create-avatar', component: CreateAvatarComponent },
-      { path: 'reset-password', component: ResetPasswordComponent },
-      { path: 'new-password', component: NewPasswordComponent }
-
-    ] 
+      { path: '', redirectTo: 'group-chat', pathMatch: 'full' },  // Redirect to group chat list or default
+      { path: 'group-chat', redirectTo: 'group-chat/1S28fQQEdf7LfxdJASzJ', pathMatch: 'full' },  // Example default redirect
+      { path: 'group-chat/:id', component: GroupChatComponent },  // Route with ID parameter
+    ],
   },
-
-  { path: 'main', component: MainComponent },
+  
+  
   // { path: 'group-chat/:id/:name', component: GroupChatComponent },
   // { path: 'solo-chat/:userId', component: SoloChatComponent },
 ];

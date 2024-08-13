@@ -27,11 +27,18 @@
 
         </div>
 
-        <ng-container *ngIf="openChannels">
-            <div *ngFor="let channel of channels$ | async" class="group-chat" (click)="openGroupChat(channel)">
+        <!-- <ng-container *ngIf="openChannels">
+            <div *ngFor="let channel of channelsIqbal" class="group-chat" (click)="openGroupChat(channel)"
+            [routerLink]="['main/group-chat/', channel.id]">
                 # {{ channel.name }}
             </div>
-        </ng-container>
+        </ng-container> -->
+        <ng-container *ngIf="openChannels">
+            <div *ngFor="let channel of channelsIqbal" class="group-chat" >
+              <a [routerLink]="['/main/group-chat', channel.id]"># {{ channel.name }}</a>
+            </div>
+          </ng-container>
+          
 
         <div (click)="openDialog()" class="new-channel">
             <!-- <img src="assets/img/add_circle.png" alt=""> -->

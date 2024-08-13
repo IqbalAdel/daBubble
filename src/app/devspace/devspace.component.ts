@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { collection, collectionData, DocumentData, Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,11 +12,12 @@ import { User } from '../../models/user.class';
 import { FirebaseService } from '../services/firebase.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogChannelCreateComponent } from '../dialogs/dialogs-channel/dialog-channel-create/dialog-channel-create.component';
+import { Channel } from '../../models/channel.class';
 
 @Component({
   selector: 'app-devspace',
   standalone: true,
-  imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent],
+  imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent, RouterModule, RouterLink],
   templateUrl: './devspace.component.html',
   styleUrls: ['./devspace.component.scss'] // corrected styleUrl to styleUrls
 })
@@ -24,7 +25,9 @@ export class DevspaceComponent {
   firestore: Firestore = inject(Firestore);
   users$: Observable<any[]>;
   channels$: Observable<any[]>;
+  channelsIqbal: Channel[] = [];
   user = new User();
+  test = [];
   
   showFiller = false;
   openEmployees = true;
@@ -55,8 +58,8 @@ export class DevspaceComponent {
     this.channels$ = collectionData(fireChannels).pipe(
       map(channels => channels.sort((a, b) => a['description'].localeCompare(b['description'])))
     );
+
     this.loadChannels();
-    this.loadUsers();
     this.selectUser;
   }
 
@@ -84,7 +87,7 @@ export class DevspaceComponent {
   openGroupChat(name: any): void {
     this.userServes.groupChatOpen = true;
     if (name && name.id && name.name) {
-      this.router.navigate(['/group-chat', name.id, name.name]);
+      this.router.navigate(['/group-chat', name.id]);
     } else {
       console.error('Invalid channel data:', name);
     }
@@ -112,20 +115,34 @@ export class DevspaceComponent {
 
 
   loadChannels() {
-    this.channels$ = this.firebaseService.getChannels();
-    // Optional: Wenn du die Channels auch in der Konsole anzeigen möchtest:
-    this.channels$.subscribe(channels => {
-      console.log('Channels:', channels);
+    this.firebaseService.getChannels().subscribe((channels) => {
+    this.channelsIqbal = channels.map(channelData => {
+
+      // Create a new Channel instance
+      return new Channel(
+        channelData.name || '',
+        channelData.description || '',
+        channelData.creator || '',
+        channelData.messages || [],
+        channelData.users || [],
+        channelData.id || ''
+      );
     });
+      // Log the mapped Channel instances
+      console.log('Mapped Channels:', this.channelsIqbal);
+    });
+  }
   }
   
-  loadUsers() {
-    const usersRef = this.firebaseService.getUsersRef();  // Holt die Referenz der Benutzer-Sammlung
-    collectionData(usersRef).subscribe((users: DocumentData[]) => {
-      users.forEach(user => {
-        console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
-      });
-    });
-  }
-}
+  // loadUsers() {
+  //   const usersRef = this.firebaseService.getUsersRef();  // Holt die Referenz der Benutzer-Sammlung
+  //   collectionData(usersRef).subscribe((users: DocumentData[]) => {
+  //     users.forEach(user => {
+  //       console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
+  //     });
+  //   });
+  // }
+
+
+
 
