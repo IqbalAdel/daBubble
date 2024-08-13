@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class UserService {
 
-  groupChatOpen = false;
+  groupChatOpen = true;
 
   private _user: User | null = null;
   private selectedUserIdSource = new BehaviorSubject<string | null>(null);

@@ -53,7 +53,7 @@ export class DevspaceComponent {
 
     const fireChannels = collection(this.firestore, 'channels');
     this.channels$ = collectionData(fireChannels).pipe(
-      map(channels => channels.sort((a, b) => a['channel'].localeCompare(b['channel'])))
+      map(channels => channels.sort((a, b) => a['description'].localeCompare(b['description'])))
     );
     this.loadChannels();
     this.loadUsers();
@@ -81,12 +81,12 @@ export class DevspaceComponent {
     this.imgSrc[0] = isHover ? 'assets/Hide-navigation-blue.png' : 'assets/Hide-navigation.png';
   }
 
-  openGroupChat(channel: any): void {
+  openGroupChat(description: any): void {
     this.userServes.groupChatOpen = true;
-    if (channel && channel.id && channel.name) {
-      this.router.navigate(['/group-chat', channel.id, channel.name]);
+    if (description && description.id && description.name) {
+      this.router.navigate(['/group-chat', description.id, description.name]);
     } else {
-      console.error('Invalid channel data:', channel);
+      console.error('Invalid channel data:', description);
     }
   }
 

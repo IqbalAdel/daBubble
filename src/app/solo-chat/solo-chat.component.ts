@@ -6,11 +6,12 @@ import { UserService } from '../services/user.service';
 import { Observable, of, from } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { User } from '../../models/user.class';
+import { ChatComponent } from '../chat/chat.component';
 
 @Component({
   selector: 'app-solo-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ChatComponent],
   templateUrl: './solo-chat.component.html',
   styleUrls: ['./solo-chat.component.scss']
 })

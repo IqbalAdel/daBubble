@@ -6,11 +6,12 @@ import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
 import { DialogChannelAddMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-add-members/dialog-channel-add-members.component';
+import { ChatComponent } from '../chat/chat.component';
 
 @Component({
   selector: 'app-group-chat',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,ChatComponent],
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss']
 })
@@ -22,7 +23,7 @@ export class GroupChatComponent implements OnInit {
   currentTime!: string;
   displayDate!: string;
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png','assets/person_add.png'];
-  imgTextarea =['assets/img/add.png','assets/img/smiley/sentiment_satisfied.png','assets/img/smiley/alternate_email.png','assets/img/smiley/send.png']
+  imgTextarea =['assets/img/add.png','assets/img/smiley/sentiment_satisfied.png','assets/img/smiley/alternate_email.png','assets/img/smiley/send.png'];
 
   constructor(
     private route: ActivatedRoute,
@@ -76,22 +77,6 @@ export class GroupChatComponent implements OnInit {
     this.imgSrc[2] = isHover ? 'assets/person_add_blue.png' : 'assets/person_add.png';
   }
 
-  changeAdd(isHover: boolean){
-    this.imgTextarea[0] = isHover ? 'assets/img/smiley/add-blue.png' : 'assets/img/add.png';
-  }
-
-  addSmiley(isHover: boolean){
-    this.imgTextarea[1] = isHover ? 'assets/img/smiley/sentiment_satisfied-blue.png' : 'assets/img/smiley/sentiment_satisfied.png';
-  }
-
-  addEmailContact(isHover: boolean){
-    this.imgTextarea[2] = isHover ? 'assets/img/smiley/alternate_email-blue.png' : 'assets/img/smiley/alternate_email.png';
-  }
-
-  sendNews(isHover: boolean){
-    this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
-  }
-
   openDialog(){
     let dialogRef = this.dialogChannel.open(DialogChannelEditComponent, {
       panelClass: 'border-30',
@@ -108,6 +93,7 @@ export class GroupChatComponent implements OnInit {
 
     });
   }
+  
   openDialogAddMember(){
     let dialogRef = this.dialogChannelAddMember.open(DialogChannelAddMembersComponent, {
       panelClass: 'border-30-right',

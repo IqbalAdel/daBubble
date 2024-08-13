@@ -21,9 +21,18 @@
         padding: 20px 20px 0px 30px;
 
         .name {
-            display: flex;
+            display: inline-flex; /* Verhindert, dass die Klasse die gesamte Breite einnimmt */
             align-items: center;
             gap: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            
+            &:hover{
+                background-color: rgba(236, 238, 254, 1);
+                background-color: rgba(236, 238, 254, 1);
+                border-radius: 50px;
+                
+            }
 
             h2 {
                 margin: 0;
