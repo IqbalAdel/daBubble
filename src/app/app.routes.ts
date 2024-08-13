@@ -32,7 +32,6 @@ export const routes: Routes = [
   },
 
   { path: 'main', component: MainComponent },
-  // { path: 'group-chat/:id/:name', component: GroupChatComponent },
-  // { path: 'solo-chat/:userId', component: SoloChatComponent },
+
 ];
 
