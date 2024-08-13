@@ -7,16 +7,18 @@
         alt="">
     </div>
     <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum Beispiel.</p>
-    <div class="inputs">
-        <span>Channel Name</span>
-        <input placeholder="#  z.B. Kooperationsprojekte" type="text">
-        <span>Beschreibung <span>(optional)</span></span>
-        <input placeholder="Dein Text hier" type="text">
-    </div>
-    <div class="buttons">
-        <button (click)="openDialogAddMembers()">
-            <!-- <img src="" alt=""> -->
-            <span>Erstellen</span>
-        </button>
-    </div>
+    <form #form="ngForm" (ngSubmit)="onSubmit()">
+        <div class="inputs">
+            <span>Channel Name</span>
+            
+            <input [(ngModel)]="name" name="name" required placeholder="#  z.B. Kooperationsprojekte" type="text">
+            <span>Beschreibung <span>(optional)</span></span>
+            <input [(ngModel)]="description" name="description" required placeholder="Dein Text hier" type="text">
+        </div>
+        <div class="buttons">
+            <button type="submit" [disabled]="!form.valid">
+                <span>Erstellen</span>
+            </button>
+        </div>
+    </form>
 </mat-card>

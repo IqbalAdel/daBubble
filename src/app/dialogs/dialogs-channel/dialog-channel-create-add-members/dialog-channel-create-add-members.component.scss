@@ -48,6 +48,7 @@
 
 .add-btn{
     @include d-flex($jc: flex-end);
+    cursor: pointer;
     button{
         border: none;
         outline: none;

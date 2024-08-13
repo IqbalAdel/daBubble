@@ -11,6 +11,7 @@ import { DialogProfileMenuComponent } from '../../dialogs/dialog-profile-menu/di
 import { MatCardModule } from '@angular/material/card';
 import { FirebaseService } from '../../services/firebase.service';
 import { User } from "./../../../models/user.class";
+import { Channel } from '../../../models/channel.class';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class HeaderComponent {
 
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
   users: User[] = [];
+
 
   constructor( 
     public dialog: MatDialog,
@@ -71,5 +73,6 @@ export class HeaderComponent {
     });
 
   }
+
   
 }
