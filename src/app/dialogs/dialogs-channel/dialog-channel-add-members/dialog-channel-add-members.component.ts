@@ -14,6 +14,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class DialogChannelAddMembersComponent {
 
   imgSrc: string = "assets/img/close_default.png";
+  
 
   constructor( public dialog: MatDialogRef<DialogChannelAddMembersComponent> ) {    
   }

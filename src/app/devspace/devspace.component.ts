@@ -4,11 +4,12 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { Router } from '@angular/router';
-import { collection, collectionData, Firestore } from '@angular/fire/firestore';
+import { collection, collectionData, DocumentData, Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { FirebaseService } from '../services/firebase.service';
 import { UserService } from '../services/user.service';
+import { User } from '../../models/user.class';
+import { FirebaseService } from '../services/firebase.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogChannelCreateComponent } from '../dialogs/dialogs-channel/dialog-channel-create/dialog-channel-create.component';
 
@@ -23,13 +24,26 @@ export class DevspaceComponent {
   firestore: Firestore = inject(Firestore);
   users$: Observable<any[]>;
   channels$: Observable<any[]>;
+  user = new User();
+  
+  showFiller = false;
+  openEmployees = true;
+  openChannels = true;
+  isDavspaceVisible = true;
+  showGroupChat = true;
+  imgSrc = ['assets/GroupClose.png', 'assets/Hide-navigation.png'];
   
   selectedUserId: string | null = null; // Variable to track the selected user
 
   constructor(
+    
     private router: Router, 
-    private firebase: FirebaseService, 
+   
+    
     public userServes: UserService,
+    private firebaseService: FirebaseService,
+    private userService: UserService 
+  ,
     private dialog: MatDialog,
   ) {
     const fireUsers = collection(this.firestore, 'users');
@@ -41,14 +55,11 @@ export class DevspaceComponent {
     this.channels$ = collectionData(fireChannels).pipe(
       map(channels => channels.sort((a, b) => a['channel'].localeCompare(b['channel'])))
     );
+    this.loadChannels();
+    this.loadUsers();
+    this.selectUser;
   }
 
-  showFiller = false;
-  openEmployees = true;
-  openChannels = true;
-  isDavspaceVisible = true;
-  showGroupChat = true;
-  imgSrc = ['assets/GroupClose.png', 'assets/Hide-navigation.png'];
 
   devspaceCloseOpen() {
     this.isDavspaceVisible = !this.isDavspaceVisible;
@@ -79,9 +90,9 @@ export class DevspaceComponent {
     }
   }
 
-  // Function to handle the click on a user chat
   selectUser(userId: string): void {
     this.selectedUserId = userId;
+    this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
     this.userServes.groupChatOpen = false;
   }
 
@@ -98,4 +109,23 @@ export class DevspaceComponent {
     });
   }
   
+
+
+  loadChannels() {
+    this.channels$ = this.firebaseService.getChannels();
+    // Optional: Wenn du die Channels auch in der Konsole anzeigen möchtest:
+    this.channels$.subscribe(channels => {
+      console.log('Channels:', channels);
+    });
+  }
+  
+  loadUsers() {
+    const usersRef = this.firebaseService.getUsersRef();  // Holt die Referenz der Benutzer-Sammlung
+    collectionData(usersRef).subscribe((users: DocumentData[]) => {
+      users.forEach(user => {
+        console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
+      });
+    });
+  }
 }
+

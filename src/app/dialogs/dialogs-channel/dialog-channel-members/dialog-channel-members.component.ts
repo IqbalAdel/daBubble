@@ -39,7 +39,7 @@ export class DialogChannelMembersComponent{
 
   ) {  
 
-    this.fire.getUsers().subscribe((list) => {
+    this.fire.getUsersData().subscribe((list) => {
       this.allUsers = list.map(element => {
         const data = element;
         return new User(
