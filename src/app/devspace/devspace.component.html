@@ -29,7 +29,7 @@
 
         <ng-container *ngIf="openChannels">
             <div *ngFor="let channel of channels$ | async" class="group-chat" (click)="openGroupChat(channel)">
-                # {{ channel.description }}
+                # {{ channel.name }}
             </div>
         </ng-container>
 

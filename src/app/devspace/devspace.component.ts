@@ -81,12 +81,12 @@ export class DevspaceComponent {
     this.imgSrc[0] = isHover ? 'assets/Hide-navigation-blue.png' : 'assets/Hide-navigation.png';
   }
 
-  openGroupChat(description: any): void {
+  openGroupChat(name: any): void {
     this.userServes.groupChatOpen = true;
-    if (description && description.id && description.name) {
-      this.router.navigate(['/group-chat', description.id, description.name]);
+    if (name && name.id && name.name) {
+      this.router.navigate(['/group-chat', name.id, name.name]);
     } else {
-      console.error('Invalid channel data:', description);
+      console.error('Invalid channel data:', name);
     }
   }
 
