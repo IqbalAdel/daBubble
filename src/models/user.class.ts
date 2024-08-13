@@ -10,20 +10,19 @@ export class User {
     channels?: Channel[];
     chats?: Chat[];
 
-  
     constructor(
       name: string = '',
       email: string = '',
       id: string = '',
-      photo: string = '',
+      img: string = '',
       password: string = '',
       channels: Channel[] = [],
-      chats: Chat[] = [],
+      chats: Chat[] = []
     ) {
       this.name = name;
       this.email = email;
       this.id = id;
-      this.img = photo;
+      this.img = img;
       this.password = password;
       this.channels = channels;
       this.chats = chats;
