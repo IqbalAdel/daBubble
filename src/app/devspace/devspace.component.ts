@@ -60,6 +60,7 @@ export class DevspaceComponent {
     );
 
     this.loadChannels();
+    this.loadUsers();
     this.selectUser;
   }
 
@@ -139,16 +140,25 @@ export class DevspaceComponent {
       console.log('Mapped Channels:', this.channelsIqbal);
     });
   }
+
+  navigateRouteChannel(id:string){
+    this.router.navigate(['/main/group-chat', id]);
+  }
+
+
+  loadUsers() {
+    const usersRef = this.firebaseService.getUsersRef();  // Holt die Referenz der Benutzer-Sammlung
+    collectionData(usersRef).subscribe((users: DocumentData[]) => {
+      users.forEach(user => {
+        console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
+      });
+    });
+  }
   }
   
-  // loadUsers() {
-  //   const usersRef = this.firebaseService.getUsersRef();  // Holt die Referenz der Benutzer-Sammlung
-  //   collectionData(usersRef).subscribe((users: DocumentData[]) => {
-  //     users.forEach(user => {
-  //       console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
-  //     });
-  //   });
-  // }
+
+
+ 
 
 
 

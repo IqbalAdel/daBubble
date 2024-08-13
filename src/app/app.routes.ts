@@ -38,11 +38,10 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'group-chat/1S28fQQEdf7LfxdJASzJ', pathMatch: 'full' },  // Redirect to group chat list or default
       
-      { path: 'group-chat/:id', component: TestComponent },  // Route with ID parameter
+      { path: 'group-chat/:id', component: GroupChatComponent },  // Route with ID parameter
     ],
   },
 
-  // { path: 'main', component: MainComponent },
 
 ];
 
