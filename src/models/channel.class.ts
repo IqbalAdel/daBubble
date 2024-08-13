@@ -5,8 +5,8 @@ export class Channel {
     name: string;
     description: string;
     creator: string;
-    messages: Message[];
-    users: User[];
+    messages?: Message[];
+    users?: User[];
     id?: string;
   
     constructor(

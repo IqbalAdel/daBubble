@@ -6,8 +6,35 @@
         (mouseout)="imgSrc = 'assets/img/close_default.png'" 
         alt="">
     </div>
-    
-        
-    
+    <div class="member-list">
+        @for (user of allUsers; track user.id) {
+            <div (click)="openDialogMemberProfile(user)" class="member">
+                <div class="image">
+                    <img src="{{user.img}}" alt="">
+                    <div class="online-status"></div>
+                </div>
+                <span>{{user.name}}</span>
+            </div>
+        }
+        <!-- <div class="member">
+            <div class="image">
+                <img src="assets/img/profiles/boy.png" alt="">
+                <div class="online-status"></div>
+            </div>
+            <span>Sofia Müller</span>
+        </div> -->
+
+
+        <div (click)="openDialogAddMember()" class="add-member"
+        (mouseover)="imgSrcAdd = 'assets/img/person_add_hover.png'"
+        (mouseout)="imgSrcAdd = 'assets/img/person_add_default.png'">
+            <div class="add-image">
+                <img 
+                [src]="imgSrcAdd"
+                 alt="">
+            </div>
+            <span>Mitglieder hinzufügen</span>
+        </div>
+    </div>
     
 </mat-card>

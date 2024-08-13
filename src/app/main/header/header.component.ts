@@ -44,21 +44,21 @@ export class HeaderComponent {
     //   });
     // })
     
-    this.fire.getUsers().subscribe((list) => {
-      this.users = list.map(element => {
-        const data = element;
-        return new User(
-          data['name'] || '',
-          data['email'] || '',
-          data['id'] || '', // Falls `id` ein optionales Feld ist
-          data['img'] || '',
-          data['password'] || '',
-          data['channels'] || [],
-          data['chats'] || []
-        );
-      });
-      console.log(this.users)
-    });  
+    // this.fire.getUsers().subscribe((list) => {
+    //   this.users = list.map(element => {
+    //     const data = element;
+    //     return new User(
+    //       data['name'] || '',
+    //       data['email'] || '',
+    //       data['id'] || '', // Falls `id` ein optionales Feld ist
+    //       data['img'] || '',
+    //       data['password'] || '',
+    //       data['channels'] || [],
+    //       data['chats'] || []
+    //     );
+    //   });
+    //   console.log(this.users)
+    // });  
   }
 
   openDialog(){
@@ -69,6 +69,7 @@ export class HeaderComponent {
       position: {top: '90px', right: '15px'},
 
     });
+
   }
   
 }

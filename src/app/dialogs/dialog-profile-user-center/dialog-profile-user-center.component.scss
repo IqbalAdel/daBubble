@@ -104,6 +104,10 @@
         &:hover{
             background-color: #797EF3;
         }
+        &:focus{
+            border: none;
+            outline: none;
+        }
     }
 }
 
