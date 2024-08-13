@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Channel } from '../../../../models/channel.class';
 import { FirebaseService } from '../../../services/firebase.service';
+import { User } from '../../../../models/user.class';
 
 
 @Component({
@@ -39,9 +40,12 @@ export class DialogChannelCreateAddMembersComponent {
   inputState: string = 'hidden';
   selectedValue: string = 'option1';
 
-  public name: string;
-  public description: string;
+  // public name: string;
+  // public description: string;
   newChannel = new Channel();
+
+  allUsers: User[] = [];
+
 
   constructor(
     public dialog: MatDialogRef<DialogChannelCreateAddMembersComponent>,
@@ -52,15 +56,39 @@ export class DialogChannelCreateAddMembersComponent {
       channel: Channel;
        }
   ) {
-    this.name = data.name;
-    this.description = data.description;
+    // this.name = data.name;
+    // this.description = data.description;
     this.newChannel.name = data.name; 
     this.newChannel.description = data.description; 
 
-    console.log('Empfangene Daten:', this.name, this.description,);
+    // console.log('Empfangene Daten:', this.name, this.description,);
+
+    this.fire.getUsersData().subscribe((list) => {
+      this.allUsers = list.map(element => {
+        const data = element;
+        return new User(
+          data['name'] || '',
+          data['email'] || '',
+          data['id'] || '', // Falls `id` ein optionales Feld ist
+          data['img'] || '',
+          data['password'] || '',
+          data['channels'] || [],
+          data['chats'] || []
+        );
+      });
+      console.log(this.allUsers)
+    });
   }  
 
   async onAddChannel() {
+  //   const channelData = {
+  //     name: this.newChannel.name,
+  //     description: this.newChannel.description,
+  //     creator: this.newChannel.creator,
+  //     messages: this.newChannel.messages,
+  //     users: this.newChannel.users,
+  //     id: this.newChannel.id,
+  // };
     try {
       await this.fire.addChannel(this.newChannel);
       // this.dialog.close();
@@ -98,6 +126,12 @@ export class DialogChannelCreateAddMembersComponent {
     onSubmit(): void {
       if (this.selectedValue === "option1") {
         console.log('Selected Option:', this.selectedValue);
+        const usersAsPlainObjects = this.allUsers.map(user => user.usersToJSON());
+
+        // Push the plain objects into newChannel.users
+        this.newChannel.users?.push(...usersAsPlainObjects);
+
+        //  this.newChannel.users?.push(...this.allUsers);
         this.onAddChannel();
       }
     }

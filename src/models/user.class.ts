@@ -27,6 +27,18 @@ export class User {
       this.channels = channels;
       this.chats = chats;
     }
+
+    public usersToJSON(){
+      return {
+          name: this.name,
+          email: this.email,
+          id: this.id,
+          img:this.img,
+          password: this.password,
+          channels: this.channels,
+          chats: this.chats,
+      }
+  }
   }
 //     constructor(obj?: Partial<User>){
 //         if(obj){

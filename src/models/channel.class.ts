@@ -1,12 +1,13 @@
 import { Message } from "./messages.class";
 import { User } from "./user.class";
+import { Chat } from "./chat.class";
 
 export class Channel {
     name: string;
     description: string;
     creator?: string;
     messages?: Message[];
-    users?: User[];
+    users?: (User | { name: string; email: string; id?: string; img: string; password: string; channels?: Channel[]; chats?: Chat[] })[];
     id?: string;
   
     constructor(
@@ -14,7 +15,7 @@ export class Channel {
       description: string = '',
       creator: string = '',
       messages: Message[] = [],
-      users: User[] = [],
+      users: (User | { name: string; email: string; id?: string; img: string; password: string; channels?: Channel[]; chats?: Chat[] })[] = [],
       id: string = '',
     ) {
       this.name = name;
@@ -24,4 +25,15 @@ export class Channel {
       this.users = users;
       this.id = id;
     }
+
+    // public channelToJSON(){
+    //           return {
+    //               name: this.name,
+    //               description: this.description,
+    //               creator: this.creator,
+    //               messages:this.messages,
+    //               users: this.users?.map(user => user.usersToJSON()),
+    //               id: this.id,
+    //           }
+    //       }
   }
