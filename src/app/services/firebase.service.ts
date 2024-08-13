@@ -37,6 +37,9 @@ export class FirebaseService {
     return doc(collection(this.firestore, collID), docID)
   }
 
+
+  // Iqbals Funktionen -------------------
+  
   getUsersData(){
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef);
