@@ -1,14 +1,11 @@
-import { Channel } from "./channel.class";
-import { Chat } from "./chat.class";
-
 export class User {
     name: string;
     email: string;
     id?: string;
     img: string;
     password: string;
-    channels?: Channel[];
-    chats?: Chat[];
+    channels?: string[];
+    chats?: string[];
 
     constructor(
       name: string = '',
@@ -16,8 +13,8 @@ export class User {
       id: string = '',
       img: string = '',
       password: string = '',
-      channels: Channel[] = [],
-      chats: Chat[] = []
+      channels: string[] = [],
+      chats: string[] = []
     ) {
       this.name = name;
       this.email = email;
