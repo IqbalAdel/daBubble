@@ -37,6 +37,21 @@ export class FirebaseService {
     return doc(collection(this.firestore, collID), docID)
   }
 
+  getChannelsMessages(channelId: string): Promise<any> {
+    const channelDocRef = doc(this.firestore, 'channels', channelId);  // Verwende die übergebene channelId
+    return getDoc(channelDocRef).then(docSnapshot => {
+      if (docSnapshot.exists()) {
+        return docSnapshot.data();
+      } else {
+        console.log('Channel existiert nicht.');
+        return null;
+      }
+    }).catch(error => {
+      console.error('Fehler beim Abrufen der Nachrichten:', error);
+      return null;
+    });
+  }
+
 
   // Iqbals Funktionen -------------------
   

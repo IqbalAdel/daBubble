@@ -39,14 +39,10 @@ export class DevspaceComponent {
   selectedUserId: string | null = null; // Variable to track the selected user
 
   constructor(
-    
     private router: Router, 
-   
-    
     public userServes: UserService,
     private firebaseService: FirebaseService,
-    private userService: UserService 
-  ,
+    private userService: UserService,
     private dialog: MatDialog,
   ) {
     const fireUsers = collection(this.firestore, 'users');

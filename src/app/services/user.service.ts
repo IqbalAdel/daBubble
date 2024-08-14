@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { User } from '../../models/user.class';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root' // Oder spezifische Module, falls du modulare Bereitstellung nutzt
+  providedIn: 'root'
 })
 export class UserService {
 
@@ -34,4 +34,3 @@ export class UserService {
   }
   
 }
-
