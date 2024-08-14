@@ -11,39 +11,39 @@ import { ChatComponent } from '../chat/chat.component';
 @Component({
   selector: 'app-group-chat',
   standalone: true,
-  imports: [CommonModule,ChatComponent],
+  imports: [CommonModule, ChatComponent],
   templateUrl: './group-chat.component.html',
-  styleUrls: ['./group-chat.component.scss']
+  styleUrls: ['./group-chat.component.scss'],
 })
 export class GroupChatComponent implements OnInit {
-  groupId!: string; 
+  groupId!: string;
   groupName!: string;
 
   currentDate!: string;
   currentTime!: string;
   displayDate!: string;
-  imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png','assets/person_add.png'];
-  imgTextarea =['assets/img/add.png','assets/img/smiley/sentiment_satisfied.png','assets/img/smiley/alternate_email.png','assets/img/smiley/send.png'];
+  imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
+  imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
 
   constructor(
     private route: ActivatedRoute,
-    public userServes: UserService,
-    private dialogChannel: MatDialog,
-    private dialogChannelMemberList: MatDialog,
-    private dialogChannelAddMember: MatDialog,
+    public userServes: UserService, // Richtiger Service Name
+    private dialog: MatDialog // Verwende nur eine Instanz von MatDialog
   ) {}
 
   ngOnInit(): void {
-    // Observing paramMap to update component when route params change
+    // Observing route params
     this.route.paramMap.subscribe(params => {
       this.groupId = params.get('id') || '';
-      this.groupName = params.get('name') || '';
-
+      // Der Kanalname sollte aus dem UserService kommen, nicht aus den Parametern
       console.log('groupId:', this.groupId);
-      console.log('groupName:', this.groupName);
-
-      // Update any other component logic that depends on groupId or groupName
       this.updateDateTime();
+    });
+
+    // Observing selected channel name
+    this.userServes.selectedChannelName$.subscribe(name => {
+      this.groupName = name || '';
+      console.log('groupName:', this.groupName);
     });
   }
 
@@ -73,19 +73,20 @@ export class GroupChatComponent implements OnInit {
     this.imgSrc[1] = isHover ? 'assets/img/smiley/comment-blue.png' : 'assets/img/smiley/comment.png';
   }
 
-  changeImageAddContat(isHover: boolean){
+  changeImageAddContat(isHover: boolean) {
     this.imgSrc[2] = isHover ? 'assets/person_add_blue.png' : 'assets/person_add.png';
   }
 
-  openDialog(){
-    let dialogRef = this.dialogChannel.open(DialogChannelEditComponent, {
+  openDialog() {
+    this.dialog.open(DialogChannelEditComponent, {
       panelClass: 'border-30',
       width: '700px',
       height: '400px',
     });
   }
-  openDialogMemberList(){
-    let dialogRef = this.dialogChannelMemberList.open(DialogChannelMembersComponent, {
+
+  openDialogMemberList() {
+    this.dialog.open(DialogChannelMembersComponent, {
       panelClass: 'border-30-right',
       width: '300px',
       height: '300px',
@@ -96,14 +97,13 @@ export class GroupChatComponent implements OnInit {
 
     });
   }
-  
-  openDialogAddMember(){
-    let dialogRef = this.dialogChannelAddMember.open(DialogChannelAddMembersComponent, {
+
+  openDialogAddMember() {
+    this.dialog.open(DialogChannelAddMembersComponent, {
       panelClass: 'border-30-right',
       width: '400px',
       height: '200px',
-      position: {top: '200px', right: '50px'},
-
+      position: { top: '200px', right: '50px' },
     });
   }
 }
