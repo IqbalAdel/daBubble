@@ -10,8 +10,12 @@ export class UserService {
   groupChatOpen = true;
 
   private _user: User | null = null;
+
   private selectedUserIdSource = new BehaviorSubject<string | null>(null);
   selectedUserId$: Observable<string | null> = this.selectedUserIdSource.asObservable();
+
+  private selectedChannelNameSource = new BehaviorSubject<string | null>(null);
+  selectedChannelName$ = this.selectedChannelNameSource.asObservable();
 
   setUser(user: User): void {
     this._user = user;
@@ -23,6 +27,10 @@ export class UserService {
 
   setSelectedUserId(userId: string | null) {
     this.selectedUserIdSource.next(userId);
+  }
+
+  setSelectedChannelName(channelName: string | null) {
+    this.selectedChannelNameSource.next(channelName);
   }
   
 }

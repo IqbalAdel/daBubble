@@ -56,7 +56,7 @@ export class DevspaceComponent {
 
     const fireChannels = collection(this.firestore, 'channels');
     this.channels$ = collectionData(fireChannels).pipe(
-      map(channels => channels.sort((a, b) => a['description'].localeCompare(b['description'])))
+      map(channels => channels.sort((a, b) => a['name'].localeCompare(b['name'])))
     );
 
     this.loadChannels();
@@ -102,7 +102,8 @@ export class DevspaceComponent {
   }
 
   selectChannel(channel: any) {
-    this.selectedChannelId = channel.id; // Setzt den ID des ausgewählten Channels
+    this.selectedChannelId = channel.id;
+    this.userServes.setSelectedChannelName(channel.name); // Setze den Channel-Namen im Service
     this.openGroupChat(channel); // Öffnet den Gruppenchat für den ausgewählten Channel
     this.selectedUserId = null;
   }
@@ -120,8 +121,6 @@ export class DevspaceComponent {
     });
   }
   
-
-
   loadChannels() {
     this.firebaseService.getChannels().subscribe((channels) => {
     this.channelsIqbal = channels.map(channelData => {
