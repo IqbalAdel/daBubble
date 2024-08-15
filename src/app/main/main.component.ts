@@ -15,18 +15,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
-export class MainComponent implements OnInit{
+export class MainComponent{
 
-  channelID = "";
 constructor(public userService:UserService, private route: ActivatedRoute){}
-
-ngOnInit(): void {
-  this.route.paramMap.subscribe(paramMap => {
-    this.channelID = paramMap.get('id')!;
-    console.log('channel: ',this.channelID)
-  });
-
-
-    // Update any other component logic that depends on groupId or groupName
-  }
 }

@@ -6,9 +6,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Channel } from '../../../../models/channel.class';
-import { FirebaseService } from '../../../services/firebase.service';
+import { FirebaseService,  } from '../../../services/firebase.service';
 import { User } from '../../../../models/user.class';
 import { ActivatedRoute } from '@angular/router';
+import { Firestore, collection, doc, updateDoc, arrayUnion, writeBatch } from '@angular/fire/firestore';
 
 
 @Component({
@@ -98,20 +99,36 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
 }
 
   async onAddChannel() {
-  //   const channelData = {
-  //     name: this.newChannel.name,
-  //     description: this.newChannel.description,
-  //     creator: this.newChannel.creator,
-  //     messages: this.newChannel.messages,
-  //     users: this.newChannel.users,
-  //     id: this.newChannel.id,
-  // };
     try {
-      await this.fire.addChannel(this.newChannel);
-      // this.dialog.close();
-      //  Neeeds to happen here somehere
+      // Add the new channel to the 'channels' collection and retrieve its ID
+      const newChannelRef = await this.fire.addChannel(this.newChannel);
+      if (!newChannelRef) {
+        throw new Error('Failed to get DocumentReference for the new channel.');
+    }
+      const newChannelId = newChannelRef.id;
 
-    } catch (error) {
+      console.log('New Channel ID:', newChannelId);
+      const batch = writeBatch(this.fire.getFirestore());
+
+      this.allUsers.forEach(user => {
+        if (user.id) {
+          const userDocRef = this.fire.getUserDocRef(user.id);
+
+          // Add the new channel ID to the user's channels array
+          batch.update(userDocRef, {
+              channels: arrayUnion(newChannelId)
+          });
+      } else {
+          console.warn('User ID is undefined. Skipping update for user:', user);
+      }
+      });
+
+      // Commit the batch
+      await batch.commit();
+
+      console.log('Channel added and users updated successfully.');
+
+  } catch (error) {
       console.error('Failed to add channel:', error);
     }
   }

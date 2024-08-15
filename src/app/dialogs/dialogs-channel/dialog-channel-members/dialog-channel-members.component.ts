@@ -42,23 +42,29 @@ export class DialogChannelMembersComponent{
        }
   ) {  
     this.channelID = data.channelID;
-    // console.log('received id:', this.channelID)
+    console.log('received id:', this.channelID)
 
-    this.fire.getUsers().subscribe((list) => {
-      this.allUsers = list.map(element => {
-        const data = element;
-        return new User(
-          data['name'] || '',
-          data['email'] || '',
-          data['id'] || '', // Falls `id` ein optionales Feld ist
-          data['img'] || '',
-          data['password'] || '',
-          data['channels'] || [],
-          data['chats'] || []
-        );
-      });
-      console.log(this.allUsers)
-    }); 
+    this.fire.getChannels().subscribe((channels) => {
+      const channel = channels.find(c => c['id'] === this.channelID);
+    
+      if (channel && channel['users']) {
+        this.allUsers = channel['users'].map((userData: User) => {
+          return new User(
+            userData['name'] || '',
+            userData['email'] || '',
+            userData['id'] || '',
+            userData['img'] || '',
+            userData['password'] || '',
+            userData['channels'] || [],
+            userData['chats'] || []
+          );
+        });
+    
+        console.log(this.allUsers);
+      } else {
+        console.error('No users found in this channel or channel not found.');
+      }
+    });
   }
 
 

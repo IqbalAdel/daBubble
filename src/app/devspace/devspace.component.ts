@@ -136,7 +136,7 @@ export class DevspaceComponent {
       );
     });
       // Log the mapped Channel instances
-      console.log('Mapped Channels:', this.channelsIqbal);
+      // console.log('Mapped Channels:', this.channelsIqbal);
     });
   }
 
@@ -149,7 +149,7 @@ export class DevspaceComponent {
     const usersRef = this.firebaseService.getUsersRef();  // Holt die Referenz der Benutzer-Sammlung
     collectionData(usersRef).subscribe((users: DocumentData[]) => {
       users.forEach(user => {
-        console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
+        // console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
       });
     });
   }

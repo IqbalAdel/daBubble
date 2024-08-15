@@ -1,0 +1,32 @@
+<form (ngSubmit)="onSubmit()">
+    <div class="example-chip-list">
+        <mat-chip-grid #chipGrid aria-label="User selection">
+          @for (user of users(); track $index) {
+            <mat-chip-row class="move" (removed)="remove(user)">
+              {{user}}
+              <button matChipRemove [attr.aria-label]="'remove ' + user">
+                <mat-icon>clear</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          #userInput
+          name="userInput"
+          (input)="onInputChange($event)"
+          [ngModel]="currentUser()"
+          (ngModelChange)="currentUser.set($event)"
+          [matChipInputFor]="chipGrid"
+          [matAutocomplete]="auto"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="add($event)"
+          [disabled]="inputDisabled"
+          [placeholder]="shouldShowPlaceholder() ? 'Namen eingeben' : ''"
+        />
+        <mat-autocomplete  #auto="matAutocomplete" (optionSelected)="selected($event)">
+          @for (user of filteredUsers(); track user) {
+            <mat-option [value]="user">{{user}}</mat-option>
+          }
+        </mat-autocomplete>
+    </div>
+</form>

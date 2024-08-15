@@ -36,14 +36,14 @@ export class GroupChatComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.groupId = params.get('id') || '';
       // Der Kanalname sollte aus dem UserService kommen, nicht aus den Parametern
-      console.log('groupId:', this.groupId);
+      // console.log('groupId:', this.groupId);
       this.updateDateTime();
     });
 
     // Observing selected channel name
     this.userServes.selectedChannelName$.subscribe(name => {
       this.groupName = name || '';
-      console.log('groupName:', this.groupName);
+      // console.log('groupName:', this.groupName);
     });
   }
 
@@ -89,7 +89,7 @@ export class GroupChatComponent implements OnInit {
     this.dialog.open(DialogChannelMembersComponent, {
       panelClass: 'border-30-right',
       width: '300px',
-      height: '300px',
+      // height: '300px',
       position: {top: '200px', right: '100px'},
       data: {
         channelID: this.groupId,
