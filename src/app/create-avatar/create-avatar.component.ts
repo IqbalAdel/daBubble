@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service';
 import { Firestore, collection, addDoc, setDoc, doc } from '@angular/fire/firestore';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 @Component({
   selector: 'app-create-avatar',
   standalone: true,
@@ -16,6 +17,7 @@ import { Firestore, collection, addDoc, setDoc, doc } from '@angular/fire/firest
 })
 export class CreateAvatarComponent {
   user!: User;
+  auth: Auth = inject(Auth);
   avatars: string[] = [
     'assets/img/avatar-1.png',
     'assets/img/avatar-2.png',
@@ -73,23 +75,37 @@ export class CreateAvatarComponent {
     return this.user.img.trim() !== '';
   }
 
+   cleanUserData(user: User) {
+    return {
+      name: user.name || '',
+      email: user.email || '',
+      password: user.password || '', // Sicherstellen, dass dieses Feld gesetzt ist
+      img: user.img || '',
+      channels: user.channels || [], // Standardwert verwenden, wenn channels undefined ist
+      chats: user.chats || [] // Standardwert verwenden, wenn chats undefined ist
+    };
+  }
   async saveUser() {
+    const cleanedUserData = this.cleanUserData(this.user);
+  
     try {
       // Hinzufügen eines neuen Dokuments in der 'users'-Sammlung
-      const docRef = await addDoc(collection(this.firestore, 'users'), { ...this.user });
+      const docRef = await addDoc(collection(this.firestore, 'users'), cleanedUserData);
       console.log('User added with ID: ', docRef.id);
-
+  
       // ID zum Benutzerobjekt hinzufügen
       this.user.id = docRef.id;
-
+  
       // Aktualisieren des Dokuments in Firestore mit der neuen ID
-      await setDoc(doc(this.firestore, 'users', docRef.id), { ...this.user });
-      
+      await setDoc(doc(this.firestore, 'users', docRef.id), cleanedUserData);
+  
       console.log('User updated with ID: ', this.user.id);
     } catch (e) {
-      console.error('Error adding or updating user: ', e);
+      console.error('Error creating or updating user: ', e);
     }
   }
+  
+  
   }
  
 

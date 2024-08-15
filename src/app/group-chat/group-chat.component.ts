@@ -7,6 +7,8 @@ import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-ch
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
 import { DialogChannelAddMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-add-members/dialog-channel-add-members.component';
 import { ChatComponent } from '../chat/chat.component';
+import { Observable } from 'rxjs';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-group-chat',
@@ -22,36 +24,78 @@ export class GroupChatComponent implements OnInit {
   currentDate!: string;
   currentTime!: string;
   displayDate!: string;
+  private storedDate: string = '';
+  messages: string[] = [];
+
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
+  groupName$: Observable<string | null> = this.userServes.selectedChannelName$;
 
   constructor(
     private route: ActivatedRoute,
     public userServes: UserService, // Richtiger Service Name
-    private dialog: MatDialog // Verwende nur eine Instanz von MatDialog
-  ) {}
+    private dialog: MatDialog, // Verwende nur eine Instanz von MatDialog
+    private fireStoree: FirebaseService
+  ) {
+    this.groupName$ = this.userServes.selectedChannelName$;
+  }
 
   ngOnInit(): void {
-    // Observing route params
     this.route.paramMap.subscribe(params => {
       this.groupId = params.get('id') || '';
-      // Der Kanalname sollte aus dem UserService kommen, nicht aus den Parametern
-      // console.log('groupId:', this.groupId);
+      this.loadGroupName();
       this.updateDateTime();
+      this.loadMessages();
+      this.scheduleDailyUpdate();
+      
     });
+  }
+  
+  async loadMessages() {
+    try {
+      if (this.groupId) {
+        const channelData = await this.fireStoree.getChannelsMessages(this.groupId);
+        if (channelData) {
+          this.messages = channelData['messages'] || [];
+        }
+      } else {
+        console.error('Keine Gruppen-ID vorhanden.');
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Nachrichten:', error);
+    }
+  }
 
-    // Observing selected channel name
-    this.userServes.selectedChannelName$.subscribe(name => {
-      this.groupName = name || '';
-      // console.log('groupName:', this.groupName);
-    });
+
+
+  async loadGroupName() {
+    try {
+      if (this.groupId) {
+        const channelData = await this.fireStoree.getChannelById(this.groupId);
+        if (channelData) {
+          this.groupName = channelData.name || 'Kein Name gefunden';  // Angenommene Struktur der Daten
+        } else {
+          this.groupName = 'Kein Name gefunden';
+        }
+      } else {
+        this.groupName = 'Keine Gruppen-ID vorhanden';
+      }
+    } catch (error) {
+      this.groupName = 'Fehler beim Laden';
+    }
   }
 
   updateDateTime(): void {
     const today = new Date();
-    this.currentDate = today.toLocaleDateString();
-    this.currentTime = this.formatTime(today);
-    this.displayDate = this.isToday(today) ? 'Heute' : this.currentDate;
+    const formattedDate = today.toLocaleDateString();
+
+    // Überprüfe, ob das Datum neu ist
+    if (this.storedDate !== formattedDate) {
+      this.currentDate = formattedDate;
+      this.currentTime = this.formatTime(today);
+      this.displayDate = this.isToday(today) ? 'Heute' : this.currentDate;
+      this.storedDate = formattedDate; // Speichere das aktuelle Datum
+    }
   }
 
   isToday(date: Date): boolean {
@@ -63,6 +107,21 @@ export class GroupChatComponent implements OnInit {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
+  }
+
+  scheduleDailyUpdate() {
+    // Berechne die Zeit bis zur nächsten Mitternacht
+    const now = new Date();
+    const nextMidnight = new Date();
+    nextMidnight.setHours(24, 0, 0, 0); // Setzt auf nächste Mitternacht
+
+    const timeToMidnight = nextMidnight.getTime() - now.getTime();
+
+    // Stelle einen Intervall für das tägliche Update ein
+    setTimeout(() => {
+      this.updateDateTime(); // Führe sofort das Update durch
+      setInterval(() => this.updateDateTime(), 24 * 60 * 60 * 1000); // Update täglich
+    }, timeToMidnight);
   }
 
   changeImageSmiley(isHover: boolean) {
@@ -89,7 +148,6 @@ export class GroupChatComponent implements OnInit {
     this.dialog.open(DialogChannelMembersComponent, {
       panelClass: 'border-30-right',
       width: '300px',
-      // height: '300px',
       position: {top: '200px', right: '100px'},
       data: {
         channelID: this.groupId,

@@ -17,5 +17,16 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 })
 export class MainComponent{
 
+channelID = '';
+
 constructor(public userService:UserService, private route: ActivatedRoute){}
+
+ngOnInit(): void {
+  this.route.paramMap.subscribe(paramMap => {
+    this.channelID = paramMap.get('id')!;
+  });
+
+
+    // Update any other component logic that depends on groupId or groupName
+  }
 }

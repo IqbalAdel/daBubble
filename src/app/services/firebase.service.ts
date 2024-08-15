@@ -37,6 +37,20 @@ export class FirebaseService {
     return doc(collection(this.firestore, collID), docID)
   }
 
+  getChannelsMessages(channelId: string): Promise<any> {
+    const channelDocRef = doc(this.firestore, 'channels', channelId);  // Verwende die übergebene channelId
+    return getDoc(channelDocRef).then(docSnapshot => {
+      if (docSnapshot.exists()) {
+        return docSnapshot.data();
+      } else {
+        return null;
+      }
+    }).catch(error => {
+      console.error('Fehler beim Abrufen der Nachrichten:', error);
+      return null;
+    });
+  }
+
 
   // Iqbals Funktionen -------------------
 
@@ -67,13 +81,52 @@ export class FirebaseService {
       await updateDoc(docRef, {
         id: docRef.id // Add the generated ID to the document
       });
+      return docRef;
 
       console.log('Channel added successfully with ID:', docRef.id);
-      return docRef;
-    }  catch (error) {
+    } catch (error) {
       console.error('Error adding channel:', error);
-      return null; // Return null or handle the error as needed
-  }
+      return null;
+    }
     
+  }
+
+  getChannelById(channelId: string): Promise<Channel | null> {
+    const channelDocRef = doc(this.firestore, 'channels', channelId);
+    return getDoc(channelDocRef).then(docSnapshot => {
+      if (docSnapshot.exists()) {
+        const channelData = docSnapshot.data() as Channel;
+        return new Channel(
+          channelData.name || '',
+          channelData.description || '',
+          channelId
+        );
+      } else {
+        return null;
+      }
+    }).catch(error => {
+      return null;
+    });
+  }
+
+
+  getUserById(userId: string): Promise<User | null> {
+    const userDocRef = doc(this.firestore, 'users', userId);
+    return getDoc(userDocRef).then(docSnapshot => {
+      if (docSnapshot.exists()) {
+        const userData = docSnapshot.data();
+        return new User(
+          userData['name'] || '',
+          userData['email'] || '',
+          userId,
+          userData['img'] || '',
+          userData['password'] || ''
+        );
+      } else {
+        return null;
+      }
+    }).catch(error => {
+      return null;
+    });
   }
 }

@@ -26,3 +26,13 @@ html, body { height: 100%; background-color: #ECEEFE;  }
     justify-content: $jc;
     align-items: $ai;
   }
+
+  app-group-chat{
+    width: 100%;
+    margin-right: 20px;
+}
+
+app-solo-chat{
+    width: 100%;
+    margin-right: 60px;
+}
