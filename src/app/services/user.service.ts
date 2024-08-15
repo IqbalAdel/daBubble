@@ -1,21 +1,24 @@
 import { Injectable } from '@angular/core';
 import { User } from '../../models/user.class';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root' // Oder spezifische Module, falls du modulare Bereitstellung nutzt
+  providedIn: 'root'
 })
 export class UserService {
 
-  groupChatOpen = true;
+  groupChatOpen = false;
 
   private _user: User | null = null;
 
-  private selectedUserIdSource = new BehaviorSubject<string | null>(null);
-  selectedUserId$: Observable<string | null> = this.selectedUserIdSource.asObservable();
+  // private selectedUserIdSource = new BehaviorSubject<string | null>(null);
+  // selectedUserId$: Observable<string | null> = this.selectedUserIdSource.asObservable();
 
   private selectedChannelNameSource = new BehaviorSubject<string | null>(null);
   selectedChannelName$ = this.selectedChannelNameSource.asObservable();
+
+  private selectedUserIdSubject = new BehaviorSubject<string | null>(null);
+  selectedUserId$ = this.selectedUserIdSubject.asObservable();
 
   setUser(user: User): void {
     this._user = user;
@@ -25,13 +28,23 @@ export class UserService {
     return this._user;
   }
 
-  setSelectedUserId(userId: string | null) {
-    this.selectedUserIdSource.next(userId);
+  setSelectedUserId(userId: string | null): void {
+    this.selectedUserIdSubject.next(userId);
+    // Optionale Speicherung in LocalStorage, falls gewünscht
+    if (userId) {
+      localStorage.setItem('lastSelectedUserId', userId);
+    } else {
+      localStorage.removeItem('lastSelectedUserId');
+    }
   }
 
   setSelectedChannelName(channelName: string | null) {
     this.selectedChannelNameSource.next(channelName);
   }
+
+  getLastSelectedUserId(): string | null {
+    return localStorage.getItem('lastSelectedUserId');
+  }
+  
   
 }
-

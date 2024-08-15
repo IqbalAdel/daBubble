@@ -13,11 +13,12 @@ import { FirebaseService } from '../services/firebase.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogChannelCreateComponent } from '../dialogs/dialogs-channel/dialog-channel-create/dialog-channel-create.component';
 import { Channel } from '../../models/channel.class';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-devspace',
   standalone: true,
-  imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent, RouterModule, RouterLink],
+  imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent, RouterModule, RouterLink, HttpClientModule],
   templateUrl: './devspace.component.html',
   styleUrls: ['./devspace.component.scss'] // corrected styleUrl to styleUrls
 })
@@ -35,18 +36,14 @@ export class DevspaceComponent {
   isDavspaceVisible = true;
   showGroupChat = true;
   imgSrc = ['assets/GroupClose.png', 'assets/Hide-navigation.png'];
-  
+
   selectedUserId: string | null = null; // Variable to track the selected user
 
   constructor(
-    
-    private router: Router, 
-   
-    
+    private router: Router,
     public userServes: UserService,
     private firebaseService: FirebaseService,
-    private userService: UserService 
-  ,
+    private userService: UserService,
     private dialog: MatDialog,
   ) {
     const fireUsers = collection(this.firestore, 'users');
@@ -62,6 +59,10 @@ export class DevspaceComponent {
     this.loadChannels();
     this.loadUsers();
     this.selectUser;
+  }
+
+  loadUserFirestore() {
+
   }
 
 
@@ -97,7 +98,7 @@ export class DevspaceComponent {
   selectUser(userId: string): void {
     this.selectedUserId = userId;
     this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
-    this.userServes.groupChatOpen = false;
+    this.router.navigate(['/main/chat', userId]);
     this.selectedChannelId = null;
   }
 
@@ -108,39 +109,38 @@ export class DevspaceComponent {
     this.selectedUserId = null;
   }
 
-  openSoloChat(channel: any): void {
-    // Navigiere zur SoloChat-Komponente mit der ID des Kanals
-    this.router.navigate(['/solo-chat', channel.id]);
+  openSoloChat(userId: string): void {
+    this.router.navigate(['/main/chat', userId]);
   }
 
-  openDialog(){
+  openDialog() {
     let dialogRef = this.dialog.open(DialogChannelCreateComponent, {
       panelClass: 'border-30',
       width: '700px',
       height: '400px',
     });
   }
-  
+
   loadChannels() {
     this.firebaseService.getChannels().subscribe((channels) => {
-    this.channelsIqbal = channels.map(channelData => {
+      this.channelsIqbal = channels.map(channelData => {
 
-      // Create a new Channel instance
-      return new Channel(
-        channelData.name || '',
-        channelData.description || '',
-        channelData.creator || '',
-        channelData.messages || [],
-        channelData.users || [],
-        channelData.id || ''
-      );
-    });
+        // Create a new Channel instance
+        return new Channel(
+          channelData.name || '',
+          channelData.description || '',
+          channelData.creator || '',
+          channelData.messages || [],
+          channelData.users || [],
+          channelData.id || ''
+        );
+      });
       // Log the mapped Channel instances
       console.log('Mapped Channels:', this.channelsIqbal);
     });
   }
 
-  navigateRouteChannel(id:string){
+  navigateRouteChannel(id: string) {
     this.router.navigate(['/main/group-chat', id]);
   }
 
@@ -153,12 +153,4 @@ export class DevspaceComponent {
       });
     });
   }
-  }
-  
-
-
- 
-
-
-
-
+}

@@ -1,5 +1,5 @@
 <div class="textarea" #autoScrollTextarea>
-    <textarea rows="2" cols="50" placeholder="Nachricht an #Gruppenname"></textarea>
+    <textarea rows="2" cols="50" [placeholder]="placeholderText"></textarea>
     <div class="textarea-send">
         <div class="textarea-add">
             <img (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)" [src]="imgTextarea[0]" alt=""> | </div>

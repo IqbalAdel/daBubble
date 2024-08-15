@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { MatCard } from '@angular/material/card';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FirebaseService } from '../../../services/firebase.service';
 import { User } from '../../../../models/user.class';
 
@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [
     MatCard,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: './dialog-channel-members.component.html',
   styleUrl: './dialog-channel-members.component.scss'
@@ -26,6 +26,7 @@ export class DialogChannelMembersComponent{
   imgSrcAdd: string = "assets/img/person_add_default.png";
 
   allUsers: User[] = [];
+  channelID: string = "";
 
   // dialogRefAddMember: MatDialogRef<DialogChannelAddMembersComponent>;
 
@@ -36,10 +37,14 @@ export class DialogChannelMembersComponent{
     private dialogChannelAddMember: MatDialog,
     private dialogProfile: MatDialog,
     private fire: FirebaseService,
-
+    @Inject(MAT_DIALOG_DATA) public data: { 
+      channelID: string; 
+       }
   ) {  
+    this.channelID = data.channelID;
+    // console.log('received id:', this.channelID)
 
-    this.fire.getUsersData().subscribe((list) => {
+    this.fire.getUsers().subscribe((list) => {
       this.allUsers = list.map(element => {
         const data = element;
         return new User(

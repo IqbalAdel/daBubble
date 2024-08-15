@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FirebaseService } from '../services/firebase.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-chat',
@@ -7,7 +9,37 @@ import { Component } from '@angular/core';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
 })
-export class ChatComponent {
+export class ChatComponent implements OnInit {
+  constructor(private fireService:FirebaseService,private route: ActivatedRoute){}
+  placeholderText: string = 'Nachricht an #Gruppenname';
+
+
+  ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      const id = params['id']; // ID aus der URL
+      if (id) {
+        this.loadDataBasedOnId(id);
+      }
+    });
+  }
+
+  private loadDataBasedOnId(id: string): void {
+    // Versuche zuerst, einen Channel zu laden
+    this.fireService.getChannelById(id).then(channel => {
+      if (channel) {
+        this.placeholderText = `Nachricht an #${channel.name}`;
+      } else {
+        // Wenn kein Channel gefunden wird, versuche, einen Benutzer zu laden
+        this.fireService.getUserById(id).then(user => {
+          if (user) {
+            this.placeholderText = `Nachricht an ${user.name}`;
+          } else {
+            this.placeholderText = 'Nachricht an #Gruppenname';
+          }
+        });
+      }
+    });
+  }
   imgTextarea =['assets/img/add.png','assets/img/smiley/sentiment_satisfied.png','assets/img/smiley/alternate_email.png','assets/img/smiley/send.png']
 
   changeAdd(isHover: boolean){
@@ -23,4 +55,6 @@ export class ChatComponent {
   sendNews(isHover: boolean){
     this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
   }
+
+
 }

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MatDialogRef } from '@angular/material/dialog';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -8,6 +8,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Channel } from '../../../../models/channel.class';
 import { FirebaseService } from '../../../services/firebase.service';
 import { User } from '../../../../models/user.class';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -34,7 +35,7 @@ import { User } from '../../../../models/user.class';
     ]),
   ],
 })
-export class DialogChannelCreateAddMembersComponent {
+export class DialogChannelCreateAddMembersComponent implements OnInit{
 
   imgSrc: string = "assets/img/close_default.png";
   inputState: string = 'hidden';
@@ -42,6 +43,7 @@ export class DialogChannelCreateAddMembersComponent {
 
   // public name: string;
   // public description: string;
+  public channelID: string | null = null;
   newChannel = new Channel();
 
   allUsers: User[] = [];
@@ -50,18 +52,16 @@ export class DialogChannelCreateAddMembersComponent {
   constructor(
     public dialog: MatDialogRef<DialogChannelCreateAddMembersComponent>,
     private fire: FirebaseService,
+    private route: ActivatedRoute,
     @Inject(MAT_DIALOG_DATA) public data: { 
       name: string; 
       description: string; 
-      channel: Channel;
        }
   ) {
-    // this.name = data.name;
-    // this.description = data.description;
+    
     this.newChannel.name = data.name; 
     this.newChannel.description = data.description; 
 
-    // console.log('Empfangene Daten:', this.name, this.description,);
 
     this.fire.getUsersData().subscribe((list) => {
       this.allUsers = list.map(element => {
@@ -80,6 +80,23 @@ export class DialogChannelCreateAddMembersComponent {
     });
   }  
 
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(paramMap => {
+      this.channelID = paramMap.get('id');
+      console.log('channel: ',this.channelID)
+    });
+
+    this.route.paramMap.subscribe(params => {
+      let KroupId = params.get('id') || '';
+      let KroupName = params.get('name') || '';
+
+      console.log('KroupId:', KroupId);
+      console.log('KroupName:', KroupName);
+
+      // Update any other component logic that depends on groupId or groupName
+    });
+}
+
   async onAddChannel() {
   //   const channelData = {
   //     name: this.newChannel.name,
@@ -92,6 +109,7 @@ export class DialogChannelCreateAddMembersComponent {
     try {
       await this.fire.addChannel(this.newChannel);
       // this.dialog.close();
+      //  Neeeds to happen here somehere
 
     } catch (error) {
       console.error('Failed to add channel:', error);
