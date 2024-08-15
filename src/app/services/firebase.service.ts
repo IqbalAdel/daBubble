@@ -43,7 +43,6 @@ export class FirebaseService {
       if (docSnapshot.exists()) {
         return docSnapshot.data();
       } else {
-        console.log('Channel existiert nicht.');
         return null;
       }
     }).catch(error => {
@@ -68,31 +67,52 @@ export class FirebaseService {
       const docRef = await addDoc(channelsRef, {
         ...channel, // Add initial data without the id
       });
-      console.log('Channel added successfully');
-
       // Update the document with the generated ID
       await updateDoc(docRef, {
         id: docRef.id // Add the generated ID to the document
       });
 
-      console.log('Channel added successfully with ID:', docRef.id);
     } catch (error) {
       console.error('Error adding channel:', error);
     }
     
   }
 
-  getChannelById(channelId: string): Promise<any> {
+  getChannelById(channelId: string): Promise<Channel | null> {
     const channelDocRef = doc(this.firestore, 'channels', channelId);
     return getDoc(channelDocRef).then(docSnapshot => {
       if (docSnapshot.exists()) {
-        return docSnapshot.data();
+        const channelData = docSnapshot.data() as Channel;
+        return new Channel(
+          channelData.name || '',
+          channelData.description || '',
+          channelId
+        );
       } else {
-        console.log('Channel existiert nicht.');
         return null;
       }
     }).catch(error => {
-      console.error('Fehler beim Abrufen des Channels:', error);
+      return null;
+    });
+  }
+
+
+  getUserById(userId: string): Promise<User | null> {
+    const userDocRef = doc(this.firestore, 'users', userId);
+    return getDoc(userDocRef).then(docSnapshot => {
+      if (docSnapshot.exists()) {
+        const userData = docSnapshot.data();
+        return new User(
+          userData['name'] || '',
+          userData['email'] || '',
+          userId,
+          userData['img'] || '',
+          userData['password'] || ''
+        );
+      } else {
+        return null;
+      }
+    }).catch(error => {
       return null;
     });
   }

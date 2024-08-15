@@ -23,7 +23,6 @@ constructor(public userService:UserService, private route: ActivatedRoute){}
 ngOnInit(): void {
   this.route.paramMap.subscribe(paramMap => {
     this.channelID = paramMap.get('id')!;
-    console.log('channel: ',this.channelID)
   });
 
 

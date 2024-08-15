@@ -43,7 +43,6 @@ export class GroupChatComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.groupId = params.get('id') || '';
-      console.log('groupId:', this.groupId);
       this.loadGroupName();
       this.updateDateTime();
       this.loadMessages();
@@ -56,10 +55,8 @@ export class GroupChatComponent implements OnInit {
     try {
       if (this.groupId) {
         const channelData = await this.fireStoree.getChannelsMessages(this.groupId);
-        console.log('Channel Data:', channelData);  // Überprüfe die Datenstruktur
         if (channelData) {
           this.messages = channelData['messages'] || [];
-          console.log('Nachrichten:', this.messages);  // Überprüfe, ob Nachrichten vorhanden sind
         }
       } else {
         console.error('Keine Gruppen-ID vorhanden.');
@@ -77,18 +74,14 @@ export class GroupChatComponent implements OnInit {
         const channelData = await this.fireStoree.getChannelById(this.groupId);
         if (channelData) {
           this.groupName = channelData.name || 'Kein Name gefunden';  // Angenommene Struktur der Daten
-          console.log('Group name loaded:', this.groupName);
         } else {
           this.groupName = 'Kein Name gefunden';
-          console.log('Channel Daten konnten nicht gefunden werden.');
         }
       } else {
         this.groupName = 'Keine Gruppen-ID vorhanden';
-        console.error('Keine Gruppen-ID vorhanden.');
       }
     } catch (error) {
       this.groupName = 'Fehler beim Laden';
-      console.error('Fehler beim Abrufen des Channel-Namens:', error);
     }
   }
 
