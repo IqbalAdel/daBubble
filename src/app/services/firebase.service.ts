@@ -81,4 +81,19 @@ export class FirebaseService {
     }
     
   }
+
+  getChannelById(channelId: string): Promise<any> {
+    const channelDocRef = doc(this.firestore, 'channels', channelId);
+    return getDoc(channelDocRef).then(docSnapshot => {
+      if (docSnapshot.exists()) {
+        return docSnapshot.data();
+      } else {
+        console.log('Channel existiert nicht.');
+        return null;
+      }
+    }).catch(error => {
+      console.error('Fehler beim Abrufen des Channels:', error);
+      return null;
+    });
+  }
 }

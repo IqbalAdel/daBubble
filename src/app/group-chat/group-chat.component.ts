@@ -29,13 +29,13 @@ export class GroupChatComponent implements OnInit {
 
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
-  groupName$: Observable<string | null>;
+  groupName$: Observable<string | null> = this.userServes.selectedChannelName$;
 
   constructor(
     private route: ActivatedRoute,
     public userServes: UserService, // Richtiger Service Name
     private dialog: MatDialog, // Verwende nur eine Instanz von MatDialog
-    private fireStoree:FirebaseService
+    private fireStoree: FirebaseService
   ) {
     this.groupName$ = this.userServes.selectedChannelName$;
   }
@@ -44,19 +44,14 @@ export class GroupChatComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.groupId = params.get('id') || '';
       console.log('groupId:', this.groupId);
+      this.loadGroupName();
       this.updateDateTime();
       this.loadMessages();
       this.scheduleDailyUpdate();
       
     });
-
-    // Observing selected channel name
-    this.userServes.selectedChannelName$.subscribe(name => {
-      this.groupName = name || '';
-      console.log('groupName:', this.groupName);
-    });
-  
   }
+  
   async loadMessages() {
     try {
       if (this.groupId) {
@@ -74,10 +69,33 @@ export class GroupChatComponent implements OnInit {
     }
   }
 
-    updateDateTime(): void {
+
+
+  async loadGroupName() {
+    try {
+      if (this.groupId) {
+        const channelData = await this.fireStoree.getChannelById(this.groupId);
+        if (channelData) {
+          this.groupName = channelData.name || 'Kein Name gefunden';  // Angenommene Struktur der Daten
+          console.log('Group name loaded:', this.groupName);
+        } else {
+          this.groupName = 'Kein Name gefunden';
+          console.log('Channel Daten konnten nicht gefunden werden.');
+        }
+      } else {
+        this.groupName = 'Keine Gruppen-ID vorhanden';
+        console.error('Keine Gruppen-ID vorhanden.');
+      }
+    } catch (error) {
+      this.groupName = 'Fehler beim Laden';
+      console.error('Fehler beim Abrufen des Channel-Namens:', error);
+    }
+  }
+
+  updateDateTime(): void {
     const today = new Date();
     const formattedDate = today.toLocaleDateString();
-    
+
     // Überprüfe, ob das Datum neu ist
     if (this.storedDate !== formattedDate) {
       this.currentDate = formattedDate;
@@ -105,7 +123,7 @@ export class GroupChatComponent implements OnInit {
     nextMidnight.setHours(24, 0, 0, 0); // Setzt auf nächste Mitternacht
 
     const timeToMidnight = nextMidnight.getTime() - now.getTime();
-    
+
     // Stelle einen Intervall für das tägliche Update ein
     setTimeout(() => {
       this.updateDateTime(); // Führe sofort das Update durch

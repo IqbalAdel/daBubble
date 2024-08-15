@@ -1,7 +1,10 @@
 <div class="chat-group">
     <div class="chat-header-group">
         <div (click)="openDialog()" class="name">
-            <h2># {{ groupName$ | async }}</h2>
+            <h2 *ngIf="groupName; else loading"># {{ groupName }}</h2>
+            <ng-template #loading>
+                <h2>Lädt...</h2>
+            </ng-template>
         </div>
         <div class="persons-group">
             <div (click)="openDialogMemberList()" class="display-flex header-group-img">

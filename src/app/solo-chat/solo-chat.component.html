@@ -2,7 +2,8 @@
   <div class="chat-header-group">
     <div class="name">
       <img *ngIf="user$ | async as user" [src]="user.img" alt="">
-      <h2 *ngIf="user$ | async as user">{{ user.name }}</h2>    </div>
+      <h2 *ngIf="user$ | async as user">{{ user.name }}</h2>
+    </div>
   </div>
 
   <div class="line"></div>
@@ -14,11 +15,11 @@
     <div class="solo-chat">
       <img *ngIf="user$ | async as user" [src]="user.img" alt="">
       <div class="solo-name">
-            <h2 *ngIf="user$ | async as user">{{ user.name }}</h2> 
+        <h2 *ngIf="user$ | async as user">{{ user.name }}</h2>
       </div>
     </div>
     <div class="chat">
-      <span>Diese Unterhaltung findet nur zwischen <b> &#64;{{ (user$ | async)?.name }}</b>  statt.</span>
+      <span>Diese Unterhaltung findet nur zwischen <b> &#64;{{ (user$ | async)?.name }}</b> statt.</span>
     </div>
   </div>
   <app-chat></app-chat>
