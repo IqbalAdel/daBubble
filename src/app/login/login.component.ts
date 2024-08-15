@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import {MatCardModule} from '@angular/material/card';
 import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-login',
   standalone: true,
