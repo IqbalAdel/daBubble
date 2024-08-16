@@ -116,4 +116,13 @@ export class FirebaseService {
       return null;
     });
   }
+
+  async addMessageToFirestore(message: string): Promise<void> {
+    const messagesRef = collection(this.firestore, 'channels'); // Erstelle eine Referenz zur "messages" Collection
+    // await addDoc(messagesRef, {
+    //   text: message,
+    //   timestamp: new Date() // Füge einen Zeitstempel hinzu
+    // });
+  }
+  
 }

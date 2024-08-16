@@ -10,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrl: './chat.component.scss'
 })
 export class ChatComponent implements OnInit {
-  constructor(private fireService:FirebaseService,private route: ActivatedRoute){}
+  constructor(private fireService: FirebaseService, private route: ActivatedRoute) { }
   placeholderText: string = 'Nachricht an #Gruppenname';
 
 
@@ -40,21 +40,41 @@ export class ChatComponent implements OnInit {
       }
     });
   }
-  imgTextarea =['assets/img/add.png','assets/img/smiley/sentiment_satisfied.png','assets/img/smiley/alternate_email.png','assets/img/smiley/send.png']
+  imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png']
 
-  changeAdd(isHover: boolean){
+  changeAdd(isHover: boolean) {
     this.imgTextarea[0] = isHover ? 'assets/img/smiley/add-blue.png' : 'assets/img/add.png';
   }
 
-  addSmiley(isHover: boolean){
+  addSmiley(isHover: boolean) {
     this.imgTextarea[1] = isHover ? 'assets/img/smiley/sentiment_satisfied-blue.png' : 'assets/img/smiley/sentiment_satisfied.png';
   }
-  addEmailContact(isHover: boolean){
+  addEmailContact(isHover: boolean) {
     this.imgTextarea[2] = isHover ? 'assets/img/smiley/alternate_email-blue.png' : 'assets/img/smiley/alternate_email.png';
   }
-  sendNews(isHover: boolean){
+  sendNews(isHover: boolean) {
     this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
   }
 
+  sendMessage(messageInput: HTMLTextAreaElement): void {
+    const message = messageInput.value;
+    if (message.trim()) {
+      // Nachricht in Firebase Firestore speichern
+      this.fireService.addMessageToFirestore(message).then(() => {
+        console.log('Message sent:', message);
+        // Textarea leeren
+        messageInput.value = '';
+      }).catch((error) => {
+        console.error('Error sending message:', error);
+      });
+    }
+  
+  }
 
+  handleKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
+    if (event.key === 'Enter' && !event.shiftKey) {  // Prüfe, ob Enter gedrückt wurde (ohne Shift für Zeilenumbruch)
+      event.preventDefault();  // Verhindere den Standard-Enter-Verhalten (z. B. Zeilenumbruch)
+      this.sendMessage(messageInput);
+    }
+  }
 }
