@@ -162,6 +162,9 @@ export class GroupChatComponent implements OnInit {
       width: '400px',
       height: '200px',
       position: { top: '200px', right: '50px' },
+      data: {
+        channelID: this.groupId,
+      }
     });
   }
 }
