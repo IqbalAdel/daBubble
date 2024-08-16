@@ -81,9 +81,9 @@ export class FirebaseService {
       await updateDoc(docRef, {
         id: docRef.id // Add the generated ID to the document
       });
+      console.log('Channel added successfully with ID:', docRef.id);
       return docRef;
 
-      console.log('Channel added successfully with ID:', docRef.id);
     } catch (error) {
       console.error('Error adding channel:', error);
       return null;
