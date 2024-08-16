@@ -1,0 +1,104 @@
+@import './../../../mixins.scss';
+
+.example-chip-list {
+    width: 100%;
+    border: none;
+    outline: none;
+    background-color: white;
+    position: relative;
+  }
+  
+
+  input{
+    width: 100%;
+    height: 40px;
+    border-radius: 30px;
+    margin-bottom: 10px;
+    padding: 5px 0px 5px 10px;
+    border: solid 1px #ADB0D9;
+    cursor: pointer;
+    &:hover{
+        border: solid 1px #444DF2;
+    }
+    &:focus{
+        outline: none;
+    }
+}
+
+.mdc-evolution-chip-set, .mdc-evolution-chip{
+    margin-left: 15px;
+}
+
+.mat-mdc-standard-chip:not(.mdc-evolution-chip--disabled) {
+    background-color: #ECEEFE;
+}
+
+mat-icon{
+    color: black;
+    font-weight: bold;
+    &:hover{
+        color: #444DF2;
+    }
+}
+
+
+  
+  mat-chip-row {
+    // margin-top: -25px;  /* Adjust this value to control the overlap */
+    // margin-left: 10px;  /* Adjust this value to control the overlap */
+    position: absolute;
+    z-index: 2;  /* Ensure chips appear above the input field */
+  }
+  
+  input{
+    position: relative;
+    z-index: 1;  /* Ensure input field appears below chips */
+    background: transparent;  /* Make sure the background is transparent */
+  }
+
+
+
+
+
+::ng-deep .mat-mdc-autocomplete-panel{
+    border-radius: 0px 20px 20px 20px !important;
+}
+
+mat-option{
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-bottom: 10px;
+    border-radius: 30px;
+    width: fit-content;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+ 
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+    background-color: #ECEEFE;
+}
+
+.mat-mdc-option{
+    min-height: fit-content;
+}
+
+.add-btn{
+    @include d-flex($jc: flex-end);
+    button{
+        cursor: pointer;
+        background-color: #686868;
+        border: none;
+        outline: none;
+        color: white;
+        padding-top: 7px;
+        padding-bottom: 7px;
+        padding-left: 15px;
+        padding-right: 15px;
+        border-radius: 30px;
+
+    }
+}
+
+
+
+

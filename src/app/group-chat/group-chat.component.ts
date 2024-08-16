@@ -148,8 +148,7 @@ export class GroupChatComponent implements OnInit {
     this.dialog.open(DialogChannelMembersComponent, {
       panelClass: 'border-30-right',
       width: '300px',
-      height: '300px',
-      position: { top: '200px', right: '100px' },
+      position: {top: '200px', right: '100px'},
       data: {
         channelID: this.groupId,
       }

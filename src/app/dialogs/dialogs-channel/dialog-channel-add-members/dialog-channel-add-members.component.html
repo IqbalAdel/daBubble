@@ -8,10 +8,23 @@
     </div>
     <span># Entwicklerteam</span>
 
-    <input type="text" placeholder="Name eingeben">
+    <!-- <mat-label>
+        <input type="text" placeholder="Name eingeben">
+    </mat-label>
+    <mat-select>
+        @for (food of foods; track food) {
+        <mat-option [value]="food.value">{{food.viewValue}}</mat-option>
+        }
+    </mat-select> -->
 
+    <app-chips-add-members [test]="test"></app-chips-add-members>
+    
     <div class="add-btn">
-        <button>
+        <button
+        [ngStyle]="checkUserSelection() ? {'background-color': '#444DF2'} : {'background-color': '#686868'}"
+        type="submit"
+        [disabled]="!checkUserSelection()"
+        (click)="triggerChipsFormSubmit()">
             Hinzufügen
         </button>
     </div>

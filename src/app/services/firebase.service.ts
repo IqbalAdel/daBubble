@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference, arrayUnion, writeBatch } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
@@ -53,10 +53,18 @@ export class FirebaseService {
 
 
   // Iqbals Funktionen -------------------
+
+  getFirestore(): Firestore {
+    return this.firestore;
+}
   
   getUsersData(){
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef);
+  }
+
+  getUserDocRef(docID: string){
+    return doc(collection(this.firestore, 'users'), docID)
   }
 
   async addChannel(channel: Channel) {
@@ -67,13 +75,18 @@ export class FirebaseService {
       const docRef = await addDoc(channelsRef, {
         ...channel, // Add initial data without the id
       });
+      console.log('Channel added successfully');
+
       // Update the document with the generated ID
       await updateDoc(docRef, {
         id: docRef.id // Add the generated ID to the document
       });
+      return docRef;
 
+      console.log('Channel added successfully with ID:', docRef.id);
     } catch (error) {
       console.error('Error adding channel:', error);
+      return null;
     }
     
   }

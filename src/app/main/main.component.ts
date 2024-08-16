@@ -15,9 +15,10 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
-export class MainComponent implements OnInit{
+export class MainComponent{
 
-  channelID = "";
+channelID = '';
+
 constructor(public userService:UserService, private route: ActivatedRoute){}
 
 ngOnInit(): void {
