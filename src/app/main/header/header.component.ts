@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -14,7 +14,7 @@ import { User } from "./../../../models/user.class";
 import { Channel } from '../../../models/channel.class';
 import {MatSelectModule} from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-header',
@@ -35,7 +35,7 @@ import { MatOptionModule } from '@angular/material/core';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-
+  user: User | null = null;
   foods = [
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
@@ -48,7 +48,8 @@ export class HeaderComponent {
 
   constructor( 
     public dialog: MatDialog,
-    private fire: FirebaseService
+    private fire: FirebaseService,
+    private userService: UserService
   ) {    
 
     // const fireUsers = fire.getUsers();
@@ -73,6 +74,9 @@ export class HeaderComponent {
     //   });
     //   console.log(this.users)
     // });  
+  }
+  ngOnInit(): void {
+    this.user = this.userService.getUser();
   }
 
   openDialog(){
