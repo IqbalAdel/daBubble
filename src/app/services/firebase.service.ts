@@ -3,15 +3,30 @@ import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateD
 import { Observable } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
-
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+  private auth = inject(Auth);
 
   firestore: Firestore = inject(Firestore);
 
   constructor() { }
+  
+  async getCurrentUserUid(): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      onAuthStateChanged(this.auth, (user) => {
+        if (user) {
+          resolve(user.uid);
+        } else {
+          resolve(null);
+        }
+      }, (error) => {
+        reject(error);
+      });
+    });
+  }
 
 
   getUsersRef(): CollectionReference<DocumentData> {

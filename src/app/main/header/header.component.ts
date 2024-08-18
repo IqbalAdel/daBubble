@@ -48,7 +48,7 @@ export class HeaderComponent {
 
   constructor( 
     public dialog: MatDialog,
-    private fire: FirebaseService,
+    private firebaseService: FirebaseService,
     private userService: UserService
   ) {    
 
@@ -75,8 +75,18 @@ export class HeaderComponent {
     //   console.log(this.users)
     // });  
   }
-  ngOnInit(): void {
-    this.user = this.userService.getUser();
+  async ngOnInit(): Promise<void> {
+    try {
+      // UID des aktuell angemeldeten Benutzers abrufen
+      const uid = await this.firebaseService.getCurrentUserUid();
+      if (uid) {
+        // Benutzerdaten anhand der UID laden
+        await this.userService.loadUserById(uid);
+        this.user = this.userService.getUser();
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+    }
   }
 
   openDialog(){
