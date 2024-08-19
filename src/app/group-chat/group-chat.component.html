@@ -24,12 +24,12 @@
         </div>
     </div>
     <div class="line"></div>
-    <div class="chat-complete">
+    <div class="chat-complete" #scrollContainer>
         <div class="complete-container" *ngFor="let message of messages">
 
             <div class="line-date">
                 <div class="line-two"></div>
-                <span class="date">{{ displayDate }}</span>
+                <span class="date">{{ message.timestamp }}</span>
                 <div class="line-two"></div>
             </div>
             <div *ngIf="messages.length > 0; else noMessages">
@@ -41,9 +41,9 @@
                             <div class="chat">
                                 <div class="current-time">
                                     <h2>Klaus</h2>
-                                    <p>{{ currentTime }} Uhr</p>
+                                    <p>{{ message.time  }} Uhr</p>
                                 </div>
-                                <span>{{ message }}</span>
+                                <span>{{ message.text }}</span>
                             </div>
                             <div class="answer">
                                 <div class="answers">2 Antworten</div>

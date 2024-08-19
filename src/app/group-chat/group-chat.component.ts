@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../services/user.service';
@@ -17,7 +17,8 @@ import { FirebaseService } from '../services/firebase.service';
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
-export class GroupChatComponent implements OnInit {
+export class GroupChatComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   groupId!: string;
   groupName!: string;
 
@@ -25,8 +26,7 @@ export class GroupChatComponent implements OnInit {
   currentTime!: string;
   displayDate!: string;
   private storedDate: string = '';
-  messages: string[] = [];
-
+  messages: { text: string; timestamp: string; time: string }[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userServes.selectedChannelName$;
@@ -44,30 +44,43 @@ export class GroupChatComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.groupId = params.get('id') || '';
       this.loadGroupName();
-      this.updateDateTime();
       this.loadMessages();
-      this.scheduleDailyUpdate();
     });
   }
 
-  async loadMessages() {
-    
-      try {
-        if (this.groupId) {
-          const channelData = await this.fireStoree.getChannelsMessages(this.groupId);
-          if (channelData) {
-            this.messages = channelData['messages'] || [];
-          }
-        } else {
-          console.error('Keine Gruppen-ID vorhanden.');
-        }
-      } catch (error) {
-        console.error('Fehler beim Abrufen der Nachrichten:', error);
-      }
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
 
+  loadMessages(): void {
+    if (this.groupId) {
+      this.fireStoree.getChannelsMessages(this.groupId).subscribe(
+        (channelData: { text: string; timestamp: string; time: string }[]) => { // Typ für channelData
+          if (channelData) {
+            this.messages = channelData;
+          } else {
+            this.messages = [];
+          }
+        },
+        (error: any) => { // Typ für error
+          console.error('Fehler beim Abrufen der Nachrichten:', error);
+        }
+      );
+    }
   }
 
 
+  formatMessageDate(timestamp: string): string {
+    const messageDate = new Date(timestamp);
+    const today = new Date();
+
+    // Vergleich des Datums ohne die Zeit
+    if (messageDate.toDateString() === today.toDateString()) {
+      return 'Heute';
+    } else {
+      return timestamp; // Gibt das ursprüngliche Datum zurück, wenn es nicht heute ist
+    }
+  }
 
   async loadGroupName() {
     try {
@@ -86,44 +99,15 @@ export class GroupChatComponent implements OnInit {
     }
   }
 
-  updateDateTime(): void {
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString();
 
-    // Überprüfe, ob das Datum neu ist
-    if (this.storedDate !== formattedDate) {
-      this.currentDate = formattedDate;
-      this.currentTime = this.formatTime(today);
-      this.displayDate = this.isToday(today) ? 'Heute' : this.currentDate;
-      this.storedDate = formattedDate; // Speichere das aktuelle Datum
-    }
-  }
 
   isToday(date: Date): boolean {
     const today = new Date();
     return today.toDateString() === date.toDateString();
   }
 
-  formatTime(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-  }
 
-  scheduleDailyUpdate() {
-    // Berechne die Zeit bis zur nächsten Mitternacht
-    const now = new Date();
-    const nextMidnight = new Date();
-    nextMidnight.setHours(24, 0, 0, 0); // Setzt auf nächste Mitternacht
 
-    const timeToMidnight = nextMidnight.getTime() - now.getTime();
-
-    // Stelle einen Intervall für das tägliche Update ein
-    setTimeout(() => {
-      this.updateDateTime(); // Führe sofort das Update durch
-      setInterval(() => this.updateDateTime(), 24 * 60 * 60 * 1000); // Update täglich
-    }, timeToMidnight);
-  }
 
   changeImageSmiley(isHover: boolean) {
     this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.png' : 'assets/img/smiley/add_reaction.png';
@@ -149,7 +133,7 @@ export class GroupChatComponent implements OnInit {
     this.dialog.open(DialogChannelMembersComponent, {
       panelClass: 'border-30-right',
       width: '300px',
-      position: {top: '200px', right: '100px'},
+      position: { top: '200px', right: '100px' },
       data: {
         channelID: this.groupId,
       }
@@ -163,6 +147,17 @@ export class GroupChatComponent implements OnInit {
       width: '400px',
       height: '200px',
       position: { top: '200px', right: '50px' },
+      data: {
+        channelID: this.groupId,
+      }
     });
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error('Scroll error:', err);
+    }
   }
 }

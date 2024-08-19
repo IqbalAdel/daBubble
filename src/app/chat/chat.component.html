@@ -1,5 +1,5 @@
 <div class="textarea" #autoScrollTextarea>
-    <textarea #messageInput rows="2" cols="50" [placeholder]="placeholderText" (keydown)="handleKeyDown($event, messageInput)"></textarea>
+    <textarea #scrollContainer #messageInput rows="2" cols="50" [placeholder]="placeholderText" (keydown)="handleKeyDown($event, messageInput)"></textarea>
     <div class="textarea-send">
         <div class="textarea-add">
             <img (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)" [src]="imgTextarea[0]" alt=""> | </div>

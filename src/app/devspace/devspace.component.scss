@@ -58,12 +58,10 @@ button {
         &::-webkit-scrollbar-thumb {
             background-color: #888;
             border-radius: 2px;
-            /* Ecken abrunden */
         }
 
         &::-webkit-scrollbar-thumb:hover {
             background-color: #555;
-            /* Farbe des Scrollbalkens beim Hover */
         }
     }
 
@@ -107,6 +105,7 @@ button {
     h2 {
         font-size: 20px;
         font-weight: 700;
+        
 
         &:hover {
             color: rgba(83, 90, 241, 1);
@@ -225,7 +224,6 @@ button {
             position: absolute;
             bottom: 5px;
             left: 70px;
-
         }
 
         &.selected {
@@ -301,20 +299,15 @@ button {
 
     &.selected {
         background-color: rgba(0, 0, 255, 0.1);
-        /* Blau als Hintergrundfarbe für ausgewählten Zustand */
         color: blue;
-        /* Textfarbe für ausgewählten Zustand */
         font-weight: 600;
-        /* Optional: Text fetter machen */
     }
 
 
     &:hover {
         background-color: rgba(236, 238, 254, 1);
         color: blue;
-
     }
-
 }
 
 header {
@@ -322,7 +315,7 @@ header {
 }
 
 
-h2 {
+h2, h1 {
     margin: 0;
     font-family: nunito, Arial, Helvetica, sans-serif;
 

@@ -31,13 +31,13 @@ import { FirebaseService } from '../../services/firebase.service';
 export class ChipsAddMembersComponent {
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   readonly currentUser = signal('');
-  readonly users = signal<string[]>([]);
-  allUsers: string[] = ['Alice', 'Bob', 'Charlie', 'David', 'Eve']; // Changed fruit to user
+  readonly users = signal<User[]>([]);  // Change to hold User objects instead of strings
+  allUsers: User[] = [];  // Changed from string[] to User[]
   selectUsers: User[] = [];
   userInputControl = new FormControl('');
   @Input() test: string = '';
 
-  filteredUsers = signal<string[]>([]); // Use signal for reactivity
+  filteredUsers = signal<User[]>([]); // Use signal for reactivity with User objects
 
   constructor(
     private fire: FirebaseService,
@@ -57,10 +57,10 @@ export class ChipsAddMembersComponent {
         );
       });
       this.cdr.detectChanges();
-      this.allUsers = this.getUserNames();
+      this.allUsers = this.selectUsers; // Store the full User objects
       this.updateFilteredUsers();
-      console.log('now',this.allUsers)
-      console.log('received', this.selectUsers)
+      // console.log('now',this.allUsers)
+      // console.log('received', this.selectUsers)
     });
   }
   readonly announcer = inject(LiveAnnouncer);
@@ -70,9 +70,12 @@ export class ChipsAddMembersComponent {
   inputDisabled: boolean = false;
 
   updateFilteredUsers(): void {
-    const currentUser = this.currentUser().toLowerCase();
-    const filtered = currentUser
-      ? this.allUsers.filter(user => user.toLowerCase().includes(currentUser))
+    console.log('this is current',this.currentUser())
+    const currentUserName = this.currentUser().toLowerCase() || '';
+    console.log('this is curretnName', currentUserName)
+
+    const filtered = currentUserName
+      ? this.allUsers.filter(user => user.name.toLowerCase().includes(currentUserName))
       : this.allUsers.slice();
 
     this.filteredUsers.set(filtered); // Update the signal
@@ -91,11 +94,11 @@ export class ChipsAddMembersComponent {
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
+    const selectedUser = this.allUsers.find(user => user.name === value);
 
-    if (value && !this.users().includes(value) && this.isValidUser(value)) {
-      this.users.update(users => [...users, value]);
+    if (selectedUser && !this.users().some(user => user.id === selectedUser.id)) {
+      this.users.update(users => [...users, selectedUser]);
     } else {
-      // Optionally show an error message or alert
       console.error('Invalid user name:', value);
     }
 
@@ -110,12 +113,12 @@ export class ChipsAddMembersComponent {
 
     // Check if the user is valid
     isValidUser(userName: string): boolean {
-      return this.filteredUsers().includes(userName);
+      return this.filteredUsers().some(user => user.name === userName);
     }
 
-  remove(user: string): void {
+  remove(user: User): void {
     this.users.update(users => {
-      const index = users.indexOf(user);
+      const index = users.findIndex(u => u.id === user.id);
       if (index < 0) {
         return users;
       }
@@ -131,10 +134,9 @@ export class ChipsAddMembersComponent {
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    const selectedUser = event.option.viewValue;
-    this.users.update(users => [...users, selectedUser]);
-    
-    if (!this.users().includes(selectedUser) && this.isValidUser(selectedUser)) {
+    const selectedUser = this.allUsers.find(user => user.name === event.option.viewValue);
+
+    if (selectedUser && !this.users().some(user => user.id === selectedUser.id)) {
       this.users.update(users => [...users, selectedUser]);
     }
 
@@ -157,9 +159,10 @@ export class ChipsAddMembersComponent {
     if (this.users().length === 0) {
       return;
     }
-    // 1.Lade alle User in allUsers
-    // 2.Auwahl von allUsers
-    // 3.selectedUser wird in Users und Channels hinzugefügt 
+    // 1.Lade alle User in allUsers --- Done
+    // 2.Auwahl von allUsers --- Done
+    // 3.selectedUser wird mit ID abgestimmt (console) -- Done
+    // 4. Nutzer wird über ID in channel und User collection geaddet
 
     console.log('Form submitted with users:', this.users());
   }

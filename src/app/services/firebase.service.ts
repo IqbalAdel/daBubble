@@ -3,15 +3,30 @@ import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateD
 import { Observable } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
-
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+  private auth = inject(Auth);
 
   firestore: Firestore = inject(Firestore);
 
   constructor() { }
+  
+  async getCurrentUserUid(): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      onAuthStateChanged(this.auth, (user) => {
+        if (user) {
+          resolve(user.uid);
+        } else {
+          resolve(null);
+        }
+      }, (error) => {
+        reject(error);
+      });
+    });
+  }
 
 
   getUsersRef(): CollectionReference<DocumentData> {
@@ -37,22 +52,26 @@ export class FirebaseService {
     return doc(collection(this.firestore, collID), docID)
   }
 
-  getChannelsMessages(channelId: string): Promise<any> {
-    const channelDocRef = doc(this.firestore, 'channels', channelId);  // Verwende die übergebene channelId
-    return getDoc(channelDocRef).then(docSnapshot => {
-      if (docSnapshot.exists()) {
-        return docSnapshot.data();
-      } else {
-        return null;
-      }
-    }).catch(error => {
-      console.error('Fehler beim Abrufen der Nachrichten:', error);
-      return null;
+  getChannelsMessages(channelId: string): Observable<any[]> {
+    const channelDocRef = doc(this.firestore, 'channels', channelId);
+  
+    return new Observable((observer) => {
+      const unsubscribe = onSnapshot(channelDocRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          const messages = data['messages'] || [];  // Annahme: Nachrichten sind ein Array innerhalb des Dokuments
+          observer.next(messages);
+        } else {
+          observer.next([]);
+        }
+      }, (error) => {
+        observer.error(error);
+      });
+  
+      // Rückgabefunktion für das Abonnement
+      return () => unsubscribe();
     });
   }
-
-
-  // Iqbals Funktionen -------------------
 
   getFirestore(): Firestore {
     return this.firestore;
@@ -78,6 +97,9 @@ export class FirebaseService {
         id: docRef.id 
       });
       return docRef;
+      console.log('Channel added successfully with ID:', docRef.id);
+      return docRef;
+
     } catch (error) {
       console.error('Error adding channel:', error);
       return null;
@@ -124,13 +146,13 @@ export class FirebaseService {
     });
   }
 
-  async addMessageToFirestore(channelId: string, message: string): Promise<void> {
+  async addMessageToFirestore(channelId: string, message: { text: string; timestamp: string; time: string }): Promise<void> {
     try {
       const channelDocRef = doc(this.firestore, 'channels', channelId);
       const channelDoc = await getDoc(channelDocRef);
       if (channelDoc.exists()) {
-        const currentMessages = channelDoc.data()['messages'] || []; // Zugriff auf das 'messages' Array
-        const updatedMessages = [...currentMessages, message]; // Füge nur den Text der Nachricht hinzu
+        const currentMessages = channelDoc.data()['messages'] || [];
+        const updatedMessages = [...currentMessages, message];  // Nachricht als Objekt hinzufügen
         await updateDoc(channelDocRef, { messages: updatedMessages });
         console.log('Message successfully added to channel:', message);
       } else {
