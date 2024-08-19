@@ -1,37 +1,50 @@
 import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { Firestore, doc, getDoc, DocumentData } from '@angular/fire/firestore';
+import { UserCredential } from 'firebase/auth'; // Prüfe die korrekte Import-Quelle
+import { UserService } from '../services/user.service';
 @Component({
   selector: 'app-login-section',
   standalone: true,
-  imports: [MatCardModule,RouterModule, CommonModule, RouterOutlet, FormsModule ],
+  imports: [MatCardModule, CommonModule, FormsModule, RouterModule],
   templateUrl: './login-section.component.html',
-  styleUrl: './login-section.component.scss'
+  styleUrls: ['./login-section.component.scss'] // Beachte den richtigen Namen: styleUrls
 })
 export class LoginSectionComponent {
   email: string = '';
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private userService: UserService) {}
 
   async onLogin(): Promise<void> {
     if (this.email && this.password) {
       try {
-        const user = await this.authService.signIn(this.email, this.password);
-        if (user) {
-          this.router.navigate(['/main']); // Ändere die Route, falls nötig
+        const userCredential = await this.authService.signIn(this.email, this.password);
+
+        if (userCredential) {
+          const uid = userCredential.user.uid;
+          
+          // Lade Benutzerdaten und speichere im UserService
+          await this.userService.loadUserById(uid);
+
+          // Navigiere zur Hauptseite
+          this.router.navigate(['/main']);
+        } else {
+          this.errorMessage = 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.';
         }
       } catch (error) {
         this.errorMessage = 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.';
+        console.error('Fehler beim Anmelden:', error);
       }
     } else {
       this.errorMessage = 'Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein.';
     }
   }
- 
+
 }
+
