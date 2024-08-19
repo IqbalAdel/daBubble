@@ -36,7 +36,7 @@ import { Firestore, collection, doc, updateDoc, arrayUnion, writeBatch } from '@
     ]),
   ],
 })
-export class DialogChannelCreateAddMembersComponent implements OnInit{
+export class DialogChannelCreateAddMembersComponent{
 
   imgSrc: string = "assets/img/close_default.png";
   inputState: string = 'hidden';
@@ -81,22 +81,7 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
     });
   }  
 
-  ngOnInit(): void {
-    this.route.paramMap.subscribe(paramMap => {
-      this.channelID = paramMap.get('id');
-      console.log('channel: ',this.channelID)
-    });
-
-    this.route.paramMap.subscribe(params => {
-      let KroupId = params.get('id') || '';
-      let KroupName = params.get('name') || '';
-
-      console.log('KroupId:', KroupId);
-      console.log('KroupName:', KroupName);
-
-      // Update any other component logic that depends on groupId or groupName
-    });
-}
+  
 
   async onAddChannel() {
     try {
@@ -161,12 +146,12 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
     onSubmit(): void {
       if (this.selectedValue === "option1") {
         console.log('Selected Option:', this.selectedValue);
-        const usersAsPlainObjects = this.allUsers.map(user => user.usersToJSON());
-
-        // Push the plain objects into newChannel.users
-        this.newChannel.users?.push(...usersAsPlainObjects);
-
-        //  this.newChannel.users?.push(...this.allUsers);
+        const userID = this.allUsers
+        .map(user => user.id)
+        .filter((id): id is string => id !== undefined);
+        console.log(userID)
+        
+        this.newChannel.users?.push(...userID);
         this.onAddChannel();
       }
     }

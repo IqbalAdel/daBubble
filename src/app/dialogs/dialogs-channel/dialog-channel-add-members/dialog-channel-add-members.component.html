@@ -24,7 +24,7 @@
         [ngStyle]="checkUserSelection() ? {'background-color': '#444DF2'} : {'background-color': '#686868'}"
         type="submit"
         [disabled]="!checkUserSelection()"
-        (click)="triggerChipsFormSubmit()">
+        (click)="onSubmit()">
             Hinzufügen
         </button>
     </div>

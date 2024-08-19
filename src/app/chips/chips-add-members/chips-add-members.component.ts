@@ -1,9 +1,9 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import { CommonModule } from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, inject, model, signal, ViewEncapsulation, ViewChild, ElementRef, Inject, Input, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, model, signal, ViewEncapsulation, ViewChild, ElementRef, Inject, Input, ChangeDetectorRef, AfterViewInit} from '@angular/core';
 import {FormControl, FormsModule} from '@angular/forms';
-import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {MatAutocompleteModule, MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -23,12 +23,11 @@ import { FirebaseService } from '../../services/firebase.service';
     
     
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './chips-add-members.component.html',
   styleUrl: './chips-add-members.component.scss',
   // encapsulation: ViewEncapsulation.None
 })
-export class ChipsAddMembersComponent {
+export class ChipsAddMembersComponent{
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   readonly currentUser = signal('');
   readonly users = signal<User[]>([]);  // Change to hold User objects instead of strings
@@ -41,7 +40,6 @@ export class ChipsAddMembersComponent {
 
   constructor(
     private fire: FirebaseService,
-    private cdr: ChangeDetectorRef,
   ){
     this.fire.getUsersData().subscribe((list) => {
       this.selectUsers = list.map(element => {
@@ -56,9 +54,9 @@ export class ChipsAddMembersComponent {
           data['chats'] || []
         );
       });
-      this.cdr.detectChanges();
       this.allUsers = this.selectUsers; // Store the full User objects
       this.updateFilteredUsers();
+      
       // console.log('now',this.allUsers)
       // console.log('received', this.selectUsers)
     });
@@ -69,10 +67,9 @@ export class ChipsAddMembersComponent {
 
   inputDisabled: boolean = false;
 
+
   updateFilteredUsers(): void {
-    console.log('this is current',this.currentUser())
     const currentUserName = this.currentUser().toLowerCase() || '';
-    console.log('this is curretnName', currentUserName)
 
     const filtered = currentUserName
       ? this.allUsers.filter(user => user.name.toLowerCase().includes(currentUserName))

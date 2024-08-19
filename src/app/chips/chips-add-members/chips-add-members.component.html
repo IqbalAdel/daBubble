@@ -15,11 +15,11 @@
           name="userInput"
           (input)="onInputChange($event)"
           [ngModel]="currentUser()"
-          (ngModelChange)="currentUser.set($event)"
           [matChipInputFor]="chipGrid"
-          [matAutocomplete]="auto"
+          (ngModelChange)="currentUser.set($event)"
           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
           (matChipInputTokenEnd)="add($event)"
+          [matAutocomplete]="auto"
           [disabled]="inputDisabled"
           [placeholder]="shouldShowPlaceholder() ? 'Namen eingeben' : ''"
         />
