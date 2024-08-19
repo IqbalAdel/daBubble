@@ -46,19 +46,17 @@ export class DialogChannelMembersComponent{
 
     this.fire.getChannels().subscribe((channels) => {
       const channel = channels.find(c => c['id'] === this.channelID);
-    
+      
       if (channel && channel['users']) {
-        this.allUsers = channel['users'].map((userData: User) => {
-          return new User(
-            userData['name'] || '',
-            userData['email'] || '',
-            userData['id'] || '',
-            userData['img'] || '',
-            userData['password'] || '',
-            userData['channels'] || [],
-            userData['chats'] || []
-          );
-        });
+        const userIDs = channel['users'];
+
+        const userPromises = userIDs.map((userID: string) =>{
+          return this.fire.getUserById(userID);
+        })
+
+        Promise.all(userPromises).then(users => {
+          this.allUsers = users.filter(user => user !== null) as User[]
+        })
     
         console.log(this.allUsers);
       } else {

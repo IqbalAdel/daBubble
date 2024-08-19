@@ -149,7 +149,8 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       position: { top: '200px', right: '50px' },
       data: {
         channelID: this.groupId,
-      }
+      },
+      autoFocus: false,
     });
   }
 

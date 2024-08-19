@@ -23,6 +23,10 @@
     &:focus{
         outline: none;
     }
+    input[autofocus] {
+        /* Disables autofocus */
+        outline: none;
+      }
 }
 
 .mdc-evolution-chip-set, .mdc-evolution-chip{

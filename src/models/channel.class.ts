@@ -7,7 +7,7 @@ export class Channel {
     description: string;
     creator?: string;
     messages?: Message[];
-    users?: (User | { name: string; email: string; id?: string; img: string; password: string; channels?: string[]; chats?: string[] })[];
+    users?: string[];
     id?: string;
   
     constructor(
@@ -15,7 +15,7 @@ export class Channel {
       description: string = '',
       creator: string = '',
       messages: Message[] = [],
-      users: (User | { name: string; email: string; id?: string; img: string; password: string; channels?: string[]; chats?: string[] })[] = [],
+      users: string[] = [],
       id: string = '',
     ) {
       this.name = name;

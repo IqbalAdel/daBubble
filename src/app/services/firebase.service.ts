@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference, arrayUnion, writeBatch } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference, arrayUnion, writeBatch, DocumentReference } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
@@ -84,6 +84,37 @@ export class FirebaseService {
 
   getUserDocRef(docID: string){
     return doc(collection(this.firestore, 'users'), docID)
+  }
+  getChannelDocRef(docID: string){
+    return doc(collection(this.firestore, 'channels'), docID)
+  }
+
+  async updateUserChannels(userID: string, channelId: string) {
+    const userDoc = await getDoc(this.getUserDocRef(userID));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const channels = userData?.['channels'] || [];
+      if (!channels.includes(channelId)) {
+        channels.push(channelId);
+      }
+      await updateDoc(this.getUserDocRef(userID), { channels });
+    } else {
+      throw new Error('User document does not exist.');
+    }
+  }
+
+  async updateChannelUserList(userID: string, channelId: string) {
+    const channelDoc = await getDoc(this.getChannelDocRef(channelId));
+    if (channelDoc.exists()) {
+      const channelData = channelDoc.data();
+      const users = channelData?.['users'] || [];
+      if (!users.includes(userID)) {
+        users.push(userID);
+      }
+      await updateDoc(this.getChannelDocRef(channelId), { users });
+    } else {
+      throw new Error('User document does not exist.');
+    }
   }
 
   async addChannel(channel: Channel) {
