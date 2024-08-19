@@ -47,23 +47,24 @@ export class GroupChatComponent implements OnInit {
       this.updateDateTime();
       this.loadMessages();
       this.scheduleDailyUpdate();
-      
     });
   }
-  
+
   async loadMessages() {
-    try {
-      if (this.groupId) {
-        const channelData = await this.fireStoree.getChannelsMessages(this.groupId);
-        if (channelData) {
-          this.messages = channelData['messages'] || [];
+    
+      try {
+        if (this.groupId) {
+          const channelData = await this.fireStoree.getChannelsMessages(this.groupId);
+          if (channelData) {
+            this.messages = channelData['messages'] || [];
+          }
+        } else {
+          console.error('Keine Gruppen-ID vorhanden.');
         }
-      } else {
-        console.error('Keine Gruppen-ID vorhanden.');
+      } catch (error) {
+        console.error('Fehler beim Abrufen der Nachrichten:', error);
       }
-    } catch (error) {
-      console.error('Fehler beim Abrufen der Nachrichten:', error);
-    }
+
   }
 
 

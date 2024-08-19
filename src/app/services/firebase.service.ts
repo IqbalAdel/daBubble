@@ -70,20 +70,14 @@ export class FirebaseService {
   async addChannel(channel: Channel) {
     try {
       const channelsRef = collection(this.firestore, 'channels');
-
-      // Add a new document and get the reference
       const docRef = await addDoc(channelsRef, {
-        ...channel, // Add initial data without the id
+        ...channel, 
       });
       console.log('Channel added successfully');
-
-      // Update the document with the generated ID
       await updateDoc(docRef, {
-        id: docRef.id // Add the generated ID to the document
+        id: docRef.id 
       });
       return docRef;
-
-      console.log('Channel added successfully with ID:', docRef.id);
     } catch (error) {
       console.error('Error adding channel:', error);
       return null;
@@ -130,12 +124,38 @@ export class FirebaseService {
     });
   }
 
-  async addMessageToFirestore(message: string): Promise<void> {
-    const messagesRef = collection(this.firestore, 'channels'); // Erstelle eine Referenz zur "messages" Collection
-    // await addDoc(messagesRef, {
-    //   text: message,
-    //   timestamp: new Date() // Füge einen Zeitstempel hinzu
-    // });
+  async addMessageToFirestore(channelId: string, message: string): Promise<void> {
+    try {
+      const channelDocRef = doc(this.firestore, 'channels', channelId);
+      const channelDoc = await getDoc(channelDocRef);
+      if (channelDoc.exists()) {
+        const currentMessages = channelDoc.data()['messages'] || []; // Zugriff auf das 'messages' Array
+        const updatedMessages = [...currentMessages, message]; // Füge nur den Text der Nachricht hinzu
+        await updateDoc(channelDocRef, { messages: updatedMessages });
+        console.log('Message successfully added to channel:', message);
+      } else {
+        console.error('Channel does not exist:', channelId);
+      }
+    } catch (error) {
+      console.error('Error adding message to Firestore:', error);
+    }
+  }
+
+   getRealtimeChannelMessages(channelId: string): Observable<DocumentData[]> {
+    const channelDocRef = doc(this.firestore, 'channels', channelId);
+    const messagesCollection = collection(channelDocRef, 'messages');
+    
+    return new Observable((observer) => {
+      const unsubscribe = onSnapshot(messagesCollection, (snapshot) => {
+        const messages = snapshot.docs.map(doc => doc.data());
+        observer.next(messages);
+      }, (error) => {
+        observer.error(error);
+      });
+
+      // Rückgabefunktion für das Abonnement
+      return () => unsubscribe();
+    });
   }
   
 }

@@ -24,51 +24,52 @@
         </div>
     </div>
     <div class="line"></div>
-    <div class="complete-container">
+    <div class="chat-complete">
+        <div class="complete-container" *ngFor="let message of messages">
 
-        <div class="line-date">
-            <div class="line-two"></div>
-            <span class="date">{{ displayDate }}</span>
-            <div class="line-two"></div>
-        </div>
-        <div *ngIf="messages.length > 0; else noMessages">
-            <div class="center">
-                <div class="group-news">
-                    <img src="assets/img/avatar-1.png" alt="">
-                    <div class="group-chat">
-                        <!-- Nachrichtenelemente -->
-                        <div class="chat" *ngFor="let message of messages">
-                            <div class="current-time">
-                                <h2>Klaus</h2>
-                                <p>{{ currentTime }} Uhr</p>
+            <div class="line-date">
+                <div class="line-two"></div>
+                <span class="date">{{ displayDate }}</span>
+                <div class="line-two"></div>
+            </div>
+            <div *ngIf="messages.length > 0; else noMessages">
+                <div class="center">
+                    <div class="group-news">
+                        <img src="assets/img/avatar-1.png" alt="">
+                        <div class="group-chat">
+                            <!-- Nachrichtenelemente -->
+                            <div class="chat">
+                                <div class="current-time">
+                                    <h2>Klaus</h2>
+                                    <p>{{ currentTime }} Uhr</p>
+                                </div>
+                                <span>{{ message }}</span>
                             </div>
-                            <span>{{ message }}</span>
+                            <div class="answer">
+                                <div class="answers">2 Antworten</div>
+                                <div>Letzte Antwort {{ currentTime }}</div>
+                            </div>
                         </div>
-                        <div class="answer">
-                            <div class="answers">2 Antworten</div>
-                            <div>Letzte Antwort {{ currentTime }}</div>
+                        <!-- Smiley und andere Elemente -->
+                        <div class="add-smiley">
+                            <img src="assets/img/smiley/check mark green.png" alt="">
+                            <img src="assets/img/smiley/hands in celebration.png" alt="">
+                            <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
+                                [src]="imgSrc[0]" alt="">
+                            <img (mouseover)="changeImageComment(true)" (mouseout)="changeImageComment(false)"
+                                [src]="imgSrc[1]" alt="">
                         </div>
-                    </div>
-                    <!-- Smiley und andere Elemente -->
-                    <div class="add-smiley">
-                        <img src="assets/img/smiley/check mark green.png" alt="">
-                        <img src="assets/img/smiley/hands in celebration.png" alt="">
-                        <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
-                            [src]="imgSrc[0]" alt="">
-                        <img (mouseover)="changeImageComment(true)" (mouseout)="changeImageComment(false)"
-                            [src]="imgSrc[1]" alt="">
                     </div>
                 </div>
             </div>
+            
+            <!-- Platzhalter für keine Nachrichten -->
+            <ng-template #noMessages>
+                <p>Keine Nachrichten vorhanden.</p>
+            </ng-template>
+
+
         </div>
 
-        <!-- Platzhalter für keine Nachrichten -->
-        <ng-template #noMessages>
-            <p>Keine Nachrichten vorhanden.</p>
-        </ng-template>
-
-
+        <app-chat></app-chat>
     </div>
-
-    <app-chat></app-chat>
-</div>

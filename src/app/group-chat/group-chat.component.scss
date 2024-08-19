@@ -1,7 +1,6 @@
 .chat-group {
     background-color: white;
     height: 85vh;
-    // width: 100%;
     border-radius: 30px;
     margin: 20px 30px;
     box-sizing: border-box;
@@ -9,17 +8,47 @@
     flex-direction: column;
     position: relative;
     transition: all 0.3s ease-in-out;
-    // display: none;
-
+    
     &.collapsed {
         width: 300px;
     }
 
-    .complete-container {
+    .my-message {
         display: flex;
         flex-direction: column;
-        justify-content: flex-end; // Inhalt am Anfang des Containers ausrichten
+        justify-content: flex-end; 
         height: calc(100% - 325px);
+        
+
+        .group-news {
+            display: flex;
+            flex-direction: row-reverse;
+            span {
+                border-top-right-radius: 0px;
+                border-top-left-radius: 30px;
+                border-bottom-right-radius: 30px;
+                border-bottom-left-radius: 30px;
+                background-color: rgba(121, 126, 243, 1);
+            }
+            &:hover{
+                .add-smiley {
+                    display: flex;
+                    align-items: center;
+                    background-color: white;
+                    width: 300px;
+                    height: 40px;
+                    border-top-left-radius: 30px;
+                    border-bottom-left-radius: 30px;
+                    border-top-right-radius: 30px;
+                    padding: 8px 20px;
+                    gap: 20px;
+                    position: absolute;
+                    left: 20px;
+                    margin-top: -40px;
+                    border: 2px solid rgba(51, 38, 235, 0.2);
+                }
+            }
+        }
     }
 
     .answer {
@@ -102,20 +131,14 @@
     .line-date {
         display: flex;
         align-items: center;
-        /* Vertikal zentrieren */
         justify-content: center;
-        /* Horizontal zentrieren */
         width: 100%;
-        /* Sicherstellen, dass die Linie die gesamte Breite einnimmt */
         margin: 20px 0;
 
         .line-two {
             flex: 1;
-            /* Flex-Wachstum, um sich an die verfügbare Breite anzupassen */
             border-bottom: 2px solid rgb(51, 38, 235, 0.2);
-            /* Dünnerer, grauer Rand */
             margin: 0 10px;
-            /* Abstand zwischen der Linie und dem Datum */
         }
 
         .date {
@@ -123,10 +146,6 @@
             border: 1px solid rgb(51, 38, 235, 0.2);
             width: 100px;
             text-align: center;
-        }
-
-        h2 {
-            
         }
     }
 
@@ -168,7 +187,6 @@
         .chat {
             display: flex;
             flex-direction: column;
-
         }
 
         span {
@@ -183,7 +201,6 @@
             display: flex;
             align-items: center;
             gap: 30px;
-
         }
 
         img {
@@ -202,11 +219,24 @@
 
                 &:hover {
                     background-color: rgb(236, 238, 254);
-
-
                 }
             }
+        }
+    }
 
+    .chat-complete {
+        height: calc(100% - 325px);
+        overflow-y: auto;
+        
+        &::-webkit-scrollbar{
+            width: 4px;
+        }
+        &::-webkit-scrollbar-thumb{
+            background-color: #888; /* Farbe des Scrollbalkens */
+        border-radius: 2px; /* Ecken abrunden */
+        }
+        &::-webkit-scrollbar-thumb:hover{
+            background-color: #555; /* Farbe des Scrollbalkens beim Hover */
         }
     }
 }
@@ -214,7 +244,6 @@
 .display-flex {
     display: flex;
     align-items: center;
-
 }
 
 .textarea {
@@ -247,7 +276,6 @@
 
             &:hover {
                 background-color: rgb(236, 238, 254);
-
             }
         }
     }
@@ -267,7 +295,8 @@
 ::ng-deep .border-30-right .mat-mdc-dialog-container {
     --mdc-dialog-container-shape: 30px 0px 30px 30px;
 }
-h2{
+
+h2 {
     font-family: nunito, Arial, Helvetica, sans-serif;
     font-weight: 900;
 }
