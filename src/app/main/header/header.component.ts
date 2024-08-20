@@ -34,13 +34,19 @@ import { UserService } from '../../services/user.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
-export class HeaderComponent {
-  user: User | null = null;
-  foods = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
-  ];
+export class HeaderComponent implements OnInit{
+  user: User = {
+    name: 'Frederick Beck',
+    email: 'Test@gmx.de',
+    id: '',
+    img: 'assets/img/profiles/boy.png',
+    password: '',
+    channels: [],
+    chats: [],
+    usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
+      throw new Error('Function not implemented.');
+    }
+  };
 
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
   users: User[] = [];
@@ -82,7 +88,10 @@ export class HeaderComponent {
       if (uid) {
         // Benutzerdaten anhand der UID laden
         await this.userService.loadUserById(uid);
-        this.user = this.userService.getUser();
+        const user = this.userService.getUser();
+        if(user){
+          this.user = user;
+        }
       }
     } catch (error) {
       console.error('Fehler beim Abrufen der Benutzerdaten:', error);

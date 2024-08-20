@@ -8,10 +8,10 @@
     </div>
     <div class="avatar">
         <img 
-        src="assets/img/profiles/boy.png" alt="">
+        src="{{user.img}}" alt="">
     </div>
     <div class="user-txt">
-        <span>Frederik Beck</span>
+        <span>{{user.name}}</span>
         <span (click)="openDialog()">Bearbeiten</span>
     </div>
     <div class="active">
@@ -22,7 +22,7 @@
         <img src="assets/img/mail-profile.png" alt="">
         <div>
             <span>E-Mail-Adresse</span>
-            <span>fred&#46;beck&#64;email&#46;com</span>
+            <span>{{user.email}}</span>
         </div>
     </div>
 </mat-card>
