@@ -16,13 +16,14 @@
                 <input type="radio" name="channelOption" id="" [value]="'option2'" [(ngModel)]="selectedValue" (change)="onRadioChange('option2')">
                 <span>Bestimmte Leute hinzufügen</span>
             </div>
-            <div [@inputAppear]="inputState">
-              <input class="search-person" type="text" placeholder="Name eingeben" *ngIf="inputState === 'visible'" />
-            </div>
         </div>
+
+        @if(selectedValue == 'option2'){
+            <app-chips-add-members></app-chips-add-members>
+        }
     
         <div class="add-btn">
-            <button type="submit" [disabled]="!selectedValue" [ngClass]="{'colorPurple': inputState !== 'visible', 'colorGrey': inputState === 'visible'}">
+            <button type="submit" [disabled]="!selectedValue" [ngClass]="{'colorPurple': selectedValue, 'colorGrey': !selectedValue}">
                 Erstellen
             </button>
         </div>
