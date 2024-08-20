@@ -1,71 +1,106 @@
 @import './../../../../mixins.scss';
 
-.user-profile{
+.user-profile {
     padding: 30px 30px 30px 30px;
     height: 100vh;
     // @include d-flex($dir: column);
-   
+
 }
-.profile-aot{
+
+.profile-aot {
     @include d-flex($jc: space-between);
     margin-bottom: 15px;
-    
-    span{
+
+    span {
         font-weight: bold;
         font-size: 20px;
     }
 
-    img{
+    img {
         width: 30px;
         height: 30px;
         cursor: pointer;
     }
-    
+
 }
 
-.channel-name, 
-.channel-description{
+.channel-name,
+.channel-description {
     padding: 25px;
     border-radius: 20px;
     border: 1px solid #797EF3;
     margin-bottom: 15px;
+    transition: all 0.5s ease-in-out;
 
-    div:first-child{
+    div:first-child {
         @include d-flex($jc: space-between);
-        span{
-            &:first-child{
+
+        span {
+            &:first-child {
                 font-weight: bold;
             }
-            &:last-child{
+
+            &:last-child {
                 color: #444DF2;
                 cursor: pointer;
-                &:hover{
+
+                &:hover {
                     font-weight: bold;
                 }
             }
         }
     }
-    span{
+
+    span {
         margin-bottom: 10px;
     }
 }
 
-.creator{
+.group-rename {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 8px;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+    .save{
+         color: #444DF2;
+         &:hover{
+            font-weight: bold;
+         }
+    }
+    .group-name{
+        font-weight: bold;
+    }
+
+}
+
+.channel-name-edit {
+    padding: 8px 25px;
+    border-radius: 20px;
+    border: 1px solid #797EF3;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+    
+}
+
+.creator {
     @include d-flex($dir: column, $ai: flex-start);
 
-    span{
-        &:first-child{
+    span {
+        &:first-child {
             font-weight: bold;
             margin-bottom: 15px;
         }
-        &:last-child{
+
+        &:last-child {
             color: #444DF2;
             font-size: 20px;
         }
     }
 }
 
-.seperator{
+.seperator {
     border: solid 1px rgba(68, 77, 242, 0.25);
 }
 
@@ -74,17 +109,20 @@
 
 
 ::ng-deep .border-radius .mat-mdc-dialog-container {
-    box-shadow: none !important;/* Removes the box shadow */
+    box-shadow: none !important;
+    /* Removes the box shadow */
     --mdc-dialog-container-shape: 30px;
-  }
+}
 
-.buttons{
+.buttons {
     margin-top: 25px;
     @include d-flex($jc: flex-end);
-    span{
+
+    span {
         color: white;
     }
-    button{
+
+    button {
         cursor: pointer;
         border-radius: 30px;
         @include widthHeight($w: 150px, $h: 33px);
@@ -93,10 +131,11 @@
         outline: none;
         @include d-flex();
 
-        &:hover{
+        &:hover {
             background-color: #797EF3;
         }
-        &:focus{
+
+        &:focus {
             outline: none;
 
         }

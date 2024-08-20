@@ -14,18 +14,23 @@ import { CommonModule } from '@angular/common';
   ],
   templateUrl: './dialog-channel-edit.component.html',
   styleUrls: ['./dialog-channel-edit.component.scss'],
-  
 })
 
 export class DialogChannelEditComponent {
+  edit = true;
 
   imgSrc: string = "assets/img/close_default.png";
 
-  constructor( public dialog: MatDialogRef<DialogChannelEditComponent> ) {    
+  constructor(public dialog: MatDialogRef<DialogChannelEditComponent>) {
   }
 
 
-  closeDialog(){
+  closeDialog() {
     this.dialog.close();
+  }
+
+
+  editOne() {
+    this.edit = !this.edit;
   }
 }
