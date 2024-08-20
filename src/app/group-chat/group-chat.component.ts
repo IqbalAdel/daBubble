@@ -39,7 +39,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     private route: ActivatedRoute,
     public userService: UserService, // Richtiger Service Name
     private dialog: MatDialog, // Verwende nur eine Instanz von MatDialog
-    private fireStoree: FirebaseService,
+    private firebaseService: FirebaseService,
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
   }
@@ -59,7 +59,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
 
   loadMessages(): void {
     if (this.groupId) {
-      this.fireStoree.getChannelsMessages(this.groupId).subscribe(
+      this.firebaseService.getChannelsMessages(this.groupId).subscribe(
         (channelData: { text: string; timestamp: string; time: string; userName: string }[]) => { // Typ für channelData
           if (channelData) {
             this.messages = channelData;
@@ -76,7 +76,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
 
   async loggedInUser() {
     try {
-      const uid = await this.fireStoree.getCurrentUserUid();
+      const uid = await this.firebaseService.getCurrentUserUid();
       if (uid) {
         await this.userService.loadUserById(uid);
         this.user = this.userService.getUser();
@@ -93,7 +93,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   async loadGroupName() {
     try {
       if (this.groupId) {
-        const channelData = await this.fireStoree.getChannelById(this.groupId);
+        const channelData = await this.firebaseService.getChannelById(this.groupId);
         if (channelData) {
           this.groupName = channelData.name || 'Kein Name gefunden';  // Angenommene Struktur der Daten
         } else {

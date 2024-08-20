@@ -70,12 +70,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  getTimeForMessage(timestamp: Date): string {
-    const hours = timestamp.getHours();
-    const minutes = timestamp.getMinutes();
-    return `${hours}:${minutes < 10 ? '0' + minutes : minutes} Uhr`;
-  }
-
   private setupMessageListener(channelId: string): void {
     // Falls ein vorheriger Listener vorhanden ist, aufheben
     if (this.messagesSubscription) {
@@ -137,24 +131,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   sendMessage(messageInput: HTMLTextAreaElement): void {
     const messageText = messageInput.value;
+    // Überprüfen, ob die Nachricht gültig ist
+    if (this.validateMessageInput(messageText)) {
+        const message = this.prepareMessage(messageText);  // Nachricht vorbereiten
 
-    if (messageText.trim() && this.channelId) {
-        console.log('Attempting to send message to channel:', this.channelId);
-
-        const now = new Date();
-        const formattedDate = now.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' });
-        const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        // Nachrichtendaten für Firestore
-        const message = {
-            text: messageText,
-            userName: this.user?.name || 'Unknown User',  // Verwende user.name oder 'Unknown User'
-            userId: this.user?.id,  // Optional: UID des Benutzers, falls verfügbar
-            timestamp: formattedDate,  // Datum speichern
-            time: formattedTime  // Zeit speichern
-        };
-
-        this.fireService.addMessageToFirestore(this.channelId, message).then(() => {
+        this.sendMessageToFirestore(message).then(() => {
             console.log('Message successfully sent and saved in Firestore:', message);
             messageInput.value = '';  // Textarea leeren
         }).catch((error: any) => {
@@ -163,6 +144,33 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     } else {
         console.log('Message is empty or channelId is not set, not sending.');
     }
+}
+
+// 2. Nachricht vorbereiten
+prepareMessage(messageText: string) {
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' });
+    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Nachrichtendaten für Firestore
+    return {
+        text: messageText,
+        userName: this.user?.name || 'Unknown User',  // Verwende user.name oder 'Unknown User'
+        userId: this.user?.id,  // Optional: UID des Benutzers, falls verfügbar
+        timestamp: formattedDate,  // Datum speichern
+        time: formattedTime  // Zeit speichern
+    };
+}
+
+// 3. Nachricht an Firestore senden
+sendMessageToFirestore(message: any): Promise<void> {
+    console.log('Attempting to send message to channel:', this.channelId);
+    return this.fireService.addMessageToFirestore(this.channelId, message);
+}
+
+// 4. Überprüfung der Nachrichteneingabe
+validateMessageInput(messageText: string): boolean {
+    return messageText.trim() !== '' && !!this.channelId;
 }
 
   handleKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
