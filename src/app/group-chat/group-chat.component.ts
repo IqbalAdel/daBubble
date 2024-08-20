@@ -9,6 +9,7 @@ import { DialogChannelAddMembersComponent } from '../dialogs/dialogs-channel/dia
 import { ChatComponent } from '../chat/chat.component';
 import { Observable } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
+import { User } from '../../models/user.class';
 
 @Component({
   selector: 'app-group-chat',
@@ -18,6 +19,7 @@ import { FirebaseService } from '../services/firebase.service';
   styleUrls: ['./group-chat.component.scss'],
 })
 export class GroupChatComponent implements OnInit, AfterViewChecked {
+  user: User | null = null;
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   groupId!: string;
   groupName!: string;
@@ -25,19 +27,21 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   currentDate!: string;
   currentTime!: string;
   displayDate!: string;
-  private storedDate: string = '';
-  messages: { text: string; timestamp: string; time: string }[] = [];
+  userName!: string;
+  loggedInUserName!: string;
+
+  messages: { text: string; timestamp: string; time: string; userName: string }[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
-  groupName$: Observable<string | null> = this.userServes.selectedChannelName$;
+  groupName$: Observable<string | null> = this.userService.selectedChannelName$;
 
   constructor(
     private route: ActivatedRoute,
-    public userServes: UserService, // Richtiger Service Name
+    public userService: UserService, // Richtiger Service Name
     private dialog: MatDialog, // Verwende nur eine Instanz von MatDialog
-    private fireStoree: FirebaseService
+    private fireStoree: FirebaseService,
   ) {
-    this.groupName$ = this.userServes.selectedChannelName$;
+    this.groupName$ = this.userService.selectedChannelName$;
   }
 
   ngOnInit(): void {
@@ -45,6 +49,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       this.groupId = params.get('id') || '';
       this.loadGroupName();
       this.loadMessages();
+      this.loggedInUser();
     });
   }
 
@@ -55,7 +60,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   loadMessages(): void {
     if (this.groupId) {
       this.fireStoree.getChannelsMessages(this.groupId).subscribe(
-        (channelData: { text: string; timestamp: string; time: string }[]) => { // Typ für channelData
+        (channelData: { text: string; timestamp: string; time: string; userName: string }[]) => { // Typ für channelData
           if (channelData) {
             this.messages = channelData;
           } else {
@@ -69,18 +74,21 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-
-  formatMessageDate(timestamp: string): string {
-    const messageDate = new Date(timestamp);
-    const today = new Date();
-
-    // Vergleich des Datums ohne die Zeit
-    if (messageDate.toDateString() === today.toDateString()) {
-      return 'Heute';
-    } else {
-      return timestamp; // Gibt das ursprüngliche Datum zurück, wenn es nicht heute ist
+  async loggedInUser() {
+    try {
+      const uid = await this.fireStoree.getCurrentUserUid();
+      if (uid) {
+        await this.userService.loadUserById(uid);
+        this.user = this.userService.getUser();
+        if (this.user) {
+          this.loggedInUserName = this.user.name; // Setze den Namen des eingeloggten Benutzers
+        }
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
     }
   }
+
 
   async loadGroupName() {
     try {
@@ -98,16 +106,6 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       this.groupName = 'Fehler beim Laden';
     }
   }
-
-
-
-  isToday(date: Date): boolean {
-    const today = new Date();
-    return today.toDateString() === date.toDateString();
-  }
-
-
-
 
   changeImageSmiley(isHover: boolean) {
     this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.png' : 'assets/img/smiley/add_reaction.png';

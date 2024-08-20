@@ -2,13 +2,15 @@ import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@ang
 import { FirebaseService } from '../services/firebase.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { User } from '../../models/user.class';
+import { UserService } from '../services/user.service'; // Sicherstellen, dass der Import korrekt ist
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [],
   templateUrl: './chat.component.html',
-  styleUrl: './chat.component.scss'
+  styleUrls: ['./chat.component.scss']  // styleUrl zu styleUrls geändert, wenn das notwendig ist
 })
 export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
@@ -16,11 +18,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   channelId!: string;
   messages: any[] = [];
   placeholderText: string = 'Nachricht an #Gruppenname';
-
+  user: User | null = null;
   private messagesSubscription: Subscription | null = null;
   private routeSubscription: Subscription | null = null;
+  userService: UserService; // Sicherstellen, dass userService in der Klasse deklariert ist
+  userName!: string;
 
-  constructor(private fireService: FirebaseService, private route: ActivatedRoute) { }
+  constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService) {
+    this.userService = userService; // Initialisiere userService
+  }
 
   ngOnInit(): void {
     // Beobachten Sie Änderungen in den URL-Parametern
@@ -30,6 +36,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.channelId = id;
         this.loadDataBasedOnId(id);
         this.setupMessageListener(id);
+        this.loadCurrentUser(); // Die Methode laden, die den Benutzer lädt
       }
     });
   }
@@ -46,6 +53,21 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     this.scrollToBottom();
+  }
+
+  async loadCurrentUser() { // Methode für das Laden des aktuellen Benutzers
+    try {
+      const uid = await this.fireService.getCurrentUserUid();
+      if (uid) {
+        await this.userService.loadUserById(uid); // Hier userService verwenden
+        this.user = this.userService.getUser(); // Hier userService verwenden
+        if (this.user) {
+          this.userName = this.user.name; // Setze den Benutzernamen, falls erforderlich
+        }
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+    }
   }
 
   getTimeForMessage(timestamp: Date): string {
@@ -115,36 +137,33 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   sendMessage(messageInput: HTMLTextAreaElement): void {
     const messageText = messageInput.value;
-  
+
     if (messageText.trim() && this.channelId) {
-      console.log('Attempting to send message to channel:', this.channelId);
-  
-      const now = new Date();
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-  
-      const messageDate = new Date();
-      messageDate.setHours(0, 0, 0, 0);
-  
-      const timestamp = today.getTime() === messageDate.getTime() ? 'Heute' : now.toLocaleDateString();
-      console.log('Timestamp:', today.getTime() === messageDate.getTime() ? 'Heute' : now.toLocaleDateString());
-  
-      const message = {
-        text: messageText,
-        timestamp: timestamp,  // "Heute" oder das tatsächliche Datum
-        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })  // z.B. "14:30"
-      };
-  
-      this.fireService.addMessageToFirestore(this.channelId, message).then(() => {
-        console.log('Message successfully sent and saved in Firestore:', message);
-        messageInput.value = '';  // Textarea leeren
-      }).catch((error: any) => {
-        console.error('Error sending message to Firestore:', error);
-      });
+        console.log('Attempting to send message to channel:', this.channelId);
+
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' });
+        const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        // Nachrichtendaten für Firestore
+        const message = {
+            text: messageText,
+            userName: this.user?.name || 'Unknown User',  // Verwende user.name oder 'Unknown User'
+            userId: this.user?.id,  // Optional: UID des Benutzers, falls verfügbar
+            timestamp: formattedDate,  // Datum speichern
+            time: formattedTime  // Zeit speichern
+        };
+
+        this.fireService.addMessageToFirestore(this.channelId, message).then(() => {
+            console.log('Message successfully sent and saved in Firestore:', message);
+            messageInput.value = '';  // Textarea leeren
+        }).catch((error: any) => {
+            console.error('Error sending message to Firestore:', error);
+        });
     } else {
-      console.log('Message is empty or channelId is not set, not sending.');
+        console.log('Message is empty or channelId is not set, not sending.');
     }
-  }
+}
 
   handleKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
     if (event.key === 'Enter' && !event.shiftKey) {  // Prüfe, ob Enter gedrückt wurde (ohne Shift für Zeilenumbruch)
