@@ -13,7 +13,7 @@
     (mouseout)="imgSrc = 'assets/img/keyboard_arrow_down_v2.png'" (click)="openDialog()" class="profile">
         <span>{{user?.name}}</span>
         <div class="image">
-            <img src="assets/img/profiles/boy.png" alt="">
+            <img src="{{user?.img}}" alt="">
             <div class="online-status"></div>
         </div>
         <img class="icon" [src]="imgSrc">

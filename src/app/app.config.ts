@@ -4,7 +4,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth } from '@angular/fire/auth'; // Importiere Auth Module
-
+import { provideStorage, getStorage } from '@angular/fire/storage';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -20,6 +20,7 @@ export const appConfig: ApplicationConfig = {
       appId: "1:255571591771:web:030b649a0f5865b2bbf57e"
     })),
     provideAuth(() => getAuth()), // Stelle Auth bereit
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()) 
   ]
 };

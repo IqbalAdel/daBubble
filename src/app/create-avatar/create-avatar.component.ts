@@ -1,23 +1,27 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
-import { LoginComponent } from '../login/login.component';
+import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service';
-import { Firestore, collection, addDoc, setDoc, doc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+
 @Component({
   selector: 'app-create-avatar',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, LoginComponent, CommonModule, HttpClientModule, FormsModule],
+  imports: [RouterOutlet, RouterModule, CommonModule, HttpClientModule, FormsModule],
   templateUrl: './create-avatar.component.html',
-  styleUrl: './create-avatar.component.scss'
+  styleUrls: ['./create-avatar.component.scss']
 })
-export class CreateAvatarComponent {
+export class CreateAvatarComponent implements OnInit {
   user!: User;
   auth: Auth = inject(Auth);
+  firestore: Firestore = inject(Firestore);
+  storage: Storage = inject(Storage);
+
   avatars: string[] = [
     'assets/img/avatar-1.png',
     'assets/img/avatar-2.png',
@@ -26,22 +30,23 @@ export class CreateAvatarComponent {
     'assets/img/avatar-5.png',
     'assets/img/avatar-6.png'
   ];
-  firestore: Firestore = inject(Firestore);
 
   selectedAvatar: string = 'assets/img/person.png';
-  constructor(private http: HttpClient, private router: Router, private userService: UserService) { }
+  selectedFile: File | null = null;
 
-
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.user = this.userService.getUser()!;
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       this.user = navigation.extras.state['user'] as User;
-
       if (this.user) {
         console.log('Benutzerdaten geladen:', this.user);
-        // Optional: Setze das Avatar-Bild, falls das bereits festgelegt wurde
         if (this.user.img) {
           this.selectedAvatar = this.user.img;
         }
@@ -55,28 +60,27 @@ export class CreateAvatarComponent {
     this.selectedAvatar = avatarSrc;
     this.user.img = avatarSrc;
   }
-  selectedFile: File | null = null;
-
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
-
+      this.selectedFile = input.files[0];
+  
       // FileReader verwenden, um die Datei als Data URL zu lesen
       const reader = new FileReader();
       reader.onload = () => {
-        this.selectedAvatar = reader.result as string; // Setze die geladene Data URL als Avatar
+        this.selectedAvatar = reader.result as string;
+        this.user.img = this.selectedAvatar; // Setze das Bild auf das User-Objekt
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(this.selectedFile);
     }
   }
-  isFormValid(): boolean {
-    return this.user.img.trim() !== '';
-  }
 
+  isFormValid(): boolean {
+    return this.user.img.trim() !== '' || this.selectedFile !== null;
+  }
+  
   private cleanUserData(user: any): any {
-    // Stelle sicher, dass keine sensiblen Daten wie Passwörter gespeichert werden
     return {
       name: user.name || '',
       email: user.email || '',
@@ -85,36 +89,37 @@ export class CreateAvatarComponent {
       chats: user.chats || []
     };
   }
- async saveUser() {
-    // Bereinige die Benutzerdaten, um nur die relevanten Informationen zu speichern
+
+  async saveUser() {
     const cleanedUserData = this.cleanUserData(this.user);
 
     try {
-        // Schritt 1: Benutzer in Firebase Authentication erstellen
-        const userCredential = await createUserWithEmailAndPassword(this.auth, this.user.email, this.user.password);
+      const userCredential = await createUserWithEmailAndPassword(this.auth, this.user.email, this.user.password);
 
-        if (userCredential.user) {
-            // Schritt 2: Benutzer-ID (UID) aus Firebase Authentication abrufen
-            const uid = userCredential.user.uid;
+      if (userCredential.user) {
+        const uid = userCredential.user.uid;
+        cleanedUserData.id = uid;
 
-            // Schritt 3: Benutzer-ID zum bereinigten Benutzerobjekt hinzufügen (optional)
-            cleanedUserData.id = uid;
+        if (this.selectedFile) {
+          const filePath = `avatars/${uid}/${this.selectedFile.name}`;
+          const fileRef = ref(this.storage, filePath);
+          await uploadBytes(fileRef, this.selectedFile);
+          
+          const downloadURL = await getDownloadURL(fileRef);
+          cleanedUserData.img = downloadURL;
 
-            // Schritt 4: Benutzer in Firestore unter der UID speichern
-            const docRef = doc(this.firestore, 'users', uid);
-            await setDoc(docRef, cleanedUserData);
+          const docRef = doc(this.firestore, 'users', uid);
+          await setDoc(docRef, cleanedUserData);
 
-            console.log('User added with ID: ', uid);
+          console.log('User added with ID: ', uid);
+        } else {
+          const docRef = doc(this.firestore, 'users', uid);
+          await setDoc(docRef, cleanedUserData);
+          console.log('User added with ID: ', uid);
         }
+      }
     } catch (e) {
-        console.error('Error creating or updating user: ', e);
+      console.error('Error creating or updating user: ', e);
     }
+  }
 }
-
-
-
-}
-
-
-
-
