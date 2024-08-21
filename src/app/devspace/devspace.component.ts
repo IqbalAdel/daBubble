@@ -27,9 +27,9 @@ export class DevspaceComponent {
   users$: Observable<any[]>;
   channels$: Observable<any[]>;
   channelsIqbal: Channel[] = [];
-  user = new User();
+  user: User | null = null;
   selectedChannelId: string | null = null;
-
+  loggedInUserName!: string;
   showFiller = false;
   openEmployees = true;
   openChannels = true;
@@ -59,12 +59,24 @@ export class DevspaceComponent {
     this.loadChannels();
     this.loadUsers();
     this.selectUser;
+    this.loggedInUser();
   }
-
-  loadUserFirestore() {
-
+  async loggedInUser() {
+    try {
+      const uid = await this.firebaseService.getCurrentUserUid();
+      if (uid) {
+        await this.userService.loadUserById(uid);
+        this.user = this.userService.getUser();
+        if (this.user) {
+          this.loggedInUserName = this.user.name; // Setze den Namen des eingeloggten Benutzers
+          
+          
+        }
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+    }
   }
-
 
   devspaceCloseOpen() {
     this.isDavspaceVisible = !this.isDavspaceVisible;

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MatDialogRef } from '@angular/material/dialog';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -10,6 +10,8 @@ import { FirebaseService,  } from '../../../services/firebase.service';
 import { User } from '../../../../models/user.class';
 import { ActivatedRoute } from '@angular/router';
 import { Firestore, collection, doc, updateDoc, arrayUnion, writeBatch } from '@angular/fire/firestore';
+import { ChipsAddMembersComponent } from '../../../chips/chips-add-members/chips-add-members.component';
+import { UserService } from '../../../services/user.service';
 
 
 @Component({
@@ -19,6 +21,7 @@ import { Firestore, collection, doc, updateDoc, arrayUnion, writeBatch } from '@
     CommonModule,
     MatCard,
     FormsModule,
+    ChipsAddMembersComponent,
   ],
   templateUrl: './dialog-channel-create-add-members.component.html',
   styleUrl: './dialog-channel-create-add-members.component.scss',
@@ -36,23 +39,36 @@ import { Firestore, collection, doc, updateDoc, arrayUnion, writeBatch } from '@
     ]),
   ],
 })
-export class DialogChannelCreateAddMembersComponent{
+export class DialogChannelCreateAddMembersComponent implements OnInit{
+
+  @ViewChild(ChipsAddMembersComponent) chipsAddMembersComponent!: ChipsAddMembersComponent;
+
 
   imgSrc: string = "assets/img/close_default.png";
   inputState: string = 'hidden';
-  selectedValue: string = 'option1';
-
-  // public name: string;
-  // public description: string;
-  public channelID: string | null = null;
+  selectedValue: string = '';
   newChannel = new Channel();
 
   allUsers: User[] = [];
+  user: User = {
+    name: 'Frederick Beck',
+    email: 'Test@gmx.de',
+    id: '',
+    img: 'assets/img/profiles/boy.png',
+    password: '',
+    channels: [],
+    chats: [],
+    usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
+      throw new Error('Function not implemented.');
+    }
+  };
+  userId: string = "";
 
 
   constructor(
     public dialog: MatDialogRef<DialogChannelCreateAddMembersComponent>,
     private fire: FirebaseService,
+    private userService: UserService,
     private route: ActivatedRoute,
     @Inject(MAT_DIALOG_DATA) public data: { 
       name: string; 
@@ -77,9 +93,28 @@ export class DialogChannelCreateAddMembersComponent{
           data['chats'] || []
         );
       });
-      console.log(this.allUsers)
     });
   }  
+
+  async ngOnInit(): Promise<void> {
+    try {
+      // UID des aktuell angemeldeten Benutzers abrufen
+      const uid = await this.fire.getCurrentUserUid();
+      if (uid) {
+        // Benutzerdaten anhand der UID laden
+        await this.userService.loadUserById(uid);
+        const user = this.userService.getUser();
+        if(user){
+          this.user = user;
+          this.newChannel.creator = this.user.name; 
+        }
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+    }
+  }
+
+
 
   
 
@@ -93,25 +128,27 @@ export class DialogChannelCreateAddMembersComponent{
       const newChannelId = newChannelRef.id;
 
       console.log('New Channel ID:', newChannelId);
-      const batch = writeBatch(this.fire.getFirestore());
-
-      this.allUsers.forEach(user => {
-        if (user.id) {
-          const userDocRef = this.fire.getUserDocRef(user.id);
-
-          // Add the new channel ID to the user's channels array
-          batch.update(userDocRef, {
-              channels: arrayUnion(newChannelId)
-          });
-      } else {
-          console.warn('User ID is undefined. Skipping update for user:', user);
+      if(this.selectedValue === "option1"){
+        const batch = writeBatch(this.fire.getFirestore());
+        this.allUsers.forEach(user => {
+          if (user.id) {
+            const userDocRef = this.fire.getUserDocRef(user.id);
+  
+            // Add the new channel ID to the user's channels array
+            batch.update(userDocRef, {
+                channels: arrayUnion(newChannelId)
+            });
+        } else {
+            console.warn('User ID is undefined. Skipping update for user:', user);
+        }
+        });
+  
+        // Commit the batch
+        await batch.commit();
+  
+      } else if(this.selectedValue === "option2"){
+        await this.addChannelToUser(newChannelId);
       }
-      });
-
-      // Commit the batch
-      await batch.commit();
-
-      console.log('Channel added and users updated successfully.');
 
   } catch (error) {
       console.error('Failed to add channel:', error);
@@ -123,36 +160,50 @@ export class DialogChannelCreateAddMembersComponent{
     this.dialog.close();
   }
 
-
-
-  animate() {
-    this.inputState = 'visible';
-    
-  }
-
-  reverseAnimate() {
-    this.inputState = 'hidden';  
-  }
-
     onRadioChange(value: string) {
       this.selectedValue = value;
       if (this.selectedValue === 'option1') {
-        this.reverseAnimate()
       } else if (this.selectedValue === 'option2') {
-        this.animate();
       }
     }
   
     onSubmit(): void {
       if (this.selectedValue === "option1") {
-        console.log('Selected Option:', this.selectedValue);
-        const userID = this.allUsers
+        const userIDs = this.allUsers
         .map(user => user.id)
         .filter((id): id is string => id !== undefined);
-        console.log(userID)
+        console.log(userIDs)
         
-        this.newChannel.users?.push(...userID);
+        this.newChannel.users?.push(...userIDs);
+        this.onAddChannel();
+      } else if(this.selectedValue === 'option2'){
+        const users: User[] = this.chipsAddMembersComponent.users();
+        if (users.length > 0) {
+          const selectedUser = users[0]; // Access the first user
+          if(selectedUser.id){
+            this.userId = selectedUser.id; // Access the ID property
+          }
+        }
+        
+        this.newChannel.users?.push(this.userId);
         this.onAddChannel();
       }
+      this.closeDialog()
+
     }
+
+    async addChannelToUser(newChannelId: string){
+      if (this.userId.length>0 && newChannelId.length>0) {
+        try {
+          await this.fire.updateUserChannels(this.userId, newChannelId);
+        } catch (error) {
+          console.error('Failed to update user channels:', error);
+        }
+      } else {
+        console.error('No user selected or user ID is missing.');
+      }
+    }
+
+
+
 }

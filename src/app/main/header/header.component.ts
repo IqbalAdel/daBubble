@@ -15,6 +15,7 @@ import { Channel } from '../../../models/channel.class';
 import {MatSelectModule} from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { UserService } from '../../services/user.service';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference, arrayUnion, writeBatch, DocumentReference } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-header',
@@ -34,13 +35,19 @@ import { UserService } from '../../services/user.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
-export class HeaderComponent {
-  user: User | null = null;
-  foods = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
-  ];
+export class HeaderComponent implements OnInit{
+  user: User = {
+    name: '',
+    email: 'Test@gmx.de',
+    id: '',
+    img: '',
+    password: '',
+    channels: [],
+    chats: [],
+    usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
+      throw new Error('Function not implemented.');
+    }
+  };
 
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
   users: User[] = [];
@@ -51,38 +58,35 @@ export class HeaderComponent {
     private firebaseService: FirebaseService,
     private userService: UserService
   ) {    
-
-    // const fireUsers = fire.getUsers();
-    // this.users = fireUsers.subscribe((list) => {
-    //   list.forEach(element => {
-    //     console.log(element)
-    //   });
-    // })
-    
-    // this.fire.getUsers().subscribe((list) => {
-    //   this.users = list.map(element => {
-    //     const data = element;
-    //     return new User(
-    //       data['name'] || '',
-    //       data['email'] || '',
-    //       data['id'] || '', // Falls `id` ein optionales Feld ist
-    //       data['img'] || '',
-    //       data['password'] || '',
-    //       data['channels'] || [],
-    //       data['chats'] || []
-    //     );
-    //   });
-    //   console.log(this.users)
-    // });  
+ 
   }
   async ngOnInit(): Promise<void> {
+    await this.getActiveUser();
+
+    const usersCollection = this.firebaseService.getUsersRef();
+
+    const userSub = onSnapshot(usersCollection, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "modified") {
+          let changedUser = change.doc.data();
+          this.user.name = changedUser['name'];
+        }
+
+      });
+    });
+  }
+
+  async getActiveUser(){
     try {
       // UID des aktuell angemeldeten Benutzers abrufen
       const uid = await this.firebaseService.getCurrentUserUid();
       if (uid) {
         // Benutzerdaten anhand der UID laden
         await this.userService.loadUserById(uid);
-        this.user = this.userService.getUser();
+        const user = this.userService.getUser();
+        if(user){
+          this.user = user;
+        }
       }
     } catch (error) {
       console.error('Fehler beim Abrufen der Benutzerdaten:', error);

@@ -8,6 +8,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { User } from '../../models/user.class';
 import { ChatComponent } from '../chat/chat.component';
 import { HttpClientModule } from '@angular/common/http';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-solo-chat',
@@ -18,10 +19,13 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class SoloChatComponent implements OnInit {
   user$: Observable<User | undefined> = of(undefined);
+  user: User | null = null;
+  loggedInUserName!: string;
 
   constructor(
     private firestore: Firestore,
-    private userService: UserService
+    private userService: UserService,
+    private firebaseService: FirebaseService
   ) { }
 
   ngOnInit(): void {
@@ -44,6 +48,23 @@ export class SoloChatComponent implements OnInit {
         return of(undefined);
       })
     );
+    this.loggedInUser();
+  }
+
+  async loggedInUser() {
+    try {
+      const uid = await this.firebaseService.getCurrentUserUid();
+      if (uid) {
+        await this.userService.loadUserById(uid);
+        this.user = this.userService.getUser();
+        if (this.user) {
+          this.loggedInUserName = this.user.name; // Setze den Namen des eingeloggten Benutzers
+          console.log('eingeloogter User' , uid);
+        }
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+    }
   }
 
   loadUserData(userId: string | null): Observable<User | undefined> {

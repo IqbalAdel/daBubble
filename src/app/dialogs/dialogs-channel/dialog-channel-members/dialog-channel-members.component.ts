@@ -55,10 +55,12 @@ export class DialogChannelMembersComponent{
         })
 
         Promise.all(userPromises).then(users => {
-          this.allUsers = users.filter(user => user !== null) as User[]
+          this.allUsers = users.filter(user => user !== null) as User[];
+        }).catch(error => {
+          console.error('error fetching users', error)
         })
-    
-        console.log(this.allUsers);
+        // console.log(this.allUsers);
+        
       } else {
         console.error('No users found in this channel or channel not found.');
       }
@@ -77,6 +79,11 @@ export class DialogChannelMembersComponent{
       width: '400px',
       height: '200px',
       position: {top: '200px', right: '50px'},
+      data: {
+        channelID: this.channelID,
+      },
+      autoFocus: false,
+
 
     });
   }

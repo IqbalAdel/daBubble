@@ -102,6 +102,23 @@ export class FirebaseService {
       throw new Error('User document does not exist.');
     }
   }
+  async updateUserData(userID: string, newName?: string, newMail?:string) {
+    const userDoc = await getDoc(this.getUserDocRef(userID));
+    if (userDoc.exists()) {
+      let email:string = "";
+      let name:string = "";
+      if (newName && newName.length > 0) {
+        name = newName;
+        await updateDoc(this.getUserDocRef(userID), { name });
+      }
+      if (newMail && newMail.length > 0) {
+        email = newMail;
+        await updateDoc(this.getUserDocRef(userID), { email });
+      }
+    } else {
+      throw new Error('User document does not exist.');
+    }
+  }
 
   async updateChannelUserList(userID: string, channelId: string) {
     const channelDoc = await getDoc(this.getChannelDocRef(channelId));

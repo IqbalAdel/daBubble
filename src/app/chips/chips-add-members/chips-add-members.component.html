@@ -23,7 +23,7 @@
           [disabled]="inputDisabled"
           [placeholder]="shouldShowPlaceholder() ? 'Namen eingeben' : ''"
         />
-        <mat-autocomplete  #auto="matAutocomplete" (optionSelected)="selected($event)">
+        <mat-autocomplete class="scroll"  #auto="matAutocomplete" (optionSelected)="selected($event)">
           @for (user of filteredUsers(); track user) {
             <mat-option [value]="user.name">{{user.name}}</mat-option>
           }

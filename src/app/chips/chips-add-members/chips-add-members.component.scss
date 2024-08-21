@@ -68,6 +68,15 @@ mat-icon{
     border-radius: 0px 20px 20px 20px !important;
 }
 
+::ng-deep .mat-mdc-autocomplete-panel::-webkit-scrollbar{
+    scrollbar-width: none; 
+    -ms-overflow-style: none;  
+    width: 0px;  
+    background: transparent;  
+}
+
+
+
 mat-option{
     margin-left: 15px;
     margin-right: 15px;

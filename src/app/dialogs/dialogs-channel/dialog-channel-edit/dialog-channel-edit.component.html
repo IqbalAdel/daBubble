@@ -6,16 +6,24 @@
         (mouseout)="imgSrc = 'assets/img/close_default.png'" 
         alt="">
     </div>
-    <div class="channel-name">
+    <div class="channel-name" *ngIf="edit" [@borderGrow]>
         <div>
             <span>Channel Name</span>
-            <span>Bearbeiten</span>
+            <span (click)="editOne()">Bearbeiten</span>
         </div>
         <span># Entwicklerteam</span>
     </div>
-    <div [@inputAppear]="inputState">
-        <input type="text" placeholder="Enter text" *ngIf="inputState === 'visible'" />
-      </div>
+    <div  *ngIf="!edit" [@borderGrow]>
+        <div class="group-rename">
+            <span class="group-name">Channel Name</span>
+            <span (click)="editOne()" class="save">Speichern</span>
+        </div>
+        <div class="channel-name-edit">
+            <span># Entwicklerteam</span>
+        </div>
+    </div>
+    
+    
     <div class="channel-description">
         <div>
             <span>Beschreibung</span>
@@ -29,7 +37,6 @@
         </div>
     </div>
 
-    <button (click)="animate()">Animate</button>
 
 
     <!-- <div class="inputs">

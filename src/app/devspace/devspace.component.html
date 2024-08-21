@@ -5,26 +5,21 @@
                 <img src="assets/Workspace.png" alt="">
                 <h1>Devspace</h1>
             </div>
-
             <div class="icon">
                 <img src="assets/edit_square.svg" alt="">
             </div>
-
         </div>
         <div class="channels">
             <div class="channel-group" (click)="closeChannels()">
                 <img [src]="openChannels ? 'assets/arrow_drop_down.png' : 'assets/arrow_drop_down-right.png'" alt="">
 
                 <div class="channels-block">
-
                     <h2>Channels</h2>
                 </div>
             </div>
-
             <div (click)="openDialog()" class="add">
                 <img src="assets/img/add.png" alt="">
             </div>
-
         </div>
 
         <ng-container *ngIf="openChannels">
@@ -52,7 +47,7 @@
                 [ngClass]="{'selected': user.id === selectedUserId}">
                 <img [src]="user.img" alt="">
                 <img class="online-offline" src="assets/img/Online.png" alt="">
-                {{ user.name }}
+                {{ user.name }}<span *ngIf="user.name === loggedInUserName">(Du)</span>
             </div>
         </div>
 
@@ -69,7 +64,6 @@
         <div class="image-open">
             Workspace-Menü öffnen
             <img [src]="imgSrc[0]" alt="Öffnen">
-
         </div>
     </button>
 </section>
