@@ -124,6 +124,9 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       panelClass: 'border-30',
       width: '700px',
       height: '400px',
+      data: {
+        channelID: this.groupId,
+      }
     });
   }
 

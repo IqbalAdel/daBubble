@@ -8,7 +8,7 @@
     </div>
     <div class="avatar">
         <img 
-        src="assets/img/profiles/boy.png" alt="">
+        src="{{user.img}}" alt="">
     </div>
     <div class="email">
         <img src="assets/img/account_circle_default.png" alt="">
@@ -16,16 +16,16 @@
             <span>Vollständiger Name</span>
         </div>
     </div>
-    <input placeholder="Frederick Beck" type="text">
+    <input [(ngModel)]="name" placeholder="{{user.name}}" type="text">
     <div class="email">
         <img src="assets/img/mail-profile.png" alt="">
         <div>
             <span>E-Mail-Adresse</span>
         </div>
     </div>
-    <input placeholder="fred-beck@emailc.com" type="text">
+    <input [(ngModel)]="email" placeholder="{{user.email}}" type="text">
     <div class="buttons">
         <button (click)="closeDialog()">Abbrechen</button>
-        <button>Speichern</button>
+        <button (click)="saveData()">Speichern</button>
     </div>
 </mat-card>

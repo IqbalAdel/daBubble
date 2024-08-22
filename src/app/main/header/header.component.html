@@ -11,9 +11,9 @@
       </div>
     <div (mouseover)="imgSrc = 'assets/img/keyboard_arrow_down_v3.png'"
     (mouseout)="imgSrc = 'assets/img/keyboard_arrow_down_v2.png'" (click)="openDialog()" class="profile">
-        <span>{{user.name}}</span>
+        <span>{{user?.name}}</span>
         <div class="image">
-            <img src="{{user.img}}" alt="">
+            <img src="{{user?.img}}" alt="">
             <div class="online-status"></div>
         </div>
         <img class="icon" [src]="imgSrc">

@@ -15,6 +15,7 @@ import { Channel } from '../../../models/channel.class';
 import {MatSelectModule} from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { UserService } from '../../services/user.service';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference, arrayUnion, writeBatch, DocumentReference } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-header',
@@ -36,10 +37,10 @@ import { UserService } from '../../services/user.service';
 })
 export class HeaderComponent implements OnInit{
   user: User = {
-    name: 'Frederick Beck',
+    name: '',
     email: 'Test@gmx.de',
     id: '',
-    img: 'assets/img/profiles/boy.png',
+    img: '',
     password: '',
     channels: [],
     chats: [],
@@ -57,31 +58,25 @@ export class HeaderComponent implements OnInit{
     private firebaseService: FirebaseService,
     private userService: UserService
   ) {    
-
-    // const fireUsers = fire.getUsers();
-    // this.users = fireUsers.subscribe((list) => {
-    //   list.forEach(element => {
-    //     console.log(element)
-    //   });
-    // })
-    
-    // this.fire.getUsers().subscribe((list) => {
-    //   this.users = list.map(element => {
-    //     const data = element;
-    //     return new User(
-    //       data['name'] || '',
-    //       data['email'] || '',
-    //       data['id'] || '', // Falls `id` ein optionales Feld ist
-    //       data['img'] || '',
-    //       data['password'] || '',
-    //       data['channels'] || [],
-    //       data['chats'] || []
-    //     );
-    //   });
-    //   console.log(this.users)
-    // });  
+ 
   }
   async ngOnInit(): Promise<void> {
+    await this.getActiveUser();
+
+    const usersCollection = this.firebaseService.getUsersRef();
+
+    const userSub = onSnapshot(usersCollection, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "modified") {
+          let changedUser = change.doc.data();
+          this.user.name = changedUser['name'];
+        }
+
+      });
+    });
+  }
+
+  async getActiveUser(){
     try {
       // UID des aktuell angemeldeten Benutzers abrufen
       const uid = await this.firebaseService.getCurrentUserUid();

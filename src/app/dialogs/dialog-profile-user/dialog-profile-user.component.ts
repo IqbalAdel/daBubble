@@ -42,6 +42,7 @@ export class DialogProfileUserComponent implements OnInit{
   }
 
   openDialog(){
+    this.dialog.close();
     let dialogRef = this.dialogUserEdit.open(DialogProfileUserEditComponent, {
       backdropClass: 'custom-backdrop',
       panelClass: 'border-radius',
