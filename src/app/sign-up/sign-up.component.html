@@ -4,22 +4,76 @@
     </button>
     <h1>Konto erstellen</h1>
     <h2>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</h2>
-    <div class="input-container">
-        <img class="icon" src="assets/img/person_filled.png" alt="">
-        <input [(ngModel)]="user.name" type="text" placeholder="Name und Nachname">
-    </div>
-    <div class="input-container">
-        <img class="icon" src="assets/img/mail.png" alt="">
-        <input [(ngModel)]="user.email" type="email" placeholder="beispielname@email.com">
-    </div>
-    <div class="input-container">
-        <img class="icon" src="assets/img/lock.png" alt="">
-        <input [(ngModel)]="user.password" type="text" placeholder="Passwort">
-    </div>
-
-    <div class="checkbox-container">
-        <input [(ngModel)]="isPrivacyChecked" type="checkbox" id="checkbox">
-        <label for="checkbox">Ich stimme der <span class="apolicy">Datenschutzerklärung</span> zu.</label>
-    </div>
-    <button [disabled]="!isFormValid()" (click)="onSubmit()" [routerLink]="['/create-avatar']" class="button">Weiter</button>
+    <form #signUpForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="input-container">
+          <img class="icon" src="assets/img/person_filled.png" alt="">
+          <input
+            [(ngModel)]="user.name"
+            name="name"
+            #nameInput="ngModel"
+            type="text"
+            placeholder="Name und Nachname"
+            minlength="6"
+            required
+          />
+         
+        </div>
+        <div *ngIf="nameInput.invalid &&  nameInput.touched" class="error-message">
+            Name muss mindestens 6 Zeichen lang sein.
+          </div>
+        <div class="input-container">
+          <img class="icon" src="assets/img/mail.png" alt="">
+          <input
+            [(ngModel)]="user.email"
+            name="email"               
+            type="email"
+            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            placeholder="beispielname@email.com"
+            required
+            #emailInput="ngModel"
+          />
+        </div>
+        <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
+            Bitte eine gültige E-Mail-Adresse eingeben.
+          </div>
+        <div class="input-container">
+          <img class="icon" src="assets/img/lock.png" alt="">
+          <input
+            [(ngModel)]="user.password"
+            name="password"            
+            type="password"
+            minlength="8"
+            placeholder="Passwort"
+            required
+            #passwordInput="ngModel"
+          />
+         
+        </div>
+        <div *ngIf="passwordInput.invalid &&  passwordInput.touched" class="error-message">
+            Passwort muss mindestens 8 Zeichen lang sein.
+          </div>
+        <div class="checkbox-container">
+          <input
+            [(ngModel)]="isPrivacyChecked"
+            name="privacy"
+            type="checkbox"
+            id="checkbox"
+            required
+            #privacyInput="ngModel"
+          />
+          <label for="checkbox">Ich stimme der <span class="apolicy">Datenschutzerklärung</span> zu.</label>
+          <div *ngIf="privacyInput.invalid && (privacyInput.dirty || privacyInput.touched)" class="error-message">
+            Sie müssen der Datenschutzerklärung zustimmen.
+          </div>
+        </div>
+      
+        <button
+          type="submit"
+          [disabled]="!isFormValid()"
+          class="button"
+        >
+          Weiter
+        </button>
+      </form>
+      
 </div>

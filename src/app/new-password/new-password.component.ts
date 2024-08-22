@@ -31,7 +31,6 @@ export class NewPasswordComponent implements OnInit {
 
 
     resetPassword() {
-      debugger;
       if (this.newPassword === this.confirmPassword && this.oobCode) {
         this.authService.newPassword(this.oobCode, this.newPassword)
           .then(() => {
