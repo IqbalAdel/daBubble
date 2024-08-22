@@ -48,7 +48,19 @@ export class DevspaceComponent {
   ) {
     const fireUsers = collection(this.firestore, 'users');
     this.users$ = collectionData(fireUsers).pipe(
-      map(users => users.sort((a, b) => a['name'].localeCompare(b['name'])))
+      map(users => {
+        // Der aktuell eingeloggte Benutzername (Beispiel: aus einer anderen Quelle)
+        const loggedInUserName = this.loggedInUserName;
+    
+        // Sortiere so, dass der eingeloggte Benutzer oben steht und die anderen alphabetisch sortiert werden
+        return users.sort((a, b) => {
+          if (a['name'] === loggedInUserName) return -1; // Zeigt den eingeloggten User als ersten an
+          if (b['name'] === loggedInUserName) return 1;
+          
+          // Fallunabhängige alphabetische Sortierung der restlichen Benutzer
+          return a['name'].toLowerCase().localeCompare(b['name'].toLowerCase());
+        });
+      })
     );
 
     const fireChannels = collection(this.firestore, 'channels');

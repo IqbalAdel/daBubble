@@ -11,8 +11,8 @@
 
   <div class="line"></div>
 
-  <div class="center">
-    <div class="solo-chat">
+  <div class="center" #scrollContainer>
+    <div class="solo-chat"> 
       <ng-container *ngIf="user$ | async as user">
         <img [src]="user.img" alt="">
         <div class="solo-name">
@@ -41,7 +41,7 @@
       </ng-template>
     </ng-container>
 
-    <div *ngFor="let chat of chats">
+    <div *ngFor="let chat of chats" >
       <div class="line-date">
         <div class="line-two"></div>
         <span class="date">{{chat.timestamp }}</span>

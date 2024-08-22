@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Firestore, collection, doc, getDoc, getDocs } from '@angular/fire/firestore';
+import { AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Firestore, collection, doc, getDoc, getDocs, onSnapshot } from '@angular/fire/firestore'; // onSnapshot hinzufügen
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../services/user.service';
@@ -10,13 +10,13 @@ import { ChatComponent } from '../chat/chat.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FirebaseService } from '../services/firebase.service';
 
-
 interface Chat {
   text: string;
   timestamp: string;
   time: string;
   userName: string;
 }
+
 
 @Component({
   selector: 'app-solo-chat',
@@ -25,13 +25,15 @@ interface Chat {
   templateUrl: './solo-chat.component.html',
   styleUrls: ['./solo-chat.component.scss']
 })
-export class SoloChatComponent implements OnInit, OnDestroy {
+export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   user$: Observable<User | undefined> = of(undefined);
   user: User | null = null;
   loggedInUserName!: string;
   userName!: string;
   chats: { text: string; timestamp: string; time: string; userName: string }[] = [];
   private chatsSubscription: Subscription | null = null;
+  private chatListenerUnsubscribe: (() => void) | null = null; // Variable für Echtzeit-Listener
 
   constructor(
     private firestore: Firestore,
@@ -46,7 +48,7 @@ export class SoloChatComponent implements OnInit, OnDestroy {
           return this.loadUserData(userId).pipe(
             switchMap(user => {
               if (user) {
-                this.loadChats(user.id); // Lädt die Chats für den Benutzer
+                this.listenToChats(user.id); // Auf Echtzeit-Updates hören
                 return of(user);
               } else {
                 return this.loadDefaultUser();
@@ -59,7 +61,7 @@ export class SoloChatComponent implements OnInit, OnDestroy {
             return this.loadUserData(lastSelectedUserId).pipe(
               switchMap(user => {
                 if (user) {
-                  this.loadChats(user.id); // Lädt die Chats für den Benutzer
+                  this.listenToChats(user.id); // Auf Echtzeit-Updates hören
                   return of(user);
                 } else {
                   return this.loadDefaultUser();
@@ -83,6 +85,14 @@ export class SoloChatComponent implements OnInit, OnDestroy {
     if (this.chatsSubscription) {
       this.chatsSubscription.unsubscribe();
     }
+
+    if (this.chatListenerUnsubscribe) {
+      this.chatListenerUnsubscribe(); // Listener entfernen, wenn die Komponente zerstört wird
+    }
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
   }
 
   async loggedInUser() {
@@ -155,36 +165,33 @@ export class SoloChatComponent implements OnInit, OnDestroy {
     );
   }
 
-  async getChatsForUser(userId: string): Promise<Chat[]> {
-    try {
-      const userDocRef = doc(this.firestore, `users/${userId}`);
-      const userDoc = await getDoc(userDocRef);
-  
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
+  // Echtzeit-Listener für die Chats eines Benutzers
+  listenToChats(userId: string): void {
+    const userDocRef = doc(this.firestore, `users/${userId}`);
+
+    this.chatListenerUnsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const userData = docSnapshot.data();
         const chats = userData?.['chats'] as Chat[] || [];
-        return chats;
+        this.chats = chats.map(chat => ({
+          text: chat.text || '',
+          timestamp: chat.timestamp || '',
+          time: chat.time || '',
+          userName: chat.userName || ''
+        }));
       } else {
         console.error('User document does not exist:', userId);
-        return [];
       }
-    } catch (error) {
-      console.error('Error getting chats for user:', error);
-      return [];
-    }
+    }, (error) => {
+      console.error('Error listening to chats:', error);
+    });
   }
 
-  async loadChats(userId: string): Promise<void> {
+  private scrollToBottom(): void {
     try {
-      const chats = await this.getChatsForUser(userId);
-      this.chats = chats.map(chat => ({
-        text: chat.text || '',
-        timestamp: chat.timestamp || '',
-        time: chat.time || '',
-        userName: chat.userName || ''
-      }));
-    } catch (error) {
-      console.error('Error loading chats:', error);
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error('Scroll error:', err);
     }
   }
 }

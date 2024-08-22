@@ -21,20 +21,28 @@
         padding: 20px 20px 0px 30px;
 
         .name {
-            display: inline-flex; /* Verhindert, dass die Klasse die gesamte Breite einnimmt */
+            display: inline-flex;
+            /* Verhindert, dass die Klasse die gesamte Breite einnimmt */
             align-items: center;
             gap: 10px;
             padding: 5px 10px;
             cursor: pointer;
-            
-            &:hover{
+
+            &:hover {
                 background-color: rgba(236, 238, 254, 1);
                 border-radius: 50px;
-                
+
             }
 
             h2 {
                 margin: 0;
+            }
+
+            img {
+                height: 65px;
+                width: 65px;
+                border-radius: 50px;
+                object-fit: cover;
             }
         }
     }
@@ -46,8 +54,9 @@
         display: flex;
         flex-direction: column;
         // justify-content: flex-end;
-        box-sizing: border-box;   
+        box-sizing: border-box;
         overflow-y: auto;
+
         &::-webkit-scrollbar {
             width: 4px;
         }
@@ -67,41 +76,53 @@
 
     .solo-chat {
         margin: 0;
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+
+        img {
+            height: 65px;
+            width: 65px;
+            border-radius: 50px;
+            object-fit: cover;
+        }
 
         .solo-name {
             margin: 0;
             display: flex;
             align-items: flex-end;
             cursor: pointer;
-            
-            h2{
+
+            h2 {
                 margin: 0;
                 font-size: 24px;
                 font-weight: 700;
-                &:hover{
+
+                &:hover {
                     color: blue;
                 }
             }
         }
+
     }
 
-    b{
+    b {
         color: blue;
         cursor: pointer;
         font-weight: 400;
         font-size: 20px;
-        &:hover{
+
+        &:hover {
             font-weight: 700;
 
         }
     }
-    .chat{
+
+    .chat {
         margin-top: 20px;
-        p{
-            b{
+
+        p {
+            b {
                 color: black;
                 font-weight: 700;
             }
@@ -109,13 +130,20 @@
     }
 }
 
-.nachrichten{
+.nachrichten {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 20px;
     cursor: pointer;
-    span{
+
+    img {
+        height: 65px;
+        width: 65px;
+        border-radius: 50px;
+    }
+
+    span {
         background-color: rgba(236, 238, 254, 1);
         padding: 10px;
         width: 100%;
@@ -123,18 +151,22 @@
         border-bottom-right-radius: 50px;
         border-bottom-left-radius: 50px;
     }
-    &:hover{
+
+    &:hover {
         background-color: rgba(236, 238, 254, 1);
-        span{
+
+        span {
             background-color: white;
         }
     }
 }
-.nameAndTime{
+
+.nameAndTime {
     display: flex;
     gap: 30px;
 }
-.solo-chat-completely{
+
+.solo-chat-completely {
     display: flex;
     flex-direction: column;
     gap: 10px;

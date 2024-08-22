@@ -82,6 +82,7 @@
             margin-right: 30px;
             font-size: 20px;
 
+
             .invite-people {
                 background-color: rgba(236, 238, 254, 1);
                 border-radius: 50%;
@@ -101,6 +102,7 @@
                     border-radius: 100%;
                     margin-left: -25px;
                     background-color: white;
+                    padding: 3px;
                 }
 
                 &:hover {
@@ -141,6 +143,12 @@
         align-items: center;
         font-size: 20px;
         gap: 10px;
+
+        img {
+            height: 65px;
+            width: 65px;
+            border-radius: 50px;
+        }
     }
 
     .line-date {

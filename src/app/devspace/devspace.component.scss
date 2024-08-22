@@ -215,6 +215,8 @@ button {
         border-radius: 50px;
         position: relative;
         margin-left: 30px;
+        flex-direction: row;
+        padding: 3px 20px;
 
         &:hover {
             background-color: rgba(236, 238, 254, 1);
@@ -223,7 +225,9 @@ button {
         .online-offline {
             position: absolute;
             bottom: 5px;
-            left: 70px;
+            left: 65px;
+            height: 15px;
+            width: 15px;
         }
 
         &.selected {
@@ -231,12 +235,16 @@ button {
             color: blue; // Optional: Textfarbe für bessere Lesbarkeit
             font-weight: 600;
         }
+        img{
+            height: 60px;
+            width: 60px;
+            object-fit: cover;
+        }
 
     }
 
     .solo-employees {
-        flex-direction: row;
-        padding: 3px 20px;
+        
     }
 
     img {
