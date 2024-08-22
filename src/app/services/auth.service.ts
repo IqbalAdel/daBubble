@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, UserCredential } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
-import { sendPasswordResetEmail } from 'firebase/auth';
+import { sendPasswordResetEmail, confirmPasswordReset } from 'firebase/auth';
 import { ActionCodeSettings } from '@firebase/auth';
+import { sendPasswordResetEmail as firebaseSendPasswordResetEmail, confirmPasswordReset as firebaseConfirmPasswordReset } from 'firebase/auth';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,23 +15,35 @@ export class AuthService {
 
   constructor() {}
 
+// Methode umbenennen oder sicherstellen, dass sie korrekt funktioniert
+newPassword(oobCode: string, newPassword: string): Promise<void> {
+  return firebaseConfirmPasswordReset(this.auth, oobCode, newPassword)
+    .then(() => {
+      console.log('Password has been reset.');
+    })
+    .catch((error) => {
+      console.error('Error resetting password:', error);
+      throw error;
+    });
+}
+
+ 
  
   resetPassword(email: string): Promise<void> {
     const actionCodeSettings: ActionCodeSettings = {
-      // URL, zu der der Benutzer weitergeleitet wird, nachdem er auf den Link in der E-Mail geklickt hat
-      url: 'https://da-bubble.artur-marbach.de', // Ersetze dies durch deine URL
-      handleCodeInApp: true, // Diese Option gibt an, dass die E-Mail in deiner App behandelt werden soll
+      url: 'http://localhost:4200/', // Die URL, zu der der Benutzer nach dem Zurücksetzen des Passworts weitergeleitet wird
+      handleCodeInApp: true,
     };
 
-    return sendPasswordResetEmail(this.auth, email, actionCodeSettings)
+    return firebaseSendPasswordResetEmail(this.auth, email, actionCodeSettings)
       .then(() => {
         console.log('Password reset email sent.');
       })
       .catch((error) => {
         console.error('Error sending password reset email:', error);
+        throw error;
       });
   }
-
   async signUp(email: string, password: string, userData: any): Promise<UserCredential | null> {
     try {
       // Benutzer in Firebase Authentication erstellen
