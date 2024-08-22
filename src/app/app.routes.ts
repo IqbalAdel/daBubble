@@ -21,7 +21,8 @@ export const routes: Routes = [
       { path: 'sign-up', component: SignUpComponent },
       { path: 'create-avatar', component: CreateAvatarComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
-      { path: 'new-password', component: NewPasswordComponent }
+      { path: 'new-password', component: NewPasswordComponent },
+      { path: 'login', component: LoginSectionComponent },
     ] 
   },
   // { 

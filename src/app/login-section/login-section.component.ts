@@ -46,5 +46,27 @@ export class LoginSectionComponent {
     }
   }
 
+  signInWithGoogle() {
+    this.authService.googleSignIn()
+      .then(() => {
+        console.log('Successfully signed in with Google and user data stored in Firestore');
+        // Optional: Weiterleitung oder andere Aktionen
+        this.router.navigate(['/main']);
+      })
+      .catch((error) => {
+        console.error('Google Sign-In failed:', error);
+      });
+  }
+
+  signOut() {
+    this.authService.googleSignOut()
+      .then(() => {
+        console.log('Successfully signed out');
+      })
+      .catch((error) => {
+        console.error('Sign-Out failed:', error);
+      });
+  }
+
 }
 

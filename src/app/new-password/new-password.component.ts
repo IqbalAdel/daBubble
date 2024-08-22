@@ -36,7 +36,7 @@ export class NewPasswordComponent implements OnInit {
           .then(() => {
             this.message = 'Passwort erfolgreich zurückgesetzt.';
             console.log('passwort neu gespeichert')
-            this.router.navigate(['/login']); // Weiterleitung zur Login-Seite nach erfolgreichem Zurücksetzen
+            this.router.navigate(['login']); // Weiterleitung zur Login-Seite nach erfolgreichem Zurücksetzen
           })
           .catch(error => {
             this.message = `Fehler beim Zurücksetzen des Passworts: ${error.message}`;
