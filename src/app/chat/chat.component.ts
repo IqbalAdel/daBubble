@@ -37,6 +37,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.loadDataBasedOnId(id);
         this.setupMessageListener(id);
         this.loadCurrentUser(); // Die Methode laden, die den Benutzer lädt
+        this.getUserIdFromUrl();
       }
     });
   }
@@ -131,47 +132,54 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   sendMessage(messageInput: HTMLTextAreaElement): void {
     const messageText = messageInput.value;
-    // Überprüfen, ob die Nachricht gültig ist
     if (this.validateMessageInput(messageText)) {
-        const message = this.prepareMessage(messageText);  // Nachricht vorbereiten
+      const message = this.prepareMessage(messageText);  // Nachricht vorbereiten
+      const userId = this.getUserIdFromUrl();  // Holen der User ID aus der URL
 
-        this.sendMessageToFirestore(message).then(() => {
-            console.log('Message successfully sent and saved in Firestore:', message);
-            messageInput.value = '';  // Textarea leeren
-        }).catch((error: any) => {
-            console.error('Error sending message to Firestore:', error);
+      // Nachricht sowohl an die Kanäle als auch an die Chats des Benutzers senden
+      Promise.all([
+        this.sendMessageToChannelFirestore(message), // Nachricht in den Channel einfügen
+        this.addMessageToUserChats(userId, message)  // Nachricht in den User Chats hinzufügen
+      ])
+        .then(() => {
+          console.log('Message successfully sent and saved in Firestore:', message);
+          messageInput.value = '';  // Textarea leeren
+          this.scrollToBottom();    // Nach unten scrollen, wenn eine Nachricht erfolgreich gesendet wurde
+        })
+        .catch((error: any) => {
+          console.error('Error sending message to Firestore:', error);
         });
     } else {
-        console.log('Message is empty or channelId is not set, not sending.');
+      console.log('Message is empty or channelId is not set, not sending.');
     }
-}
+  }
 
-// 2. Nachricht vorbereiten
-prepareMessage(messageText: string) {
+  // 2. Nachricht vorbereiten
+  prepareMessage(messageText: string) {
     const now = new Date();
     const formattedDate = now.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' });
     const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // Nachrichtendaten für Firestore
     return {
-        text: messageText,
-        userName: this.user?.name || 'Unknown User',  // Verwende user.name oder 'Unknown User'
-        userId: this.user?.id,  // Optional: UID des Benutzers, falls verfügbar
-        timestamp: formattedDate,  // Datum speichern
-        time: formattedTime  // Zeit speichern
+      text: messageText,
+      userName: this.user?.name || 'Unknown User',  // Verwende user.name oder 'Unknown User'
+      userId: this.user?.id,  // Optional: UID des Benutzers, falls verfügbar
+      timestamp: formattedDate,  // Datum speichern
+      time: formattedTime  // Zeit speichern
     };
-}
+  }
 
-// 3. Nachricht an Firestore senden
-sendMessageToFirestore(message: any): Promise<void> {
+  // 3. Nachricht an Firestore senden
+  sendMessageToFirestore(message: any): Promise<void> {
     console.log('Attempting to send message to channel:', this.channelId);
     return this.fireService.addMessageToFirestore(this.channelId, message);
-}
+  }
 
-// 4. Überprüfung der Nachrichteneingabe
-validateMessageInput(messageText: string): boolean {
+  // 4. Überprüfung der Nachrichteneingabe
+  validateMessageInput(messageText: string): boolean {
     return messageText.trim() !== '' && !!this.channelId;
-}
+  }
 
   handleKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
     if (event.key === 'Enter' && !event.shiftKey) {  // Prüfe, ob Enter gedrückt wurde (ohne Shift für Zeilenumbruch)
@@ -185,6 +193,32 @@ validateMessageInput(messageText: string): boolean {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
     } catch (err) {
       console.error('Scroll error:', err);
+    }
+  }
+
+  getUserIdFromUrl(): string | null {
+    const userId = this.route.snapshot.params['id'];
+    if (userId) {
+      console.log('Benutzer-ID aus der URL:', userId);
+      return userId;
+    } else {
+      console.log('Keine Benutzer-ID in der URL gefunden.');
+      return null;
+    }
+  }
+
+  // Nachricht an die Channel-Sammlung senden
+  sendMessageToChannelFirestore(message: any): Promise<void> {
+    console.log('Attempting to send message to channel:', this.channelId);
+    return this.fireService.addMessageToFirestore(this.channelId, message);
+  }
+
+  addMessageToUserChats(userId: string | null, message: any): Promise<void> {
+    if (userId) {
+      console.log('Attempting to add message to user chats:', userId);
+      return this.fireService.addMessageToUserChats(userId, message);
+    } else {
+      return Promise.reject('No user ID available to add message to user chats.');
     }
   }
 }

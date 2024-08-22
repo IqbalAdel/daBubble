@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference, arrayUnion, writeBatch, DocumentReference } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { orderBy, QuerySnapshot } from 'firebase/firestore';
 @Injectable({
   providedIn: 'root'
 })
@@ -13,7 +14,7 @@ export class FirebaseService {
   firestore: Firestore = inject(Firestore);
 
   constructor() { }
-  
+
   async getCurrentUserUid(): Promise<string | null> {
     return new Promise((resolve, reject) => {
       onAuthStateChanged(this.auth, (user) => {
@@ -37,24 +38,24 @@ export class FirebaseService {
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef, { idField: 'id' }) as Observable<User[]>; // Achte darauf, dass der Typ korrekt ist
   }
-  getChannels(): Observable<any[]> {
+  getChannels(): Observable<Channel[]> {
     const channelsRef = collection(this.firestore, 'channels');
-    return collectionData(channelsRef);
+    return collectionData(channelsRef, { idField: 'id' }) as Observable<Channel[]>;
   }
-  getChatsRef(){
+  getChatsRef() {
     return collection(this.firestore, 'chats');
   }
-  getChannelsRef(){
+  getChannelsRef() {
     return collection(this.firestore, 'channels');
   }
 
-  getSingleDocRef(collID: string, docID: string){
+  getSingleDocRef(collID: string, docID: string) {
     return doc(collection(this.firestore, collID), docID)
   }
 
   getChannelsMessages(channelId: string): Observable<any[]> {
     const channelDocRef = doc(this.firestore, 'channels', channelId);
-  
+
     return new Observable((observer) => {
       const unsubscribe = onSnapshot(channelDocRef, (snapshot) => {
         if (snapshot.exists()) {
@@ -67,7 +68,7 @@ export class FirebaseService {
       }, (error) => {
         observer.error(error);
       });
-  
+
       // Rückgabefunktion für das Abonnement
       return () => unsubscribe();
     });
@@ -75,17 +76,17 @@ export class FirebaseService {
 
   getFirestore(): Firestore {
     return this.firestore;
-}
-  
-  getUsersData(){
+  }
+
+  getUsersData() {
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef);
   }
 
-  getUserDocRef(docID: string){
+  getUserDocRef(docID: string) {
     return doc(collection(this.firestore, 'users'), docID)
   }
-  getChannelDocRef(docID: string){
+  getChannelDocRef(docID: string) {
     return doc(collection(this.firestore, 'channels'), docID)
   }
 
@@ -121,11 +122,11 @@ export class FirebaseService {
     try {
       const channelsRef = collection(this.firestore, 'channels');
       const docRef = await addDoc(channelsRef, {
-        ...channel, 
+        ...channel,
       });
-      console.log('Channel added successfully');
+      // console.log('Channel added successfully');
       await updateDoc(docRef, {
-        id: docRef.id 
+        id: docRef.id
       });
       return docRef;
       console.log('Channel added successfully with ID:', docRef.id);
@@ -135,7 +136,7 @@ export class FirebaseService {
       console.error('Error adding channel:', error);
       return null;
     }
-    
+
   }
 
   getChannelById(channelId: string): Promise<Channel | null> {
@@ -185,7 +186,7 @@ export class FirebaseService {
         const currentMessages = channelDoc.data()['messages'] || [];
         const updatedMessages = [...currentMessages, message];  // Nachricht als Objekt hinzufügen
         await updateDoc(channelDocRef, { messages: updatedMessages });
-        console.log('Message successfully added to channel:', message);
+        // console.log('Message successfully added to channel:', message);
       } else {
         console.error('Channel does not exist:', channelId);
       }
@@ -194,21 +195,12 @@ export class FirebaseService {
     }
   }
 
-   getRealtimeChannelMessages(channelId: string): Observable<DocumentData[]> {
-    const channelDocRef = doc(this.firestore, 'channels', channelId);
-    const messagesCollection = collection(channelDocRef, 'messages');
-    
-    return new Observable((observer) => {
-      const unsubscribe = onSnapshot(messagesCollection, (snapshot) => {
-        const messages = snapshot.docs.map(doc => doc.data());
-        observer.next(messages);
-      }, (error) => {
-        observer.error(error);
-      });
 
-      // Rückgabefunktion für das Abonnement
-      return () => unsubscribe();
+  addMessageToUserChats(userId: string, message: any): Promise<void> {
+    const userDoc = doc(this.firestore, `users/${userId}`);
+    return updateDoc(userDoc, {
+      chats: arrayUnion(message)  // Füge die Nachricht zum chats-Array hinzu
     });
   }
-  
+
 }

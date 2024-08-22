@@ -29,7 +29,6 @@
             
             &:hover{
                 background-color: rgba(236, 238, 254, 1);
-                background-color: rgba(236, 238, 254, 1);
                 border-radius: 50px;
                 
             }
@@ -41,13 +40,29 @@
     }
 
     .center {
-        padding: 30px;
         font-size: 20px;
         gap: 10px;
-        height: calc(100% - 330px);
+        height: calc(100% - 335px);
         display: flex;
         flex-direction: column;
-        justify-content: flex-end        
+        // justify-content: flex-end;
+        box-sizing: border-box;   
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #888;
+            /* Farbe des Scrollbalkens */
+            border-radius: 2px;
+            /* Ecken abrunden */
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+            /* Farbe des Scrollbalkens beim Hover */
+        }
     }
 
     .solo-chat {
@@ -92,4 +107,35 @@
             }
         }
     }
+}
+
+.nachrichten{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    cursor: pointer;
+    span{
+        background-color: rgba(236, 238, 254, 1);
+        padding: 10px;
+        width: 100%;
+        border-top-right-radius: 50px;
+        border-bottom-right-radius: 50px;
+        border-bottom-left-radius: 50px;
+    }
+    &:hover{
+        background-color: rgba(236, 238, 254, 1);
+        span{
+            background-color: white;
+        }
+    }
+}
+.nameAndTime{
+    display: flex;
+    gap: 30px;
+}
+.solo-chat-completely{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
