@@ -19,7 +19,10 @@ export const routes: Routes = [
     children: [
       { path: '', component: LoginSectionComponent },
       { path: 'sign-up', component: SignUpComponent },
-      { path: 'create-avatar', component: CreateAvatarComponent }
+      { path: 'create-avatar', component: CreateAvatarComponent },
+      { path: 'reset-password', component: ResetPasswordComponent },
+      { path: 'new-password', component: NewPasswordComponent },
+      { path: 'login', component: LoginSectionComponent },
     ] 
   },
   // { 

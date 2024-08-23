@@ -31,6 +31,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   loggedInUserName!: string;
 
   messages: { text: string; timestamp: string; time: string; userName: string }[] = [];
+  groupUsers: User[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
@@ -49,6 +50,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       this.groupId = params.get('id') || '';
       this.loadGroupName();
       this.loadMessages();
+      this.loadGroupUsers(); 
       this.loggedInUser();
     });
   }
@@ -107,6 +109,22 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  async loadGroupUsers() {
+    try {
+      const channelData = await this.firebaseService.getChannelById(this.groupId);
+      if (channelData && channelData.users) {
+        const userIds = channelData.users;  // Angenommene Struktur: users ist ein Array von User-IDs
+        const userPromises = userIds.map((userId: string) => this.firebaseService.getUserById(userId));
+        const users = await Promise.all(userPromises);
+  
+        // Filtere Benutzer, die null sind, heraus
+        this.groupUsers = users.filter((user): user is User => user !== null);
+      }
+    } catch (error) {
+      console.error('Fehler beim Laden der Channel-Benutzer:', error);
+    }
+  }
+
   changeImageSmiley(isHover: boolean) {
     this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.png' : 'assets/img/smiley/add_reaction.png';
   }
@@ -162,4 +180,5 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       console.error('Scroll error:', err);
     }
   }
+  
 }

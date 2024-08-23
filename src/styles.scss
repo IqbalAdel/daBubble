@@ -35,3 +35,26 @@ app-solo-chat{
     width: 100%;
     margin-right: 60px;
 }
+
+.line-date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 20px 0;
+
+    .line-two {
+        flex: 1;
+        border-bottom: 2px solid rgb(51, 38, 235, 0.2);
+        margin: 0 10px;
+    }
+
+    .date {
+        border-radius: 30px;
+        border: 1px solid rgb(51, 38, 235, 0.2);
+        padding: 8px;
+        text-align: center;
+    }
+}
+
+

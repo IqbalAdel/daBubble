@@ -1,7 +1,7 @@
 export class User {
     name: string;
     email: string;
-    id?: string;
+    id: string;
     img: string;
     password: string;
     channels?: string[];

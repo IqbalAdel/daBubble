@@ -3,22 +3,43 @@
         <h1>Anmeldung</h1>
         <h2>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</h2>
     </div>
+    <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+    </div>
     <form (ngSubmit)="onLogin()">
         <div class="input-container">
             <img class="icon" src="assets/img/mail.png" alt="">
-            <input type="email" id="email" [(ngModel)]="email" name="email" required
-                placeholder="beispielname@email.com">
+            <input 
+            [(ngModel)]="email"
+            name="email"               
+            type="email"
+            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            placeholder="beispielname@email.com"
+            required
+            #emailInput="ngModel"
+          />
         </div>
+        <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
+            Bitte eine gültige E-Mail-Adresse eingeben.
+          </div>
         <div class="input-container">
             <img class="icon" src="assets/img/lock.png" alt="">
-            <input type="password" id="password" [(ngModel)]="password" name="password" required placeholder="Passwort">
+            <input  [(ngModel)]="password"
+            name="passwort"            
+            type="passwort"
+            minlength="8"
+            placeholder="Passwort"
+            required
+            #passwordInput="ngModel">
         </div>
+        <div *ngIf="passwordInput.invalid &&  passwordInput.touched" class="error-message">
+            Passwort muss mindestens 8 Zeichen lang sein.
+          </div>
+        
         <div class="passwort">
             <a [routerLink]="'/reset-password'">Passwort vergessen?</a>
         </div>
-        <div *ngIf="errorMessage" class="error-message">
-            {{ errorMessage }}
-        </div>
+       
 
 
         <div class="or-section">
@@ -28,10 +49,10 @@
         </div>
         <div class="google-container">
             <img class="google-icon" src="assets/img/Google.png" alt="">
-            <button>Anmelden mit Google</button>
+            <button (click)="signInWithGoogle()">Anmelden mit Google</button>
         </div>
         <div class="login-button">
-            <button type="submit" class="login">Anmelden</button><button class="guest-login">Gäste-Login</button>
+            <button type="submit" class="login">Anmelden</button><button  class="guest-login">Gäste-Login</button>
         </div>
     </form>
 </div>

@@ -21,10 +21,10 @@ export class DialogProfileUserComponent implements OnInit{
   imgSrc:string = "assets/img/close_default.png";
 
   user: User = {
-    name: 'Frederick Beck',
-    email: 'Test@gmx.de',
+    name: '',
+    email: '',
     id: '',
-    img: 'assets/img/profiles/boy.png',
+    img: '',
     password: '',
     channels: [],
     chats: [],
