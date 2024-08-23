@@ -7,22 +7,27 @@
             </ng-template>
             <!-- <img src="assets/img/keyboard_arrow_down_v2.png" alt=""> -->
         </div>
-        <div class="persons-group">
-            <div (click)="openDialogMemberList()" class="display-flex header-group-img" >
+        <div class="persons-group" *ngIf="filteredChannels$ | async as channels; else loading">
+            <!-- Iteriere über die gefilterten Kanäle -->
+            <div *ngFor="let channel of channels" (click)="openDialogMemberList()" class="display-flex header-group-img">
                 <div>
                     <img src="assets/img/avatar-6.png" alt="">
                     <img src="assets/img/avatar-6.png" alt="">
                     <img src="assets/img/avatar-6.png" alt="">
                 </div>
-
-                <div>3</div>
+        
+                <!-- Zeige die Benutzeranzahl für den jeweiligen Kanal -->
+                <div>{{ channel.users?.length }}</div>
             </div>
+        
             <div (click)="openDialogAddMember()" class="invite-people">
-                <img (mouseover)="changeImageAddContat(true)" (mouseout)="changeImageAddContat(false)" [src]="imgSrc[2]"
-                    alt="">
+                <img (mouseover)="changeImageAddContat(true)" (mouseout)="changeImageAddContat(false)" [src]="imgSrc[2]" alt="">
             </div>
-
         </div>
+        
+        <ng-template #loading>
+            <p>Lade Kanäle...</p>
+        </ng-template>
     </div>
     <div class="line"></div>
     <div class="chat-complete" #scrollContainer>

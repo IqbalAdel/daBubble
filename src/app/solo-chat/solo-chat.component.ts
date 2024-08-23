@@ -15,6 +15,7 @@ interface Chat {
   timestamp: string;
   time: string;
   userName: string;
+  userId:string;
 }
 
 
@@ -31,7 +32,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   user: User | null = null;
   loggedInUserName!: string;
   userName!: string;
-  chats: { text: string; timestamp: string; time: string; userName: string }[] = [];
+  chats: { text: string; timestamp: string; time: string; userName: string; userId:string; }[] = [];
   private chatsSubscription: Subscription | null = null;
   private chatListenerUnsubscribe: (() => void) | null = null; // Variable für Echtzeit-Listener
 
@@ -79,6 +80,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       })
     );
     this.loggedInUser();
+    const chatsRef = this.firebaseService.getChatsRef();
   }
 
   ngOnDestroy(): void {
@@ -177,7 +179,8 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           text: chat.text || '',
           timestamp: chat.timestamp || '',
           time: chat.time || '',
-          userName: chat.userName || ''
+          userName: chat.userName || '',
+          userId: chat.userId || ''
         }));
       } else {
         console.error('User document does not exist:', userId);

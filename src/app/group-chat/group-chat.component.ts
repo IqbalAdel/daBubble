@@ -7,9 +7,11 @@ import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-ch
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
 import { DialogChannelAddMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-add-members/dialog-channel-add-members.component';
 import { ChatComponent } from '../chat/chat.component';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
+import { Channel } from '../../models/channel.class';
+import {  map } from 'rxjs/operators'; 
 
 @Component({
   selector: 'app-group-chat',
@@ -21,6 +23,8 @@ import { User } from '../../models/user.class';
 export class GroupChatComponent implements OnInit, AfterViewChecked {
   user: User | null = null;
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+  channels$: Observable<Channel[]> | undefined;
+  filteredChannels$: Observable<Channel[]> | undefined;
   groupId!: string;
   groupName!: string;
 
@@ -52,6 +56,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       this.loadMessages();
       this.loadGroupUsers(); 
       this.loggedInUser();
+      this.getChannelsForusers();
     });
   }
 
@@ -180,5 +185,18 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       console.error('Scroll error:', err);
     }
   }
+
+  getChannelsForusers() {
+    this.filteredChannels$ = this.route.paramMap.pipe(
+      switchMap(params => {
+        const channelId = params.get('id');
+        return this.firebaseService.getChannels().pipe(
+          map(channels => channels.filter(channel => channel.id === channelId))
+        );
+      })
+    );
+  }
   
 }
+  
+  

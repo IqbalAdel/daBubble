@@ -17,8 +17,6 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        // height: calc(100% - 325px);
-
 
         .group-news {
             display: flex;
@@ -30,6 +28,7 @@
                 border-bottom-right-radius: 30px;
                 border-bottom-left-radius: 30px;
                 background-color: rgba(121, 126, 243, 1);
+                
             }
 
             &:hover {
@@ -48,6 +47,9 @@
                     left: 20px;
                     margin-top: -40px;
                     border: 2px solid rgba(51, 38, 235, 0.2);
+                }
+                span{
+                    background-color: white;
                 }
             }
         }
