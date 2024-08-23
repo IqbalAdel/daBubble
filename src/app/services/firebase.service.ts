@@ -163,6 +163,9 @@ export class FirebaseService {
         return new Channel(
           channelData.name || '',
           channelData.description || '',
+          channelData.creator || '',
+          channelData.messages || [],
+          channelData.users || [],
           channelId
         );
       } else {

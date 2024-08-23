@@ -25,7 +25,10 @@
         />
         <mat-autocomplete class="scroll"  #auto="matAutocomplete" (optionSelected)="selected($event)">
           @for (user of filteredUsers(); track user) {
-            <mat-option [value]="user.name">{{user.name}}</mat-option>
+            <mat-option class="options" [value]="user.name">
+              <img src="{{user.img}}" alt="">
+              <span>{{user.name}}</span>
+            </mat-option>
           }
         </mat-autocomplete>
     </div>

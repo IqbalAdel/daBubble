@@ -64,6 +64,10 @@ mat-icon{
 
 
 
+::ng-deep .mdc-list-item__primary-text{
+    display: flex;
+    align-items: center;
+}
 ::ng-deep .mat-mdc-autocomplete-panel{
     border-radius: 0px 20px 20px 20px !important;
 }
@@ -85,11 +89,21 @@ mat-option{
     width: fit-content;
     padding-top: 5px;
     padding-bottom: 5px;
+    
+    img{
+        @include widthHeight($w: 30px, $h: 30px);
+        border-radius: 100%;
+        margin-right: 5px;
+    }
 }
+
+
  
 .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
     background-color: #ECEEFE;
 }
+
+
 
 .mat-mdc-option{
     min-height: fit-content;

@@ -6,34 +6,38 @@
         (mouseout)="imgSrc = 'assets/img/close_default.png'" 
         alt="">
     </div>
-    <div class="channel-name" *ngIf="edit" [@borderGrow]>
+    <div class="channel-name" [ngClass] = "{'hide-color': edit == true, 'color': edit == false}">
         <div>
-            <span>Channel Name</span>
-            <span (click)="editOne()">Bearbeiten</span>
+            <span [ngClass] = "{'slide-left': edit == true, 'slide-left-back': edit == false}" class="animate-name position-left">Channel Name</span>
+            <span (click)="editSwitch()" [ngClass] = "{'slide-right': edit == true, 'slide-right-back': edit == false}" class="animate-name position-right">{{editTxtValue}}</span>
         </div>
-        <span># Entwicklerteam</span>
-    </div>
-    <div  *ngIf="!edit" [@borderGrow]>
-        <div class="group-rename">
-            <span class="group-name">Channel Name</span>
-            <span (click)="editOne()" class="save">Speichern</span>
-        </div>
-        <div class="channel-name-edit">
-            <span># Entwicklerteam</span>
-        </div>
+        @if(edit == true){
+            <input placeholder="#  z.B. Kooperationsprojekte" type="text">
+        } @else {
+            <span class="txt" ><strong>#</strong> Entwicklerteam</span>
+        }
     </div>
     
     
-    <div class="channel-description">
+    <div class="channel-description" [ngClass] = "{'hide-color': editTwo == true, 'color': editTwo == false}">
         <div>
-            <span>Beschreibung</span>
-            <span>Bearbeiten</span>
+            <span [ngClass] = "{'slide-left-d': editTwo == true, 'slide-left-back-d': editTwo == false}" class="animate-name position-left" class="animate-name position-description">Beschreibung</span>
+            <span [ngClass] = "{'slide-right-d': editTwo == true, 'slide-right-back-d': editTwo == false}" class="animate-name position-edit" (click)="editTwoSwitch()">{{editTxtValueTwo}}</span>
         </div>
-        <p>Dieser Channel ist für alles rund um #dfsdf vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.</p>
-        <div class="seperator"></div>
-        <div class="creator">
+        @if(editTwo==true){
+            <textarea [ngClass] = "{'slide-left-textarea': editTwoInput == true, 'slide-left-back-textarea': editTwoInput == false}" class="animate-textarea" placeholder="Dein Text hier" type="text" name="" id=""></textarea>
+
+        } @else {
+            <p [ngClass] = "{'move-paragraph': editTwoInput == false}" class="description-txt animate-paragraph">Dieser Channel ist für alles rund um #dfsdf vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.</p>
+        }
+        <div [ngClass] = "{'grow-short': editTwo == true, 'grow-long': editTwo == false}" class=" animate-seperator seperator"></div>
+        <div [ngClass] = "{'move-down': editTwo == true, 'move-down-back': editTwo == false}" class=" animate-creator creator">
             <span>Erstellt von</span>
-            <span>Noah Braun</span>
+            @if(channel){
+                <span>{{channel.creator}}</span>
+            } @else {
+                <span>Daten fehlen</span>
+            }
         </div>
     </div>
 
