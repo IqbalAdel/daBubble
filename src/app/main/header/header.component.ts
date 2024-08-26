@@ -51,12 +51,13 @@ export class HeaderComponent implements OnInit{
 
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
   users: User[] = [];
+  test!: boolean;
 
 
   constructor( 
     public dialog: MatDialog,
     private firebaseService: FirebaseService,
-    private userService: UserService,
+    public userService: UserService,
     private firestore: Firestore,
   ) {    
  
@@ -64,11 +65,24 @@ export class HeaderComponent implements OnInit{
   async ngOnInit(): Promise<void> {
     await this.getActiveUser();
 
-    if (this.user && this.user.id) {
-      this.userService.subscribeToUserChanges(this.user.id, (updatedUser) => {
-        this.user = updatedUser;
+    const uid = await this.firebaseService.getCurrentUserUid();
+    if (uid) {
+      const userDocRef = doc(this.firebaseService.firestore, 'users', uid);
+      
+      // Set up the real-time listener
+      onSnapshot(userDocRef, async (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          console.log('User data changed, reloading user...');
+          await this.getActiveUser(); // Reload the user data when a change is detected
+        }
       });
     }
+
+    // if (this.user && this.user.id) {
+    //   this.userService.subscribeToUserChanges(this.user.id, (updatedUser) => {
+    //     this.user = updatedUser;
+    //   });
+    // }
 
     // const usersCollection = this.firebaseService.getUsersRef();
 
@@ -94,6 +108,7 @@ export class HeaderComponent implements OnInit{
         const user = this.userService.getUser();
         if(user){
           this.user = new User(user);
+          this.test = true;
         }
       }
     } catch (error) {

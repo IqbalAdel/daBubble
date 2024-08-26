@@ -9,7 +9,7 @@ export class UserService {
 
   groupChatOpen = false;
 
-  private _user: User | null = null;
+  public _user: User | null = null;
 
   // private selectedUserIdSource = new BehaviorSubject<string | null>(null);
   // selectedUserId$: Observable<string | null> = this.selectedUserIdSource.asObservable();
