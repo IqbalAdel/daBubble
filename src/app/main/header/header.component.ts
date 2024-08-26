@@ -56,24 +56,32 @@ export class HeaderComponent implements OnInit{
   constructor( 
     public dialog: MatDialog,
     private firebaseService: FirebaseService,
-    private userService: UserService
+    private userService: UserService,
+    private firestore: Firestore,
   ) {    
  
   }
   async ngOnInit(): Promise<void> {
     await this.getActiveUser();
 
-    const usersCollection = this.firebaseService.getUsersRef();
-
-    const userSub = onSnapshot(usersCollection, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "modified") {
-          let changedUser = change.doc.data();
-          this.user.name = changedUser['name'];
-        }
-
+    if (this.user && this.user.id) {
+      this.userService.subscribeToUserChanges(this.user.id, (updatedUser) => {
+        this.user = updatedUser;
       });
-    });
+    }
+
+    // const usersCollection = this.firebaseService.getUsersRef();
+
+    // const userSub = onSnapshot(usersCollection, (snapshot) => {
+    //   snapshot.docChanges().forEach((change) => {
+    //     if (change.type === "modified") {
+    //       let changedUser = change.doc.data();
+    //       this.user.name = changedUser['name'];
+    //     }
+    //   });
+    // });
+
+    
   }
 
   async getActiveUser(){

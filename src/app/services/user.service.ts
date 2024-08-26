@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '../../models/user.class';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, onSnapshot } from '@angular/fire/firestore';
 @Injectable({
   providedIn: 'root'
 })
@@ -27,7 +27,7 @@ export class UserService {
   }
 
   getUser(): User | null {
-    return this._user;
+    return this._user ? new User(this._user) : null;
   }
 
   async loadUserById(uid: string): Promise<void> {
@@ -36,8 +36,19 @@ export class UserService {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const userData = docSnap.data() as User;
-        this.setUser(userData);
-        this.selectedUserIdSubject.next(uid);
+        if (userData) {
+          const user = new User(
+              userData.name || '',
+              userData.email || '',
+              userData.id || '',
+              userData.img || '',
+              userData.password || '',
+              userData.channels || [],
+              userData.chats || []
+          );
+          this.setUser(user);
+          this.selectedUserIdSubject.next(uid);
+        }
       } else {
         console.warn('Benutzerdokument nicht gefunden!');
         this.setUser(null);
@@ -62,5 +73,15 @@ export class UserService {
     } else {
       localStorage.removeItem('lastSelectedUserId');
     }
+  }
+
+  subscribeToUserChanges(uid: string, callback: (user: User) => void): void {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    onSnapshot(userDocRef, (doc) => {
+      if (doc.exists()) {
+        const updatedUser = new User(doc.data() as User);
+        callback(updatedUser);
+      }
+    });
   }
 }
