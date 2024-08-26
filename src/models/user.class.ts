@@ -8,7 +8,7 @@ export class User {
     chats?: string[];
 
     constructor(
-      name: string = '',
+      nameOrUser?: string | User,
       email: string = '',
       id: string = '',
       img: string = '',
@@ -16,13 +16,25 @@ export class User {
       channels: string[] = [],
       chats: string[] = []
     ) {
-      this.name = name;
-      this.email = email;
-      this.id = id;
-      this.img = img;
-      this.password = password;
-      this.channels = channels;
-      this.chats = chats;
+      if (typeof nameOrUser === 'string' || nameOrUser === undefined) {
+        // Initialize with provided parameters or defaults
+        this.name = nameOrUser || '';
+        this.email = email;
+        this.id = id;
+        this.img = img;
+        this.password = password;
+        this.channels = channels;
+        this.chats = chats;
+      } else {
+        // Initialize with a copy of another User instance
+        this.name = nameOrUser.name;
+        this.email = nameOrUser.email;
+        this.id = nameOrUser.id;
+        this.img = nameOrUser.img;
+        this.password = nameOrUser.password;
+        this.channels = nameOrUser.channels ? [...nameOrUser.channels] : [];
+        this.chats = nameOrUser.chats ? [...nameOrUser.chats] : [];
+      }
     }
 
     public usersToJSON(){

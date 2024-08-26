@@ -85,7 +85,7 @@ export class HeaderComponent implements OnInit{
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){
-          this.user = user;
+          this.user = new User(user);
         }
       }
     } catch (error) {
