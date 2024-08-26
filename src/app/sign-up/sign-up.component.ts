@@ -4,7 +4,8 @@ import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/rout
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service';
 import { CommonModule } from '@angular/common';
-
+import { inject } from '@angular/core';
+import { Auth } from '@angular/fire/auth';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -15,24 +16,40 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './sign-up.component.scss'
 })
 export class SignUpComponent {
+  private auth = inject(Auth);
   user: User = new User(); // Initialisiere das User-Objekt
   isPrivacyChecked: boolean = false;
-  emailExistsError: boolean = false; 
+  emailExistsError: boolean = false;
   constructor(private router: Router, private userService: UserService, private authService: AuthService) { }
- 
-  // ngOnInit(): void {
-  //   // Teste mit einer bekannten E-Mail-Adresse
 
-  //   this.authService.checkEmailExists('dsfsdf@asd.de')
-  //     .then(exists => {
-       
-  //       console.log('Existiert:', exists); // Sollte true sein, wenn die E-Mail bekannt ist
-  //     })
-  //     .catch(error => {
-  //       console.error('Fehler beim Überprüfen:', error);
-  //     });
-  // }
+  ngOnInit(): void {
+
+  }
+
+  async onSubmit(): Promise<void> {
+    if (this.isFormValid()) {
+      try {
+        // Überprüfen, ob die E-Mail bereits existiert
+        const emailExists = await this.authService.checkEmailExists(this.user.email);
+        if (emailExists) {
+          this.emailExistsError = true; // E-Mail existiert bereits
+          return;
+        } else {
+          this.emailExistsError = false;
+        }
+        // Fortfahren mit der Registrierung, da die E-Mail nicht existiert
+        this.userService.setUser(this.user);
+        this.router.navigate(['/create-avatar']);
+      } catch (error) {
+        console.error('Fehler bei der Registrierung:', error);
+      }
+    } else {
+      console.warn('Formular ist nicht gültig');
+    }
+  }
+
  
+
   // Methode zur Validierung des Formulars
   isFormValid(): boolean {
     return this.user.name.trim() !== '' &&
@@ -40,33 +57,12 @@ export class SignUpComponent {
       this.user.password.trim() !== '' &&
       this.isPrivacyChecked;
   }
-  onSubmit(): void {
-    this.authService.checkEmailExists('marbach.a@gmx.net').then(exists => {
-      console.log('Existiert:', exists); // Sollte true sein, wenn die E-Mail bekannt ist
-    });
-    if (this.isFormValid()) {
-      // Überprüfen, ob die E-Mail bereits existiert
-      this.authService.checkEmailExists(this.user.email)
-        .then(exists => {
-          if (exists) {
-           
-            // Wenn die E-Mail existiert, setze den Fehlerzustand
-            this.emailExistsError = true;
-          } else {
-            
-            // Wenn die E-Mail nicht existiert, setze den Benutzer und navigiere weiter
-            this.emailExistsError = false;
-            this.userService.setUser(this.user);
-            this.router.navigate(['/create-avatar']);
-          }
-        })
-        .catch(error => {
-          console.error('Fehler bei der Überprüfung der E-Mail:', error);
-        });
-    } else {
-      console.warn('Formular ist nicht gültig');
-    }
-  }
-
-
+  // onSubmit(): void {
+  //   if (this.isFormValid()) {
+  //     // Wenn die E-Mail nicht existiert, setze den Benutzer und navigiere weiter
+  //     this.emailExistsError = false;
+  //     this.userService.setUser(this.user);
+  //     this.router.navigate(['/create-avatar']);
+  //   }
+  // }
 }
