@@ -5,7 +5,7 @@ import { inject } from '@angular/core';
 import { sendPasswordResetEmail, confirmPasswordReset } from 'firebase/auth';
 import { ActionCodeSettings, signInWithPopup, GoogleAuthProvider, signOut} from '@firebase/auth';
 import { sendPasswordResetEmail as firebaseSendPasswordResetEmail, confirmPasswordReset as firebaseConfirmPasswordReset, User } from 'firebase/auth';
-
+import { fetchSignInMethodsForEmail } from 'firebase/auth';
 @Injectable({
   providedIn: 'root'
 })
@@ -26,6 +26,21 @@ export class AuthService {
         throw error;
       });
   }
+
+ // Überprüfen, ob die E-Mail bereits existiert
+ checkEmailExists(email: string): Promise<boolean> {
+  console.log('Überprüfe E-Mail:', email); // Debug-Ausgabe
+  return fetchSignInMethodsForEmail(this.auth, email)
+    .then((signInMethods) => {
+      console.log('Sign-In-Methoden:', signInMethods); // Debug-Ausgabe
+      return signInMethods.length > 0;
+    })
+    .catch((error) => {
+      console.error('Fehler beim Überprüfen der E-Mail:', error);
+      throw error;
+    });
+}
+
 
 // Methode umbenennen oder sicherstellen, dass sie korrekt funktioniert
 newPassword(oobCode: string, newPassword: string): Promise<void> {
