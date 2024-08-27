@@ -6,6 +6,7 @@ import { User } from './../../models/user.class';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { ChatMessage } from '../chat/chat.component';
+import { getDocs, orderBy, where } from 'firebase/firestore';
 @Injectable({
   providedIn: 'root'
 })
