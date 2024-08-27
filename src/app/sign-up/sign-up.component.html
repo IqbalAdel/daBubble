@@ -36,6 +36,9 @@
         <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
             Bitte eine gültige E-Mail-Adresse eingeben.
           </div>
+          <div *ngIf="emailExistsError" class="error-message">
+            Diese E-Mail-Adresse wird bereits verwendet.
+          </div>
         <div class="input-container">
           <img class="icon" src="assets/img/lock.png" alt="">
           <input

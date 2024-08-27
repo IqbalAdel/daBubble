@@ -4,17 +4,30 @@ import { Observable } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { getDocs, orderBy, QuerySnapshot, where } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { ChatMessage } from '../chat/chat.component';
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
   private auth = inject(Auth);
-
+  private storage = getStorage();
   firestore: Firestore = inject(Firestore);
 
   constructor() { }
+  
+  async  getImageDownloadURL(imagePath: string): Promise<string> {
+    const storage = getStorage();
+    const imageRef = ref(storage, imagePath);
+    try {
+      const url = await getDownloadURL(imageRef);
+      return url;
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Bild-URL:', error);
+      throw error;
+    }
+  }
+
 
   async getCurrentUserUid(): Promise<string | null> {
     return new Promise((resolve, reject) => {
@@ -256,5 +269,9 @@ export class FirebaseService {
       return () => unsubscribe();
     });
   }
+
+ 
+
+ 
 
 }
