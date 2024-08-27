@@ -37,7 +37,7 @@
                 <span class="date">{{message.timestamp }}</span>
                 <div class="line-two"></div>
             </div>
-            <div *ngIf="messages.length > 0; else noMessages">
+            <div *ngIf="messages.length > 0;">
                 <div class="center">
                     <div class="group-news">
                     <img [src]="user?.img" alt="">
@@ -50,9 +50,16 @@
                                 <span>{{ message.text }}</span>
                             </div>
                             <div class="answer">
-                                <div class="answers">Antworten</div>
+                                <div class="answers">
+                                  <!-- Anzeige der Anzahl der Chats -->
+                                  <ng-container *ngIf="message.chats.length === 0">Antworten</ng-container>
+                                  <ng-container *ngIf="message.chats.length === 1">1 Antwort</ng-container>
+                                  <ng-container *ngIf="message.chats.length > 1">
+                                    {{ message.chats.length }} Antworten
+                                  </ng-container>
+                                </div>
                                 <div>Letzte Antwort {{ currentTime }}</div>
-                            </div>
+                              </div>
                         </div>
                         <div class="add-smiley">
                             <img src="assets/img/smiley/check mark green.png" alt="">
@@ -65,11 +72,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Platzhalter für keine Nachrichten -->
-            <ng-template #noMessages>
-                <p>Keine Nachrichten vorhanden.</p>
-            </ng-template>
 
 
         </div>

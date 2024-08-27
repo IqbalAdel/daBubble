@@ -4,6 +4,15 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service'; // Sicherstellen, dass der Import korrekt ist
+import { addDoc, arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import { Firestore } from '@angular/fire/firestore';
+
+export interface ChatMessage {
+  text: string;
+  timestamp: Timestamp; // Firestore Timestamp Typ verwenden
+  time: string;
+  userName: string;
+}
 
 @Component({
   selector: 'app-chat',
@@ -24,7 +33,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   userService: UserService; // Sicherstellen, dass userService in der Klasse deklariert ist
   userName!: string;
 
-  constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService) {
+  constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore) {
     this.userService = userService; // Initialisiere userService
   }
 
@@ -132,42 +141,101 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   sendMessage(messageInput: HTMLTextAreaElement): void {
     const messageText = messageInput.value;
+  
     if (this.validateMessageInput(messageText)) {
-      const message = this.prepareMessage(messageText);  // Nachricht vorbereiten
-      const userId = this.getUserIdFromUrl();  // Holen der User ID aus der URL
-
-      // Nachricht sowohl an die Kanäle als auch an die Chats des Benutzers senden
-      Promise.all([
-        this.sendMessageToChannelFirestore(message), // Nachricht in den Channel einfügen
-        this.addMessageToUserChats(userId, message)  // Nachricht in den User Chats hinzufügen
-      ])
-        .then(() => {
-          console.log('Message successfully sent and saved in Firestore:', message);
-          messageInput.value = '';  // Textarea leeren
-          this.scrollToBottom();    // Nach unten scrollen, wenn eine Nachricht erfolgreich gesendet wurde
-        })
-        .catch((error: any) => {
-          console.error('Error sending message to Firestore:', error);
-        });
+      const message = this.prepareMessage(messageText);
+      this.checkIfUserAndSendMessage(message, messageInput);
     } else {
       console.log('Message is empty or channelId is not set, not sending.');
     }
+  }
+  
+  // Überprüft, ob die channelId eine User-ID ist und speichert entsprechend
+  private checkIfUserAndSendMessage(message: any, messageInput: HTMLTextAreaElement): void {
+    const userDocRef = doc(this.firestore, 'users', this.channelId);
+  
+    getDoc(userDocRef)
+      .then((userSnapshot) => {
+        if (userSnapshot.exists()) {
+          // Die channelId ist eine User-ID, speichere die Nachricht in der users-Collection
+          this.saveMessageToUsers(userDocRef, message, messageInput);
+        } else {
+          // Die channelId ist keine User-ID, speichere die Nachricht in der channels-Collection
+          this.saveMessageToChannels(message, messageInput);
+        }
+      })
+      .catch((error: any) => {
+        console.error('Error checking userId in Firestore:', error);
+      });
+  }
+  
+  // Speichert die Nachricht in der users-Collection
+  private saveMessageToUsers(userDocRef: any, message: any, messageInput: HTMLTextAreaElement): void {
+    addDoc(collection(userDocRef, 'messages'), message)
+      .then(() => {
+        console.log('Message successfully sent and saved in Firestore under users:', message);
+        this.clearMessageInputAndScroll(messageInput);
+      })
+      .catch((error: any) => {
+        console.error('Error sending message to Firestore under users:', error);
+      });
+  }
+  
+  // Speichert die Nachricht in der channels-Collection
+  private saveMessageToChannels(message: any, messageInput: HTMLTextAreaElement): void {
+    const channelDocRef = doc(this.firestore, 'channels', this.channelId);
+  
+    addDoc(collection(channelDocRef, 'messages'), message)
+      .then(() => {
+        console.log('Message successfully sent and saved in Firestore under channels:', message);
+        this.clearMessageInputAndScroll(messageInput);
+      })
+      .catch((error: any) => {
+        console.error('Error sending message to Firestore under channels:', error);
+      });
+  }
+  
+  // Leert das Nachrichtenfeld und scrollt nach unten
+  private clearMessageInputAndScroll(messageInput: HTMLTextAreaElement): void {
+    messageInput.value = '';  // Textarea leeren
+    this.scrollToBottom();    // Nach unten scrollen
+  }
+  
+  
+
+  sendMessageToChannelChats(message: any): Promise<void> {
+    const channelDocRef = doc(this.firestore, 'messages', this.channelId);  // Referenz zum Kanaldokument
+    return updateDoc(channelDocRef, {
+      chats: arrayUnion(message)  // Nachricht zum 'chats' Array hinzufügen
+    }).catch(async (error) => {
+      if (error.code === 'not-found') {
+        // Falls das Dokument noch nicht existiert, erstelle es und füge das erste 'chats' Array hinzu
+        await setDoc(channelDocRef, { chats: [message] });
+      } else {
+        throw error;
+      }
+    });
   }
 
   // 2. Nachricht vorbereiten
   prepareMessage(messageText: string) {
     const now = new Date();
-    const formattedDate = now.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' });
     const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    // Nachrichtendaten für Firestore
+    const sendUserId = this.getUserIdFromUrl();
+    const receivingUserId = this.getReceivingUserId();  // Hier sicherstellen, dass receivingUserId korrekt gesetzt ist
+  
     return {
       text: messageText,
       userName: this.user?.name || 'Unknown User',  // Verwende user.name oder 'Unknown User'
-      userId: this.user?.id,  // Optional: UID des Benutzers, falls verfügbar
-      timestamp: formattedDate,  // Datum speichern
-      time: formattedTime  // Zeit speichern
+      userId: this.user?.id || 'Unknown UserId',  // Optional: UID des Benutzers, falls verfügbar
+      timestamp: Timestamp.fromDate(now),  // Firestore Timestamp verwenden
+      time: formattedTime,  // Zeit speichern
+      receivinguserId: receivingUserId || 'Unknown ReceivingUserId',  // Optional: Empfangsbenutzer-ID, falls verfügbar
+      chats: []
     };
+  }
+  getReceivingUserId(): string | null {
+    return this.route.snapshot.paramMap.get('receivingUserId');
   }
 
   // 3. Nachricht an Firestore senden

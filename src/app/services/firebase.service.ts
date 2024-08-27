@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query, docData } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { orderBy, QuerySnapshot } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { ChatMessage } from '../chat/chat.component';
+import { getDocs, orderBy, where } from 'firebase/firestore';
 @Injectable({
   providedIn: 'root'
 })
@@ -67,25 +68,16 @@ export class FirebaseService {
     return doc(collection(this.firestore, collID), docID)
   }
 
-  getChannelsMessages(channelId: string): Observable<any[]> {
-    const channelDocRef = doc(this.firestore, 'channels', channelId);
+  getChannelsMessages(channelId: string): Observable<ChatMessage[]> {
+    const messagesCollection = collection(this.firestore, 'channels', channelId, 'messages');
+    const q = query(messagesCollection, orderBy('timestamp'));
+    return collectionData(q, { idField: 'id' }) as Observable<ChatMessage[]>; // Verwende ChatMessage[]
+  }
 
-    return new Observable((observer) => {
-      const unsubscribe = onSnapshot(channelDocRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          const messages = data['messages'] || [];  // Annahme: Nachrichten sind ein Array innerhalb des Dokuments
-          observer.next(messages);
-        } else {
-          observer.next([]);
-        }
-      }, (error) => {
-        observer.error(error);
-      });
-
-      // Rückgabefunktion für das Abonnement
-      return () => unsubscribe();
-    });
+  getChatsForUser(userId: string): Observable<ChatMessage[]> {
+    const userChatsCollection = collection(this.firestore, 'users', userId, 'chats');
+    const q = query(userChatsCollection, orderBy('timestamp'));
+    return collectionData(q, { idField: 'id' }) as Observable<ChatMessage[]>;
   }
 
   getFirestore(): Firestore {
@@ -100,8 +92,14 @@ export class FirebaseService {
   getUserDocRef(docID: string) {
     return doc(collection(this.firestore, 'users'), docID)
   }
+  
   getChannelDocRef(docID: string) {
     return doc(collection(this.firestore, 'channels'), docID)
+  }
+
+  getChannelData(docID: string): Observable<any> {
+    const channelDocRef = this.getChannelDocRef(docID);
+    return docData(channelDocRef);
   }
 
   async updateUserChannels(userID: string, channelId: string) {
@@ -231,11 +229,49 @@ export class FirebaseService {
 
 
   addMessageToUserChats(userId: string, message: any): Promise<void> {
-    const userDoc = doc(this.firestore, `users/${userId}`);
-    return updateDoc(userDoc, {
-      chats: arrayUnion(message)  // Füge die Nachricht zum chats-Array hinzu
+    // Referenz zur Unter-Sammlung "messages" unter der Benutzer-ID
+    const userMessagesRef = collection(this.firestore, `users/${userId}/messages`);
+    
+    // Neue Nachricht in die Unter-Sammlung hinzufügen
+    return addDoc(userMessagesRef, message)
+      .then(() => {
+        console.log('Message successfully added to user chats!');
+      })
+      .catch((error) => {
+        console.error('Error adding message to user chats:', error);
+        throw error; // Falls ein Fehler auftritt, wirft es den Fehler zurück
+      });
+  }
+
+  async getPrivateMessages(userId: string): Promise<any[]> {
+    const messagesRef = collection(this.firestore, `users/${userId}/messages`);
+    const messagesQuery = query(messagesRef, orderBy('timestamp', 'asc'));
+  
+    const querySnapshot = await getDocs(messagesQuery);
+    return querySnapshot.docs.map(doc => doc.data());
+  }
+
+  listenToPrivateMessages(userId: string, loggedInUserId: string): Observable<any[]> {
+    const messagesRef = collection(this.firestore, `users/${userId}/messages`);
+    
+    const messagesQuery = query(
+      messagesRef,
+      where('senderId', 'in', [loggedInUserId, userId]),
+      where('receiverId', 'in', [loggedInUserId, userId]),
+      orderBy('timestamp', 'asc')
+    );
+  
+    return new Observable(observer => {
+      const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+        const messages = snapshot.docs.map(doc => doc.data());
+        observer.next(messages);
+      });
+      
+      return () => unsubscribe();
     });
   }
+
+ 
 
  
 

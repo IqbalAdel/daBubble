@@ -30,6 +30,10 @@ export class UserService {
     return this._user ? new User(this._user) : null;
   }
 
+  selectUser(userId: string) {
+    this.selectedUserIdSubject.next(userId); // Sofort aktualisieren
+  }
+
   async loadUserById(uid: string): Promise<void> {
     try {
       const docRef = doc(this.firestore, 'users', uid);

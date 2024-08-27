@@ -6,7 +6,7 @@ import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
 import { DialogChannelAddMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-add-members/dialog-channel-add-members.component';
-import { ChatComponent } from '../chat/chat.component';
+import { ChatComponent, ChatMessage } from '../chat/chat.component';
 import { Observable, switchMap } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
@@ -27,14 +27,17 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   filteredChannels$: Observable<Channel[]> | undefined;
   groupId!: string;
   groupName!: string;
+  userChats: ChatMessage[] = [];
+  selectedUserId: string = ''; 
 
   currentDate!: string;
   currentTime!: string;
   displayDate!: string;
   userName!: string;
   loggedInUserName!: string;
+  chatsNummbers: ChatMessage[] = [];
 
-  messages: { text: string; timestamp: string; time: string; userName: string }[] = [];
+  messages: { text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
   groupUsers: User[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
@@ -57,6 +60,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       this.loadGroupUsers(); 
       this.loggedInUser();
       this.getChannelsForusers();
+      this.loadUserChats();
     });
   }
 
@@ -64,15 +68,23 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     this.scrollToBottom();
   }
 
+  loadChats(): void {
+    const channelId = 'your-channel-id'; // Channel ID hier setzen
+    this.firebaseService.getChannelsMessages(channelId).subscribe(
+      (messages: ChatMessage[]) => {
+        this.chatsNummbers = messages;
+      },
+      (error) => {
+        console.error('Fehler beim Abrufen der Nachrichten:', error);
+      }
+    );
+  }
+  
   loadMessages(): void {
     if (this.groupId) {
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
-        (channelData: { text: string; timestamp: string; time: string; userName: string }[]) => { // Typ für channelData
-          if (channelData) {
-            this.messages = channelData;
-          } else {
-            this.messages = [];
-          }
+        (channelData: any[]) => { // Verwende any[] für channelData
+          this.messages = this.formatMessages(channelData); // Formatierte Nachrichten setzen
         },
         (error: any) => { // Typ für error
           console.error('Fehler beim Abrufen der Nachrichten:', error);
@@ -80,6 +92,45 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       );
     }
   }
+  
+  formatMessages(messages: any[]): any[] {
+    return messages.map(message => {
+      return {
+        ...message,
+        timestamp: this.formatTimestamp(message.timestamp)
+      };
+    });
+  }
+
+  formatTimestamp(timestamp: any): string {
+    const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
+    const today = new Date();
+  
+    if (date.toDateString() === today.toDateString()) {
+      return 'Heute'; // Wenn Datum von heute ist
+    } else {
+      return date.toLocaleDateString('de-DE', { // Formatierung für deutsches Datum
+        weekday: 'long',  // Wochentag
+        day: '2-digit',   // Tag
+        month: '2-digit', // Monat
+        year: 'numeric'   // Jahr
+      });
+    }
+  }
+
+loadUserChats(): void {
+  if (this.selectedUserId) {
+    this.firebaseService.getChatsForUser(this.selectedUserId).subscribe(
+      (chats: ChatMessage[]) => {
+        this.userChats = chats;
+        // Optional: Verarbeite die Daten weiter, falls notwendig
+      },
+      (error) => {
+        console.error('Fehler beim Abrufen der Chats:', error);
+      }
+    );
+  }
+}
 
   async loggedInUser() {
     try {
@@ -129,6 +180,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       console.error('Fehler beim Laden der Channel-Benutzer:', error);
     }
   }
+  
 
   changeImageSmiley(isHover: boolean) {
     this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.png' : 'assets/img/smiley/add_reaction.png';
