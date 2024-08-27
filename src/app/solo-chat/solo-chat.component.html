@@ -39,24 +39,28 @@
     </ng-container>
 
     <div *ngFor="let chat of chats">
-      <div class="line-date">
-        <div class="line-two"></div>
-        <span class="date">{{chat.timestamp }}</span>
-        <div class="line-two"></div>
-      </div>
-      <div *ngIf="chat.text.length > 0" [ngClass]="{'my-message': chat.userName === loggedInUserName, 'nachrichten': chat.userName !== loggedInUserName}">
-        <img [src]="user?.img" alt="User Image">
-        <div class="solo-chat-completely">
-          <div class="nameAndTime">
-            <p>{{ chat.userName }}</p>
-            <p>{{ chat.time }}</p>
+      <!-- Nachrichten anzeigen, wenn der Benutzer der Absender oder Empfänger ist -->
+      <div *ngIf="chat.userId === loggedInUserId || chat.receivinguserId === loggedInUserId">
+        <div class="line-date">
+          <div class="line-two"></div>
+          <span class="date">{{ chat.timestamp }}</span>
+          <div class="line-two"></div>
+        </div>
+        <div [ngClass]="{'my-message': chat.userId === loggedInUserId, 'nachrichten': chat.userId !== loggedInUserId}">
+          <img [src]="user?.img" alt="User Image">
+          <div class="solo-chat-completely">
+            <div class="nameAndTime">
+              <p>{{ chat.text }}</p>
+              <p>{{ chat.time }}</p>
+            </div>
+            <span>
+              {{ chat.text }}
+            </span>
           </div>
-          <span>
-            {{ chat.text }}
-          </span>
         </div>
       </div>
     </div>
+    
     
   </div>
   <app-chat></app-chat>
