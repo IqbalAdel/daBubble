@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
@@ -22,11 +22,24 @@ import { HttpClientModule } from '@angular/common/http';
   templateUrl: './devspace.component.html',
   styleUrls: ['./devspace.component.scss'] // corrected styleUrl to styleUrls
 })
-export class DevspaceComponent {
+export class DevspaceComponent implements OnInit{
   firestore: Firestore = inject(Firestore);
   users$: Observable<any[]>;
   channels$: Observable<any[]>;
   channelsIqbal: Channel[] = [];
+  currentUser: User = {
+    name: '',
+    email: 'Test@gmx.de',
+    id: '',
+    img: '',
+    password: '',
+    channels: [],
+    chats: [],
+    usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
+      throw new Error('Function not implemented.');
+    }
+  };
+  currentUserChannels: Channel[] = [];
   user: User | null = null;
   selectedChannelId: string | null = null;
   loggedInUserName!: string;
@@ -73,6 +86,22 @@ export class DevspaceComponent {
     this.selectUser;
     this.loggedInUser();
   }
+
+  async ngOnInit(): Promise<void>{
+    await this.getActiveUser();
+
+    if(this.currentUser && this.currentUser.channels){
+      this.firebaseService.getChannels().subscribe((channels) => {
+        this.currentUserChannels = channels.filter(channel =>{
+          const channelId = channel['id']
+          return channelId && this.currentUser.channels!.includes(channelId)
+        })
+        	  
+      })
+      
+    };
+  }
+  
   async loggedInUser() {
     try {
       const uid = await this.firebaseService.getCurrentUserUid();
@@ -165,7 +194,9 @@ export class DevspaceComponent {
   }
 
   navigateRouteChannel(id: string) {
-    this.router.navigate(['/main/group-chat', id]);
+    if(id){
+      this.router.navigate(['/main/group-chat', id]);
+    }
   }
 
 
@@ -176,5 +207,23 @@ export class DevspaceComponent {
         // console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
       });
     });
+  }
+
+  async getActiveUser(){
+    try {
+      // UID des aktuell angemeldeten Benutzers abrufen
+      const uid = await this.firebaseService.getCurrentUserUid();
+      if (uid) {
+        // Benutzerdaten anhand der UID laden
+        await this.userService.loadUserById(uid);
+        const user = this.userService.getUser();
+        if(user){
+          this.currentUser = new User(user);
+        }
+      
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+    }
   }
 }

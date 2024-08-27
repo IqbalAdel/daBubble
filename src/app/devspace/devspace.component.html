@@ -30,6 +30,14 @@
             </div>
         </ng-container>
 
+        <!-- <ng-container *ngIf="openChannels">
+            <div *ngFor="let channel of currentUserChannels" class="group-chat"
+                [ngClass]="{'selected': selectedChannelId === channel.id}"
+                (click)="selectChannel(channel); navigateRouteChannel(channel.id!)">
+                # {{ channel.name }}
+            </div>
+        </ng-container> -->
+
         <div (click)="openDialog()" class="new-channel">
             <!-- <img src="assets/img/add_circle.png" alt=""> -->
             <span>Channel hinzufügen</span>
