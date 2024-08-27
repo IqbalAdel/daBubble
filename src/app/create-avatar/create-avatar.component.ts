@@ -4,8 +4,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../models/user.class';
+import { Channel } from '../../models/channel.class';
 import { UserService } from '../services/user.service';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 
@@ -18,6 +19,7 @@ import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage
 })
 export class CreateAvatarComponent implements OnInit {
   user!: User;
+  Channel!: Channel;
   auth: Auth = inject(Auth);
   firestore: Firestore = inject(Firestore);
   storage: Storage = inject(Storage);
@@ -93,34 +95,52 @@ export class CreateAvatarComponent implements OnInit {
   async saveUser() {
     const cleanedUserData = this.cleanUserData(this.user);
 
-    cleanedUserData.channels.push('1S28fQQEdf7LfxdJASzJ');
+    const channelId = '1S28fQQEdf7LfxdJASzJ'; // Die ID des Channels, zu dem der User hinzugefügt werden soll
+    cleanedUserData.channels.push(channelId);
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(this.auth, this.user.email, this.user.password);
+        const userCredential = await createUserWithEmailAndPassword(this.auth, this.user.email, this.user.password);
 
-      if (userCredential.user) {
-        const uid = userCredential.user.uid;
-        cleanedUserData.id = uid;
+        if (userCredential.user) {
+            const uid = userCredential.user.uid;
+            cleanedUserData.id = uid;
 
-        if (this.selectedFile) {
-          const filePath = `avatars/${uid}/${this.selectedFile.name}`;
-          const fileRef = ref(this.storage, filePath);
-          await uploadBytes(fileRef, this.selectedFile);
-          
-          const downloadURL = await getDownloadURL(fileRef);
-          cleanedUserData.img = downloadURL;
+            if (this.selectedFile) {
+                const filePath = `avatars/${uid}/${this.selectedFile.name}`;
+                const fileRef = ref(this.storage, filePath);
+                await uploadBytes(fileRef, this.selectedFile);
+                
+                const downloadURL = await getDownloadURL(fileRef);
+                cleanedUserData.img = downloadURL;
+            }
 
-          const docRef = doc(this.firestore, 'users', uid);
-          await setDoc(docRef, cleanedUserData);
+            // Benutzer in der `users`-Sammlung speichern
+            const userDocRef = doc(this.firestore, 'users', uid);
+            await setDoc(userDocRef, cleanedUserData);
+            console.log('User added with ID: ', uid);
 
-          console.log('User added with ID: ', uid);
-        } else {
-          const docRef = doc(this.firestore, 'users', uid);
-          await setDoc(docRef, cleanedUserData);
-          console.log('User added with ID: ', uid);
+            // Channel-Dokument aktualisieren, um den neuen Benutzer hinzuzufügen
+            const channelDocRef = doc(this.firestore, 'channels', channelId);
+            const channelDocSnap = await getDoc(channelDocRef);
+
+            if (channelDocSnap.exists()) {
+                const channelData = channelDocSnap.data() as Channel;
+                const userIds = channelData.users || [];
+
+                // Überprüfen, ob der Benutzer bereits in der Liste ist
+                if (!userIds.includes(uid)) {
+                    userIds.push(uid);
+                    await setDoc(channelDocRef, { users: userIds }, { merge: true });
+                    console.log(`User ${uid} added to channel ${channelId}`);
+                }
+            } else {
+                console.warn(`Channel with ID ${channelId} not found!`);
+            }
         }
-      }
     } catch (e) {
-      console.error('Error creating or updating user: ', e);
+        console.error('Error creating or updating user: ', e);
     }
-  }
+}
+
+
 }
