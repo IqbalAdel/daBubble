@@ -93,6 +93,7 @@ export class CreateAvatarComponent implements OnInit {
   async saveUser() {
     const cleanedUserData = this.cleanUserData(this.user);
 
+    cleanedUserData.channels.push('1S28fQQEdf7LfxdJASzJ');
     try {
       const userCredential = await createUserWithEmailAndPassword(this.auth, this.user.email, this.user.password);
 
