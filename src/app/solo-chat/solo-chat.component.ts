@@ -9,14 +9,15 @@ import { User } from '../../models/user.class';
 import { ChatComponent } from '../chat/chat.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FirebaseService } from '../services/firebase.service';
+import { collection, Timestamp } from 'firebase/firestore';
 
 interface Chat {
   text: string;
-  timestamp: string;
+  timestamp: Timestamp; // Oder string, falls Timestamp anders dargestellt wird
   time: string;
   userName: string;
   userId: string;
-  receivinguserId: string;
+  receivingUserId: string;
 }
 
 @Component({
@@ -92,6 +93,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.user = this.userService.getUser();
         if (this.user) {
           this.loggedInUserId = this.user.id;  // Benutzer-ID setzen
+          this.loggedInUserName = this.user.name; // Benutzername setzen (falls verwendet)
         }
       }
     } catch (error) {
@@ -131,33 +133,25 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // Echtzeit-Listener für die Chats eines Benutzers
   listenToChats(userId: string): void {
-    const userDocRef = doc(this.firestore, `users/${userId}`);
+    const messagesCollectionRef = collection(this.firestore, `users/${userId}/messages`);
   
-    this.chatListenerUnsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        const userData = docSnapshot.data();
-        const chats = userData?.['messages'] as Chat[] || [];
+    this.chatListenerUnsubscribe = onSnapshot(messagesCollectionRef, (snapshot) => {
+      if (!snapshot.empty) {
+        const chats = snapshot.docs.map(doc => doc.data() as Chat);
   
-        // Filter, um nur relevante Nachrichten anzuzeigen (gesendet/empfangen vom eingeloggten Benutzer)
+        // Filtere Nachrichten nach Benutzer-ID
         this.chats = chats
           .filter(chat => 
-            chat.userId === this.loggedInUserId || chat.receivinguserId === this.loggedInUserId
-          )
-          .map(chat => ({
-            text: chat.text || '',
-            timestamp: chat.timestamp || '',
-            time: chat.time || '',
-            userName: chat.userName || '',
-            userId: chat.userId || '',
-            receivinguserId: chat.receivinguserId || ''
-          }));
+            chat.userId === this.loggedInUserId || chat.receivingUserId === this.loggedInUserId
+          );
       } else {
-        console.error('User document does not exist:', userId);
+        this.chats = []; // Setze `chats` auf ein leeres Array, wenn keine Nachrichten vorhanden sind
       }
     }, (error) => {
       console.error('Error listening to chats:', error);
     });
   }
+  
 
   addMessageToUserChats(userId: string | null, message: any): Promise<void> {
     if (userId) {
