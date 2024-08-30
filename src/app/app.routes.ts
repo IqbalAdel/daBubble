@@ -17,12 +17,12 @@ export const routes: Routes = [
   { 
     path: '', component: LoginComponent, 
     children: [
-      { path: '', component: LoginSectionComponent },
+      { path: '', redirectTo: 'login', pathMatch: 'full' }, // Umleitung zur LoginSectionComponent
+      { path: 'login', component: LoginSectionComponent }, // Explizite Login-Route
       { path: 'sign-up', component: SignUpComponent },
       { path: 'create-avatar', component: CreateAvatarComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
-      { path: 'new-password', component: NewPasswordComponent },
-      { path: 'login', component: LoginSectionComponent },
+      { path: 'new-password', component: NewPasswordComponent }
     ] 
   },
   // { 
