@@ -83,21 +83,30 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   loadMessages(): void {
     if (this.groupId) {
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
-        (channelData: any[]) => { // Verwende any[] für channelData
+        (channelData: any[]) => {
           this.messages = this.formatMessages(channelData); // Formatierte Nachrichten setzen
         },
-        (error: any) => { // Typ für error
+        (error: any) => {
           console.error('Fehler beim Abrufen der Nachrichten:', error);
         }
       );
     }
   }
-  
+
+  formatMessageTime(timestamp: any): string {
+    const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
+    return date.toLocaleTimeString('de-DE', {
+      hour: '2-digit',    // Stunde
+      minute: '2-digit',  // Minute
+      // Sekunden weglassen
+    });
+  }
   formatMessages(messages: any[]): any[] {
     return messages.map(message => {
       return {
         ...message,
-        timestamp: this.formatTimestamp(message.timestamp)
+        timestamp: this.formatTimestamp(message.timestamp), // Datum formatieren
+        time: this.formatMessageTime(message.timestamp)   // Zeit ohne Sekunden formatieren
       };
     });
   }

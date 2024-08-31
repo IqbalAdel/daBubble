@@ -1,11 +1,11 @@
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription,Observable  } from 'rxjs';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service'; // Sicherstellen, dass der Import korrekt ist
 import { addDoc, arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
-import { Firestore } from '@angular/fire/firestore';
+import { collectionData, Firestore } from '@angular/fire/firestore';
 
 export interface ChatMessage {
   text: string;
@@ -48,7 +48,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.loadDataBasedOnId(id);
         this.setupMessageListener(id);
         this.loadCurrentUser(); // Die Methode laden, die den Benutzer lädt
-        this.getUserIdFromUrl();
+        // this.getUserIdFromUrl();
         this.getReceivingUserIdFromUrl();
       }
     });
@@ -87,23 +87,27 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  private setupMessageListener(channelId: string): void {
+  private setupMessageListener(chatId: string): void {
     if (this.messagesSubscription) {
       this.messagesSubscription.unsubscribe();
     }
   
-    this.messagesSubscription = this.fireService.getChannelsMessages(channelId)
+    // Erstellen Sie eine Referenz zur Nachrichten-Sammlung
+    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
+  
+    // Verwenden Sie collectionData, um die Daten als Observable zu erhalten
+    this.messagesSubscription = collectionData(messagesRef, { idField: 'id' }) // idField kann hilfreich sein, um Dokument-IDs zu erhalten
       .subscribe(
-        (messages) => {
-          // Filtere oder überprüfe hier, ob die eigenen Nachrichten enthalten sind
+        (messages: any[]) => { // Typ für messages definieren
           this.messages = messages;
           console.log('Messages updated:', this.messages);
         },
-        (error) => {
+        (error: any) => { // Typ für error definieren
           console.error('Error loading messages:', error);
         }
       );
   }
+  
 
   private async loadDataBasedOnId(id: string): Promise<void> {
     try {
@@ -139,9 +143,20 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
   }
 
-  createChatId(userId1: string, userId2: string): string {
-    const sortedIds = [userId1, userId2].sort();  // Alphabetische Sortierung
-    return sortedIds.join('_');  // Kombinierte ID erstellen
+  createChatId(userId1: string, userId2: string): string | null {
+    // Beispielhafte Überprüfung, ob es sich um gültige Benutzer-IDs handelt
+    // Diese Logik könnte an deine ID-Struktur angepasst werden.
+    const isValidUserId = (id: string) => id.startsWith('user_') || id.length === 28; // Beispiel: User-IDs haben ein Präfix 'user_' oder eine bestimmte Länge
+    
+    // Nur Chat-ID erstellen, wenn beide IDs Benutzer-IDs sind
+    if (isValidUserId(userId1) && isValidUserId(userId2)) {
+      const sortedIds = [userId1, userId2].sort();  // Alphabetische Sortierung
+      console.log('User IDs for chat creation:', userId1, userId2);  // Debugging: IDs ausgeben
+      return sortedIds.join('_');  // Kombinierte ID erstellen
+    } else {
+      console.warn('One or both IDs are not valid user IDs:', userId1, userId2);
+      return null;  // Gib null zurück, wenn keine Benutzer-IDs vorliegen
+    }
   }
 
   sendMessageToUser(messageText: string, receivingUserId: string): void {
@@ -149,11 +164,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       console.error('User is not defined');
       return;
     }
-
-    console.log('Sender User ID:', this.user.id);
-    console.log('Receiving User ID:', receivingUserId);
   
-    const chatId = this.createChatId(this.user.id, receivingUserId);  // Chat-ID zwischen den beiden Benutzern erstellen
+    const chatId = this.createChatId(this.user.id, receivingUserId); // Chat-ID erstellen
+    console.log('Chat ID:', chatId);  // Debugging: Chat-ID ausgeben
+  
     const message = {
       text: messageText,
       timestamp: Timestamp.now(),
@@ -164,10 +178,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     };
   
     // Nachricht in der Firestore-Collection für diesen Chat speichern
-    const chatDocRef = doc(this.firestore, 'chats', chatId);
-    addDoc(collection(chatDocRef, 'messages'), message)
-      .then(() => console.log('Message sent successfully'))
-      .catch(error => console.error('Error sending message:', error));
+    if (chatId) {
+      const chatDocRef = doc(this.firestore, 'chats', chatId);
+      addDoc(collection(chatDocRef, 'messages'), message)
+        .then(() => console.log('Message sent successfully'))
+        .catch(error => console.error('Error sending message:', error));
+    } else {
+      console.error('chatId is null or undefined');
+    }
   }
 
   
@@ -183,6 +201,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       return;
     }
   
+    this.sendMessageToUser(messageText, receivingUserId);
+    
     const messageInput = this.messageInputRef.nativeElement;
     const message = {
       text: messageText,
@@ -190,12 +210,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       userName: this.userName || 'Gast',
       userId: this.user.id,
       receivingUserId: receivingUserId,
-      time: new Date().toLocaleTimeString()
+      time: new Date().toLocaleTimeString(),
+      chats:[]
     };
   
     console.log('Message object:', message);  // Debugging-Ausgabe für die Nachricht
   
     this.checkIfUserAndSendMessage(message, messageInput);
+    this.clearMessageInputAndScroll(messageInput);
   }
   
   
@@ -207,7 +229,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       .then((userSnapshot) => {
         if (userSnapshot.exists()) {
           // Die channelId ist eine User-ID, speichere die Nachricht in der users-Collection
-          this.saveMessageToUsers(userDocRef, message, messageInput);
+          // this.saveMessageToUsers(userDocRef, message, messageInput);
         } else {
           // Die channelId ist keine User-ID, speichere die Nachricht in der channels-Collection
           this.saveMessageToChannels(message, messageInput);
@@ -215,19 +237,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       })
       .catch((error: any) => {
         console.error('Error checking userId in Firestore:', error);
-      });
-  }
-  
-  // Speichert die Nachricht in der users-Collection
-  private saveMessageToUsers(userDocRef: any, message: any, messageInput: HTMLTextAreaElement): void {
-    const messagesRef = collection(this.firestore, `users/${userDocRef.id}/messages`);
-    addDoc(messagesRef, message)
-      .then(() => {
-        this.clearMessageInputAndScroll(messageInput);
-        console.log('Message saved to users successfully');
-      })
-      .catch((error) => {
-        console.error('Error saving message to users:', error);
       });
   }
   
@@ -261,9 +270,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       userId: this.user?.id || 'Unknown UserId',    // Verwende this.user.id
       timestamp: Timestamp.fromDate(now),
       time: formattedTime,
-      receivinguserId: this.channelId  // channelId als Empfangsuser verwenden
+      receivinguserId: this.channelId,  // channelId als Empfangsuser verwenden
+      chats:[]
     };
   }
+
   getReceivingUserId(): string | null {
     const receivingUserId = this.route.snapshot.queryParams['receiverId']; // Oder 'params', je nach URL-Struktur
     if (receivingUserId) {
@@ -276,14 +287,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   getReceivingUserIdFromUrl(): string | null {
-    const receivingUserId = this.route.snapshot.paramMap.get('id');  // Oder verwende queryParams, wenn es sich um eine Query handelt
-    if (receivingUserId) {
-      console.log('Extracted receiving user ID:', receivingUserId);
-      return receivingUserId;
-    } else {
-      console.error('Receiving user ID is not present in the URL');
-      return null;
-    }
+    const receivingUserId = this.route.snapshot.paramMap.get('id');  // Falls nötig, ändere 'id' auf den richtigen Parametername
+    console.log('Extracted receiving user ID:', receivingUserId);  // Debugging: empfangene Benutzer-ID ausgeben
+    return receivingUserId;
   }
 
   // 3. Nachricht an Firestore senden
@@ -318,7 +324,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       console.log('Benutzer-ID aus der URL:', userId);
       return userId;
     } else {
-      console.log('Keine Benutzer-ID in der URL gefunden.');
+      // console.log('Keine Benutzer-ID in der URL gefunden.');
       return null;
     }
   }

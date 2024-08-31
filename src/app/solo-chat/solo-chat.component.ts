@@ -10,10 +10,14 @@ import { ChatComponent } from '../chat/chat.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FirebaseService } from '../services/firebase.service';
 import { collection, Timestamp } from 'firebase/firestore';
+import { DatePipe } from '@angular/common';
+import { QueryDocumentSnapshot } from 'firebase/firestore';
+import { ActivatedRoute } from '@angular/router';
 
 interface Chat {
   text: string;
-  timestamp: Timestamp; // Oder string, falls Timestamp anders dargestellt wird
+  timestamp: Timestamp | string; // Oder string, falls Timestamp anders dargestellt wird
+  formattedTimestamp?: string;
   time: string;
   userName: string;
   userId: string;
@@ -25,7 +29,8 @@ interface Chat {
   standalone: true,
   imports: [CommonModule, FormsModule, ChatComponent, HttpClientModule],
   templateUrl: './solo-chat.component.html',
-  styleUrls: ['./solo-chat.component.scss']
+  styleUrls: ['./solo-chat.component.scss'],
+  providers: [DatePipe]
 })
 export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
@@ -42,7 +47,9 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   constructor(
     private firestore: Firestore,
     private userService: UserService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private datePipe: DatePipe,
+    private route: ActivatedRoute
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -133,34 +140,109 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // Echtzeit-Listener für die Chats eines Benutzers
   listenToChats(userId: string): void {
-    const messagesCollectionRef = collection(this.firestore, `users/${userId}/messages`);
+    if (!this.loggedInUserId || !userId) {
+      return;
+    }
+  
+    // Chat-ID basierend auf den beiden Benutzer-IDs erstellen
+    const chatId = this.createChatId(this.loggedInUserId, userId);
+  
+    // Nachrichten aus der `chats/{chatId}/messages` Collection laden
+    const messagesCollectionRef = collection(this.firestore, `chats/${chatId}/messages`);
   
     this.chatListenerUnsubscribe = onSnapshot(messagesCollectionRef, (snapshot) => {
       if (!snapshot.empty) {
-        const chats = snapshot.docs.map(doc => doc.data() as Chat);
-  
-        // Filtere Nachrichten nach Benutzer-ID
-        this.chats = chats
-          .filter(chat => 
-            chat.userId === this.loggedInUserId || chat.receivingUserId === this.loggedInUserId
-          );
+        this.chats = this.processChatsSnapshot(snapshot); // Verarbeite und filtere die Nachrichten
       } else {
-        this.chats = []; // Setze `chats` auf ein leeres Array, wenn keine Nachrichten vorhanden sind
+        this.chats = []; // Falls keine Nachrichten vorhanden sind
       }
     }, (error) => {
-      console.error('Error listening to chats:', error);
+      console.error('Fehler beim Anhören der Chats:', error);
     });
   }
-  
 
-  addMessageToUserChats(userId: string | null, message: any): Promise<void> {
-    if (userId) {
-      console.log('Attempting to add message to user chats:', userId);
-      return this.firebaseService.addMessageToUserChats(userId, message);
+  // Funktion, um die Chat-ID zu erstellen (basierend auf alphabetischer Sortierung der IDs)
+createChatId(userId1: string, userId2: string): string {
+  const sortedIds = [userId1, userId2].sort();  // IDs alphabetisch sortieren
+  return sortedIds.join('_');  // Kombiniere die sortierten IDs
+}
+
+  private processChatsSnapshot(snapshot: { docs: QueryDocumentSnapshot[] }): Chat[] {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Setze Zeit auf Mitternacht für den Vergleich
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1); // Gestern
+
+    const chats = snapshot.docs.map(doc => {
+        const data = doc.data() as Chat;
+        let date: Date | null = this.convertTimestamp(data.timestamp);
+
+        return this.formatChatData(data, date, today, yesterday);
+    });
+
+    return this.filterAndSortChats(chats);
+}
+  private convertTimestamp(timestamp: Timestamp | string): Date {
+    if (timestamp instanceof Timestamp) {
+      return timestamp.toDate();
+    } else if (typeof timestamp === 'string') {
+      return new Date(timestamp);
     } else {
-      return Promise.reject('No user ID available to add message to user chats.');
+      return new Date();
     }
   }
+
+  private filterAndSortChats(chats: Chat[]): Chat[] {
+    return chats
+        .filter(chat =>
+            chat.userId === this.loggedInUserId || chat.receivingUserId === this.loggedInUserId
+        )
+        .sort((a, b) => {
+            const dateA = this.convertTimestamp(a.timestamp);
+            const dateB = this.convertTimestamp(b.timestamp);
+            return dateA.getTime() - dateB.getTime();
+        });
+}
+  
+  
+  private formatChatData(data: Chat, date: Date, today: Date, yesterday: Date): Chat {
+    const formattedTimestamp = this.getFormattedDate(date, today, yesterday);
+    const formattedTime = this.datePipe.transform(date, 'HH:mm', 'de-DE') || '';
+  
+    return {
+      ...data,
+      formattedTimestamp: formattedTimestamp,
+      time: formattedTime || data.time
+    };
+  }
+  
+  private getFormattedDate(date: Date, today: Date, yesterday: Date): string {
+    if (this.isSameDay(date, today)) {
+      return 'Heute';
+    } else if (this.isSameDay(date, yesterday)) {
+      return 'Gestern';
+    } else {
+      return this.datePipe.transform(date, 'EEEE, dd.MM.yyyy', 'de-DE') || '';
+    }
+  }
+  
+  private isSameDay(date1: Date, date2: Date): boolean {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
+  }
+
+  getUserIdFromUrl(): string | null {
+    const userId = this.route.snapshot.params['id'];
+    if (userId) {
+      console.log('Benutzer-ID aus der URL:', userId);
+      return userId;
+    } else {
+      console.log('Keine Benutzer-ID in der URL gefunden.');
+      return null;
+    }
+  }
+  
 
   private scrollToBottom(): void {
     try {

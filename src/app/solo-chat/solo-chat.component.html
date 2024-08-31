@@ -38,31 +38,34 @@
       </ng-template>
     </ng-container>
 
-  <div *ngFor="let chat of chats">
-  <!-- Nachrichten anzeigen, wenn der Benutzer der Absender oder Empfänger ist -->
-  <div *ngIf="chat.userId === loggedInUserId || chat.receivingUserId === loggedInUserId">
-    <div class="line-date">
-      <div class="line-two"></div>
-      <!-- Falls timestamp ein Timestamp-Objekt ist, konvertiere es in ein lesbares Format -->
-      <span class="date">{{ chat.timestamp.toDate() | date: 'short' }}</span>
-      <div class="line-two"></div>
-    </div>
-    <div [ngClass]="{'my-message': chat.userId === loggedInUserId, 'nachrichten': chat.userId !== loggedInUserId}">
-      <img [src]="user?.img" alt="User Image">
-      <div class="solo-chat-completely">
-        <div class="nameAndTime">
-          <p>{{ chat.userName }}</p>
-          <p>{{ chat.time }}</p>
+    <div *ngFor="let chat of chats">
+      <!-- Nachricht nur anzeigen, wenn der eingeloggte Benutzer entweder der Sender oder der Empfänger ist -->
+      <div *ngIf="loggedInUserId === chat.userId || loggedInUserId === chat.receivingUserId">
+        <div class="line-date">
+          <div class="line-two"></div>
+          <!-- Anzeige des formatierten Datums -->
+          <span class="date">{{ chat.formattedTimestamp }}</span>
+          <div class="line-two"></div>
         </div>
-        <span>
-          {{ chat.text }}
-        </span>
+    
+        <!-- Unterscheidung, ob der eingeloggte Benutzer der Sender der Nachricht ist -->
+        <div [ngClass]="{'my-message': chat.userId === loggedInUserId, 'nachrichten': chat.userId !== loggedInUserId}">
+          <img [src]="user?.img" alt="User Image">
+          <div class="solo-chat-completely">
+            <div class="nameAndTime">
+              <p>{{ chat.userName }}</p>
+              <!-- Anzeige der formatierten Uhrzeit -->
+              <p>{{ chat.time }} Uhr</p>
+            </div>
+            <span>
+              {{ chat.text }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-    
-    
+
+
   </div>
   <app-chat></app-chat>
 </div>

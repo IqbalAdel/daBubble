@@ -52,11 +52,11 @@
                             <div class="answer">
                                 <div class="answers">
                                   <!-- Anzeige der Anzahl der Chats -->
-                                  <!-- <ng-container *ngIf="message.chats === 0">Antworten</ng-container>
+                                  <ng-container *ngIf="message.chats.length === 0">Antworten</ng-container>
                                   <ng-container *ngIf="message.chats.length === 1">1 Antwort</ng-container>
                                   <ng-container *ngIf="message.chats.length > 1">
                                     {{ message.chats.length }} Antworten
-                                  </ng-container> -->
+                                  </ng-container>
                                 </div>
                                 <div>Letzte Antwort {{ currentTime }}</div>
                               </div>
