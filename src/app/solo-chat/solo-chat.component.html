@@ -38,13 +38,13 @@
       </ng-template>
     </ng-container>
 
-    <div *ngFor="let chat of chats">
+    <div *ngFor="let chat of chats"  [ngClass]="{'blink': isChatBlinking}">
       <!-- Nachricht nur anzeigen, wenn der eingeloggte Benutzer entweder der Sender oder der Empfänger ist -->
       <div *ngIf="loggedInUserId === chat.userId || loggedInUserId === chat.receivingUserId">
         <div class="line-date">
           <div class="line-two"></div>
           <!-- Anzeige des formatierten Datums -->
-          <span class="date">{{ chat.formattedTimestamp }}</span>
+          <span class="date">{{ chat.timestamp  }}</span>
           <div class="line-two"></div>
         </div>
     

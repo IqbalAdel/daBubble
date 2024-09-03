@@ -1,0 +1,30 @@
+.main {
+    height: 85vh;
+
+    width: 350px;
+    background-color: white;
+    margin: 20px 20px 20px 0px;
+    border-radius: 30px;
+    position: relative;
+}
+
+.header {
+    height: 60px;
+    padding: 20px 30px 0px 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    h1{
+        margin: 0;
+    }
+    span{
+        color: blue;
+        cursor: pointer;
+        font-size: 17px;
+    }
+}
+
+.line {
+    border-bottom: 4px solid rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}

@@ -8,11 +8,12 @@ import { UserService } from '../services/user.service';
 import { SoloChatComponent } from '../solo-chat/solo-chat.component';
 import { ActivatedRoute, Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators'; 
+import { GroupAnswerComponent } from '../group-answer/group-answer.component';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [DevspaceComponent, GroupChatComponent,MainComponent,HeaderComponent,CommonModule,SoloChatComponent, RouterModule],
+  imports: [DevspaceComponent, GroupChatComponent,MainComponent,HeaderComponent,CommonModule,SoloChatComponent, RouterModule, GroupAnswerComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })

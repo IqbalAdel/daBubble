@@ -9,9 +9,8 @@ import { User } from '../../models/user.class';
 import { ChatComponent } from '../chat/chat.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FirebaseService } from '../services/firebase.service';
-import { collection, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, getDocs, Timestamp, updateDoc, writeBatch } from 'firebase/firestore';
 import { DatePipe } from '@angular/common';
-import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { ActivatedRoute } from '@angular/router';
 
 interface Chat {
@@ -22,6 +21,7 @@ interface Chat {
   userName: string;
   userId: string;
   receivingUserId: string;
+  isRead: boolean; // Neues Feld zum Verfolgen des Lesestatus
 }
 
 @Component({
@@ -40,6 +40,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   loggedInUserId!: string;
   userName!: string;
   chats: Chat[] = [];
+  isChatBlinking: boolean = false;
 
   private chatsSubscription: Subscription | null = null;
   private chatListenerUnsubscribe: (() => void) | null = null;
@@ -48,7 +49,6 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     private firestore: Firestore,
     private userService: UserService,
     private firebaseService: FirebaseService,
-    private datePipe: DatePipe,
     private route: ActivatedRoute
   ) { }
 
@@ -139,98 +139,42 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   // Echtzeit-Listener für die Chats eines Benutzers
-  listenToChats(userId: string): void {
-    if (!this.loggedInUserId || !userId) {
-      return;
-    }
-  
-    // Chat-ID basierend auf den beiden Benutzer-IDs erstellen
-    const chatId = this.createChatId(this.loggedInUserId, userId);
-  
-    // Nachrichten aus der `chats/{chatId}/messages` Collection laden
-    const messagesCollectionRef = collection(this.firestore, `chats/${chatId}/messages`);
-  
-    this.chatListenerUnsubscribe = onSnapshot(messagesCollectionRef, (snapshot) => {
-      if (!snapshot.empty) {
-        this.chats = this.processChatsSnapshot(snapshot); // Verarbeite und filtere die Nachrichten
-      } else {
-        this.chats = []; // Falls keine Nachrichten vorhanden sind
-      }
-    }, (error) => {
-      console.error('Fehler beim Anhören der Chats:', error);
-    });
+listenToChats(userId: string): void {
+  if (!this.loggedInUserId || !userId) {
+    return;
   }
+
+  const chatId = this.createChatId(this.loggedInUserId, userId);
+  const messagesCollectionRef = collection(this.firestore, `chats/${chatId}/messages`);
+
+  this.chatListenerUnsubscribe = onSnapshot(messagesCollectionRef, (snapshot) => {
+    if (!snapshot.empty) {
+      const retrievedMessages = snapshot.docs.map(doc => doc.data());
+      this.chats = this.formatMessages(retrievedMessages);
+
+      // Prüfe, ob es ungelesene Nachrichten gibt
+      const hasUnread = retrievedMessages.some(message => !message['isRead'] && message['receivingUserId'] === this.loggedInUserId);
+
+      // Aktualisiere den Blink-Status
+      this.isChatBlinking = hasUnread;
+
+      // console.log('Formatted chats:', this.chats);
+    } else {
+      this.chats = [];
+      this.isChatBlinking = false;
+    }
+  }, (error) => {
+    console.error('Fehler beim Abrufen der Chats:', error);
+  });
+}
+
 
   // Funktion, um die Chat-ID zu erstellen (basierend auf alphabetischer Sortierung der IDs)
-createChatId(userId1: string, userId2: string): string {
-  const sortedIds = [userId1, userId2].sort();  // IDs alphabetisch sortieren
-  return sortedIds.join('_');  // Kombiniere die sortierten IDs
-}
-
-  private processChatsSnapshot(snapshot: { docs: QueryDocumentSnapshot[] }): Chat[] {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Setze Zeit auf Mitternacht für den Vergleich
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1); // Gestern
-
-    const chats = snapshot.docs.map(doc => {
-        const data = doc.data() as Chat;
-        let date: Date | null = this.convertTimestamp(data.timestamp);
-
-        return this.formatChatData(data, date, today, yesterday);
-    });
-
-    return this.filterAndSortChats(chats);
-}
-  private convertTimestamp(timestamp: Timestamp | string): Date {
-    if (timestamp instanceof Timestamp) {
-      return timestamp.toDate();
-    } else if (typeof timestamp === 'string') {
-      return new Date(timestamp);
-    } else {
-      return new Date();
-    }
+  createChatId(userId1: string, userId2: string): string {
+    const sortedIds = [userId1, userId2].sort();  // IDs alphabetisch sortieren
+    return sortedIds.join('_');  // Kombiniere die sortierten IDs
   }
 
-  private filterAndSortChats(chats: Chat[]): Chat[] {
-    return chats
-        .filter(chat =>
-            chat.userId === this.loggedInUserId || chat.receivingUserId === this.loggedInUserId
-        )
-        .sort((a, b) => {
-            const dateA = this.convertTimestamp(a.timestamp);
-            const dateB = this.convertTimestamp(b.timestamp);
-            return dateA.getTime() - dateB.getTime();
-        });
-}
-  
-  
-  private formatChatData(data: Chat, date: Date, today: Date, yesterday: Date): Chat {
-    const formattedTimestamp = this.getFormattedDate(date, today, yesterday);
-    const formattedTime = this.datePipe.transform(date, 'HH:mm', 'de-DE') || '';
-  
-    return {
-      ...data,
-      formattedTimestamp: formattedTimestamp,
-      time: formattedTime || data.time
-    };
-  }
-  
-  private getFormattedDate(date: Date, today: Date, yesterday: Date): string {
-    if (this.isSameDay(date, today)) {
-      return 'Heute';
-    } else if (this.isSameDay(date, yesterday)) {
-      return 'Gestern';
-    } else {
-      return this.datePipe.transform(date, 'EEEE, dd.MM.yyyy', 'de-DE') || '';
-    }
-  }
-  
-  private isSameDay(date1: Date, date2: Date): boolean {
-    return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
-  }
 
   getUserIdFromUrl(): string | null {
     const userId = this.route.snapshot.params['id'];
@@ -242,7 +186,66 @@ createChatId(userId1: string, userId2: string): string {
       return null;
     }
   }
+
+  formatMessageTime(timestamp: any): string {
+    const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
+    return date.toLocaleTimeString('de-DE', {
+      hour: '2-digit',    // Stunde
+      minute: '2-digit',  // Minute
+    });
+  }
+
+  formatMessages(messages: any[]): any[] {
+    const sortedMessages = messages.sort((a, b) => {
+      return a.timestamp.toDate().getTime() - b.timestamp.toDate().getTime();
+    });
   
+    return sortedMessages.map(message => {
+      return {
+        ...message,
+        timestamp: this.formatTimestamp(message.timestamp), // Datum formatieren
+        time: this.formatMessageTime(message.timestamp),   // Zeit formatieren
+        isRead: message.isRead // Status der Nachricht (gelesen/ungelesen)
+      };
+    });
+  }
+  formatTimestamp(timestamp: any): string {
+    const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
+    const today = new Date();
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Heute'; // Wenn Datum von heute ist
+    } else {
+      return date.toLocaleDateString('de-DE', { // Formatierung für deutsches Datum
+        weekday: 'long',  // Wochentag
+        day: '2-digit',   // Tag
+        month: '2-digit', // Monat
+        year: 'numeric'   // Jahr
+      });
+    }
+  }
+
+  async markMessagesAsRead(chatId: string, userId: string) {
+    const messagesCollectionRef = collection(this.firestore, `chats/${chatId}/messages`);
+    
+    const snapshot = await getDocs(messagesCollectionRef);
+    const batch = writeBatch(this.firestore);
+  
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      if (data['receivingUserId'] === userId && !data['isRead']) {
+        batch.update(doc.ref, { isRead: true });
+      }
+    });
+  
+    try {
+      await batch.commit();
+      console.log('Messages marked as read.');
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+    }
+  }
+
 
   private scrollToBottom(): void {
     try {

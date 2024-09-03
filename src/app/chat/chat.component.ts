@@ -9,9 +9,12 @@ import { collectionData, Firestore } from '@angular/fire/firestore';
 
 export interface ChatMessage {
   text: string;
-  timestamp: Timestamp; // Firestore Timestamp Typ verwenden
+  timestamp: Timestamp;
   time: string;
   userName: string;
+  userId: string;
+  receivingUserId: string;
+  isRead?: boolean;
 }
 
 @Component({
@@ -71,19 +74,19 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   async loadCurrentUser() {
     try {
       const uid = await this.fireService.getCurrentUserUid();
-      console.log('Current user UID:', uid);  // Debugging-Ausgabe für UID
+      // console.log('Current user UID:', uid);  // Debugging-Ausgabe für UID
       if (uid) {
         await this.userService.loadUserById(uid);
         this.user = this.userService.getUser();
-        console.log('Loaded user:', this.user);  // Debugging-Ausgabe für Benutzerobjekt
+        // console.log('Loaded user:', this.user);  // Debugging-Ausgabe für Benutzerobjekt
         if (this.user) {
           this.userName = this.user.name;  // Setze den Benutzernamen, falls erforderlich
         }
       } else {
-        console.error('No UID retrieved');
+        // console.error('No UID retrieved');
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      // console.error('Error fetching user data:', error);
     }
   }
 
@@ -92,17 +95,17 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.messagesSubscription.unsubscribe();
     }
   
-    // Erstellen Sie eine Referenz zur Nachrichten-Sammlung
     const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
   
-    // Verwenden Sie collectionData, um die Daten als Observable zu erhalten
-    this.messagesSubscription = collectionData(messagesRef, { idField: 'id' }) // idField kann hilfreich sein, um Dokument-IDs zu erhalten
+    this.messagesSubscription = collectionData(messagesRef, { idField: 'id' })
       .subscribe(
-        (messages: any[]) => { // Typ für messages definieren
+        (messages: any[]) => {
           this.messages = messages;
-          console.log('Messages updated:', this.messages);
+          // console.log('Messages updated:', this.messages);
+          // Bei neuer Nachricht Blinken aktivieren
+          messages.forEach(message => this.receiveMessage(message));
         },
-        (error: any) => { // Typ für error definieren
+        (error: any) => {
           console.error('Error loading messages:', error);
         }
       );
@@ -143,30 +146,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
   }
 
-  createChatId(userId1: string, userId2: string): string | null {
-    // Beispielhafte Überprüfung, ob es sich um gültige Benutzer-IDs handelt
-    // Diese Logik könnte an deine ID-Struktur angepasst werden.
-    const isValidUserId = (id: string) => id.startsWith('user_') || id.length === 28; // Beispiel: User-IDs haben ein Präfix 'user_' oder eine bestimmte Länge
-    
-    // Nur Chat-ID erstellen, wenn beide IDs Benutzer-IDs sind
-    if (isValidUserId(userId1) && isValidUserId(userId2)) {
-      const sortedIds = [userId1, userId2].sort();  // Alphabetische Sortierung
-      console.log('User IDs for chat creation:', userId1, userId2);  // Debugging: IDs ausgeben
-      return sortedIds.join('_');  // Kombinierte ID erstellen
-    } else {
-      console.warn('One or both IDs are not valid user IDs:', userId1, userId2);
-      return null;  // Gib null zurück, wenn keine Benutzer-IDs vorliegen
-    }
-  }
-
   sendMessageToUser(messageText: string, receivingUserId: string): void {
     if (!this.user) {
       console.error('User is not defined');
       return;
     }
   
-    const chatId = this.createChatId(this.user.id, receivingUserId); // Chat-ID erstellen
-    console.log('Chat ID:', chatId);  // Debugging: Chat-ID ausgeben
+    const chatId = this.fireService.createChatId(this.user.id, receivingUserId); // Chat-ID erstellen
+    // console.log('Chat ID:', chatId);  // Debugging: Chat-ID ausgeben
   
     const message = {
       text: messageText,
@@ -174,7 +161,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       userName: this.user.name,
       userId: this.user.id,
       receivingUserId: receivingUserId,
-      time: new Date().toLocaleTimeString()
+      time: new Date().toLocaleTimeString(),
+      isRead: false 
     };
   
     // Nachricht in der Firestore-Collection für diesen Chat speichern
@@ -211,10 +199,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       userId: this.user.id,
       receivingUserId: receivingUserId,
       time: new Date().toLocaleTimeString(),
-      chats:[]
+      chats:[],
+      isRead:false
     };
   
-    console.log('Message object:', message);  // Debugging-Ausgabe für die Nachricht
+    // console.log('Message object:', message);  // Debugging-Ausgabe für die Nachricht
   
     this.checkIfUserAndSendMessage(message, messageInput);
     this.clearMessageInputAndScroll(messageInput);
@@ -288,13 +277,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   getReceivingUserIdFromUrl(): string | null {
     const receivingUserId = this.route.snapshot.paramMap.get('id');  // Falls nötig, ändere 'id' auf den richtigen Parametername
-    console.log('Extracted receiving user ID:', receivingUserId);  // Debugging: empfangene Benutzer-ID ausgeben
+    // console.log('Extracted receiving user ID:', receivingUserId);  // Debugging: empfangene Benutzer-ID ausgeben
     return receivingUserId;
   }
 
   // 3. Nachricht an Firestore senden
   sendMessageToFirestore(message: any): Promise<void> {
-    console.log('Attempting to send message to channel:', this.channelId);
+    // console.log('Attempting to send message to channel:', this.channelId);
     return this.fireService.addMessageToFirestore(this.channelId, message);
   }
 
@@ -328,5 +317,28 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       return null;
     }
   }
+
+  async updateUserBlinkingStatus(userId: string, isBlinking: boolean): Promise<void> {
+    try {
+      const userDocRef = doc(this.firestore, 'users', userId);
+      await updateDoc(userDocRef, { isBlinking });
+      console.log(`User ${userId} blinking status updated to ${isBlinking}`);
+    } catch (error) {
+      console.error('Error updating user blinking status:', error);
+    }
+  }
+
+  // Methode zum Blinken der Benutzer, wenn eine Nachricht empfangen wird
+receiveMessage(message: any) {
+  const { userId, receivingUserId } = message;
+  this.updateUserBlinkingStatus(userId, true);  // Sender blinkt
+  this.updateUserBlinkingStatus(receivingUserId, true);  // Empfänger blinkt
+
+  // Stoppe das Blinken nach einer bestimmten Zeit
+  setTimeout(() => {
+    this.updateUserBlinkingStatus(userId, false);
+    this.updateUserBlinkingStatus(receivingUserId, false);
+  }, 5000);  // Blinken für 5 Sekunden
+}
 
 }

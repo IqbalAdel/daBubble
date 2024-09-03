@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
@@ -37,7 +37,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   loggedInUserName!: string;
   chatsNummbers: ChatMessage[] = [];
 
-  messages: { text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
+  messages: { id:string; text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
   groupUsers: User[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
@@ -48,6 +48,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     public userService: UserService, // Richtiger Service Name
     private dialog: MatDialog, // Verwende nur eine Instanz von MatDialog
     private firebaseService: FirebaseService,
+    private router: Router
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
   }
@@ -188,6 +189,10 @@ loadUserChats(): void {
     } catch (error) {
       console.error('Fehler beim Laden der Channel-Benutzer:', error);
     }
+  }
+
+  navigateToAnswers(messageId: string) {
+    this.router.navigate(['/main/group-answer', messageId]);
   }
   
 

@@ -9,29 +9,32 @@
         </div>
         <div class="persons-group" *ngIf="filteredChannels$ | async as channels; else loading">
             <!-- Iteriere über die gefilterten Kanäle -->
-            <div *ngFor="let channel of channels" (click)="openDialogMemberList()" class="display-flex header-group-img">
+            <div *ngFor="let channel of channels" (click)="openDialogMemberList()"
+                class="display-flex header-group-img">
                 <div>
                     <img src="assets/img/avatar-6.png" alt="">
                     <img src="assets/img/avatar-6.png" alt="">
                     <img src="assets/img/avatar-6.png" alt="">
                 </div>
-        
+
                 <!-- Zeige die Benutzeranzahl für den jeweiligen Kanal -->
                 <div>{{ channel.users?.length }}</div>
             </div>
-        
+
             <div (click)="openDialogAddMember()" class="invite-people">
-                <img (mouseover)="changeImageAddContat(true)" (mouseout)="changeImageAddContat(false)" [src]="imgSrc[2]" alt="">
+                <img (mouseover)="changeImageAddContat(true)" (mouseout)="changeImageAddContat(false)" [src]="imgSrc[2]"
+                    alt="">
             </div>
         </div>
-        
+
         <ng-template #loading>
             <p>Lade Kanäle...</p>
         </ng-template>
     </div>
     <div class="line"></div>
     <div class="chat-complete" #scrollContainer>
-        <div [ngClass]="{'my-message': message.userName === loggedInUserName, 'complete-container': message.userName !== loggedInUserName}" *ngFor="let message of messages">
+        <div [ngClass]="{'my-message': message.userName === loggedInUserName, 'complete-container': message.userName !== loggedInUserName}"
+            *ngFor="let message of messages">
             <div class="line-date">
                 <div class="line-two"></div>
                 <span class="date">{{message.timestamp }}</span>
@@ -40,26 +43,26 @@
             <div *ngIf="messages.length > 0;">
                 <div class="center">
                     <div class="group-news">
-                    <img [src]="user?.img" alt="">
+                        <img [src]="user?.img" alt="">
                         <div class="group-chat">
                             <div class="chat">
                                 <div class="current-time">
                                     <h2>{{ message.userName }}</h2>
-                                    <p>{{ message.time  }} Uhr</p>
+                                    <p>{{ message.time }} Uhr</p>
                                 </div>
                                 <span>{{ message.text }}</span>
                             </div>
-                            <div class="answer">
-                                <div class="answers">
-                                  <!-- Anzeige der Anzahl der Chats -->
-                                  <ng-container *ngIf="message.chats.length === 0">Antworten</ng-container>
-                                  <ng-container *ngIf="message.chats.length === 1">1 Antwort</ng-container>
-                                  <ng-container *ngIf="message.chats.length > 1">
-                                    {{ message.chats.length }} Antworten
-                                  </ng-container>
+                            <div class="answer" >
+                                <div class="answers" (click)="navigateToAnswers(message.id)">
+                                    <!-- Anzeige der Anzahl der Chats -->
+                                    <ng-container *ngIf="message.chats.length === 0">Antworten</ng-container>
+                                    <ng-container *ngIf="message.chats.length === 1">1 Antwort</ng-container>
+                                    <ng-container *ngIf="message.chats.length > 1">
+                                        {{ message.chats.length }} Antworten
+                                    </ng-container>
                                 </div>
                                 <div>Letzte Antwort {{ currentTime }}</div>
-                              </div>
+                            </div>
                         </div>
                         <div class="add-smiley">
                             <img src="assets/img/smiley/check mark green.png" alt="">

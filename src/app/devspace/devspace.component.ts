@@ -5,7 +5,7 @@ import { HeaderComponent } from '../main/header/header.component';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { collection, collectionData, DocumentData, Firestore } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UserService } from '../services/user.service';
 import { User } from '../../models/user.class';
@@ -27,6 +27,8 @@ export class DevspaceComponent implements OnInit{
   users$: Observable<any[]>;
   channels$: Observable<any[]>;
   channelsIqbal: Channel[] = [];
+  messages: any[] = [];
+  selectedChatId: string | null = null;
   currentUser: User = {
     name: '',
     email: 'Test@gmx.de',
@@ -87,6 +89,22 @@ export class DevspaceComponent implements OnInit{
     this.loggedInUser();
   }
 
+  getUsers$(): Observable<any[]> {
+    const fireUsers = collection(this.firestore, 'users');
+    return collectionData(fireUsers).pipe(
+      map(users => {
+        // Sortiere so, dass der eingeloggte Benutzer oben steht und die anderen alphabetisch sortiert werden
+        return users.sort((a, b) => {
+          if (a['name'] === this.loggedInUserName) return -1; // Zeigt den eingeloggten User als ersten an
+          if (b['name'] === this.loggedInUserName) return 1;
+
+          // Fallunabhängige alphabetische Sortierung der restlichen Benutzer
+          return a['name'].toLowerCase().localeCompare(b['name'].toLowerCase());
+        });
+      })
+    );
+  }
+
   async ngOnInit(): Promise<void>{
     await this.getActiveUser();
 
@@ -100,6 +118,7 @@ export class DevspaceComponent implements OnInit{
       })
       
     };
+
   }
   
   async loggedInUser() {
@@ -155,11 +174,13 @@ export class DevspaceComponent implements OnInit{
     this.selectedChannelId = null;
   }
 
+
   selectChannel(channel: any) {
     this.selectedChannelId = channel.id;
     this.userServes.setSelectedChannelName(channel.name); // Setze den Channel-Namen im Service
     this.openGroupChat(channel); // Öffnet den Gruppenchat für den ausgewählten Channel
     this.selectedUserId = null;
+    
   }
 
   openSoloChat(userId: string): void {
