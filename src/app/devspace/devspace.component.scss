@@ -50,6 +50,7 @@ button {
         flex: 1;
         overflow-y: auto;
         max-height: 100%;
+        margin-bottom: 20px;
 
         &::-webkit-scrollbar {
             width: 4px;

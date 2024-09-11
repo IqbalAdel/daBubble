@@ -36,6 +36,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   userName!: string;
   loggedInUserName!: string;
   chatsNummbers: ChatMessage[] = [];
+  userImages: string[] = [];
 
   messages: { id:string; text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
   groupUsers: User[] = [];
@@ -62,6 +63,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       this.loggedInUser();
       this.getChannelsForusers();
       this.loadUserChats();
+      this.loadChannelData(this.groupId);
     });
   }
 
@@ -261,6 +263,27 @@ loadUserChats(): void {
         );
       })
     );
+  }
+
+  async loadChannelData(channelId: string){
+    const channelData = await this.firebaseService.getChannelById(channelId);
+    if(channelData){
+      const userIds = channelData.users;
+      if(userIds){
+        await this.loadUserImages(userIds);
+      }
+    }
+  }
+
+  async loadUserImages(userIds: string[]){
+    this.userImages = [];
+    for (const userId of userIds){
+      const userData = await this.firebaseService.getUserById(userId);
+      if(userData){
+        this.userImages.push(userData.img)
+      }
+    }
+    console.log(this.userImages)
   }
   
 }
