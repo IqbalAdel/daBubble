@@ -63,7 +63,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.user$ = this.userService.selectedUserId$.pipe(
       switchMap(userId => this.handleUserSelection(userId)),
       catchError(error => {
-        console.error('Error loading user data:', error);
+        // console.error('Error loading user data:', error);
         return of(undefined);
       })
     );
@@ -104,7 +104,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
       }
     } catch (error) {
-      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+      // console.error('Fehler beim Abrufen der Benutzerdaten:', error);
     }
   }
 
@@ -132,7 +132,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
       }),
       catchError(error => {
-        console.error('Error loading user data:', error);
+        // console.error('Error loading user data:', error);
         return of(undefined);
       })
     );
@@ -164,7 +164,7 @@ listenToChats(userId: string): void {
       this.isChatBlinking = false;
     }
   }, (error) => {
-    console.error('Fehler beim Abrufen der Chats:', error);
+    // console.error('Fehler beim Abrufen der Chats:', error);
   });
 }
 
@@ -179,10 +179,10 @@ listenToChats(userId: string): void {
   getUserIdFromUrl(): string | null {
     const userId = this.route.snapshot.params['id'];
     if (userId) {
-      console.log('Benutzer-ID aus der URL:', userId);
+      // console.log('Benutzer-ID aus der URL:', userId);
       return userId;
     } else {
-      console.log('Keine Benutzer-ID in der URL gefunden.');
+      // console.log('Keine Benutzer-ID in der URL gefunden.');
       return null;
     }
   }
@@ -240,9 +240,9 @@ listenToChats(userId: string): void {
   
     try {
       await batch.commit();
-      console.log('Messages marked as read.');
+      // console.log('Messages marked as read.');
     } catch (error) {
-      console.error('Error marking messages as read:', error);
+      // console.error('Error marking messages as read:', error);
     }
   }
 
@@ -251,7 +251,7 @@ listenToChats(userId: string): void {
     try {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
     } catch (err) {
-      console.error('Scroll error:', err);
+      // console.error('Scroll error:', err);
     }
   }
 

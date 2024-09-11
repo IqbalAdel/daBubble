@@ -5,8 +5,33 @@
     </div>
     <div class="line"></div>
     <div class="message-content">
-        <h3>Nachricht:</h3>
+        <img src="assets/img/avatar-1.png" alt="">
+        <div class="messages">
+            <div class="name-and-time">
+                <div class="name">{{ userName }}</div>
+                <div class="time">{{time}} Uhr</div>
+            </div>
+
+            <div class="massage">{{ messageText }}</div>
+        </div>
     </div>
+    <div class="answers-and-line">
+        <div class="answer"> 2 Antworten</div>
+        <div class="line-two"></div>
+    </div>
+    <div class="message-content">
+        <img src="assets/img/avatar-1.png" alt="">
+        <div class="messages">
+            <div class="name-and-time">
+                <div class="name">Name</div>
+                <div class="time">Zeit Uhr</div>
+            </div>
+
+            <div class="massage">answerChat</div>
+        </div>
+
+    </div>
+
 
     <app-chat></app-chat>
 </div>
