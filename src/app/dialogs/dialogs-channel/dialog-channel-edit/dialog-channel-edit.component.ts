@@ -8,6 +8,8 @@ import { FirebaseService } from '../../../services/firebase.service';
 import { Channel } from '../../../../models/channel.class';
 import { catchError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { User } from '../../../../models/user.class';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-dialog-channel-edit',
@@ -36,12 +38,25 @@ export class DialogChannelEditComponent implements OnInit{
   description: string = "";
   channelName: string;
   channelDescription: string;
-  
 
+  user: User = {
+    name: '',
+    email: 'Test@gmx.de',
+    id: '',
+    img: '',
+    password: '',
+    channels: [],
+    chats: [],
+    usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
+      throw new Error('Function not implemented.');
+    }
+  };
+  
 
   constructor(
     public dialog: MatDialogRef<DialogChannelEditComponent>,
     private fire: FirebaseService,
+    private userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: { 
       channelID: string; 
       channelName: string; 
@@ -55,6 +70,7 @@ export class DialogChannelEditComponent implements OnInit{
   }
 
   async ngOnInit(): Promise<void> {
+    await this.getActiveUser();
       try{
         this.channel = await this.fire.getChannelById(this.channelID);
         if(!this.channel){
@@ -64,6 +80,24 @@ export class DialogChannelEditComponent implements OnInit{
       catch(error){
         console.log('error channel edit, loading', error)
       }
+    console.log(this.user.id)
+  }
+
+  async getActiveUser(){
+    try {
+      // UID des aktuell angemeldeten Benutzers abrufen
+      const uid = await this.fire.getCurrentUserUid();
+      if (uid) {
+        // Benutzerdaten anhand der UID laden
+        await this.userService.loadUserById(uid);
+        const user = this.userService.getUser();
+        if(user){
+          this.user = new User(user);
+        }
+      }
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+    }
   }
 
   closeDialog() {
@@ -102,5 +136,11 @@ export class DialogChannelEditComponent implements OnInit{
     console.log(this.name)
     // this.dialog.close();
 
+  }
+
+  leaveChannel(){
+    this.fire.deleteChannelFromUser(this.user.id, this.channelID)
+    this.fire.deleteUserFromChannel(this.channelID, this.user.id)
+    this.dialog.close();
   }
 }

@@ -12,7 +12,7 @@
                 <!-- Iteriere über die gefilterten Kanäle -->
                 <div *ngFor="let channel of channels" (click)="openDialogMemberList()"
                     class="display-flex header-group-img">
-                    <div class="member-images">
+                    <div *ngIf="dataLoaded" class="member-images">
                         @for(userImage of userImages; track userImage){
                         <img src="{{userImage}}" alt="">
                         }

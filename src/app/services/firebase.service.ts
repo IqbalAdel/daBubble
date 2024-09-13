@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query, docData } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query, docData, deleteDoc, arrayRemove } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
@@ -228,6 +228,35 @@ export class FirebaseService {
     }).catch(error => {
       return null;
     });
+  }
+
+  async deleteUserFromChannel(channelId:string, userId: string): Promise<void> {
+    const channelDocRef = this.getChannelDocRef(channelId)
+
+    try{
+      await updateDoc(channelDocRef,
+        {
+          users: arrayRemove(userId)
+        }
+      ); 
+      console.log('user removed from channel')
+    } catch(error){
+      console.error('errro removing user from channel', error)
+    }
+  }
+
+
+  async deleteChannelFromUser(uId:string, channelId: string){
+    const userDocRef = this.getUserDocRef(uId);
+
+    try{
+      await updateDoc(userDocRef, {
+        channels: arrayRemove(channelId)
+      });
+      console.log('channel removed from users')
+    } catch(error){
+      console.error('error removing channel from users', error)
+    }
   }
 
   async addMessageToFirestore(channelId: string, message: { text: string; timestamp: string; time: string }): Promise<void> {
