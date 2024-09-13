@@ -172,6 +172,7 @@ export class DevspaceComponent implements OnInit{
     this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
     this.router.navigate(['/main/chat', userId]);
     this.selectedChannelId = null;
+    this.userServes.showGroupAnswer = false;
   }
 
 
@@ -180,6 +181,7 @@ export class DevspaceComponent implements OnInit{
     this.userServes.setSelectedChannelName(channel.name); // Setze den Channel-Namen im Service
     this.openGroupChat(channel); // Öffnet den Gruppenchat für den ausgewählten Channel
     this.selectedUserId = null;
+    this.userService.showGroupAnswer = false;
     
   }
 

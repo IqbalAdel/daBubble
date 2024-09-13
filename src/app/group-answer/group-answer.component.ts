@@ -5,16 +5,19 @@ import { FirebaseService } from '../services/firebase.service';
 import { Firestore } from '@angular/fire/firestore';
 import { from, map, Observable } from 'rxjs';
 import { collection, doc, getDocs } from 'firebase/firestore';
+import { CommonModule } from '@angular/common';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-group-answer',
   standalone: true,
-  imports: [ChatComponent],
+  imports: [ChatComponent, CommonModule],
   templateUrl: './group-answer.component.html',
   styleUrl: './group-answer.component.scss'
 })
 export class GroupAnswerComponent implements OnInit {
   groupId: string | null = null;
+   answerId: string | null = null;
   messageText: string = ''; // Hier wird der Nachrichtentext gespeichert
   groupName: string = ''; // Hier wird der Name der Gruppe gespeichert
   answerChat:string = ''; //Hier werden die Antworten stehen!
@@ -23,7 +26,7 @@ export class GroupAnswerComponent implements OnInit {
   firestore: Firestore = inject(Firestore);
   channels$: Observable<any[]>;
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute,  public userService: UserService) {
     // Erstelle die Referenz zur 'channels'-Sammlung
     const channelsCollection = collection(this.firestore, 'channels');
 
@@ -41,7 +44,8 @@ export class GroupAnswerComponent implements OnInit {
         this.fetchChannelsAndMessages();
       }
     });
-    // this.test();
+    this.giveGroupIdAndAnswerID();
+
   }
 
   async fetchChannelsAndMessages() {
@@ -108,13 +112,16 @@ export class GroupAnswerComponent implements OnInit {
     this.userName = matchingMessage.userName;
   }
 
-// async test(){
-//   const channelsCollectionRef = collection(this.firestore, 'channels');
-//   const channelsSnapshot = await getDocs(channelsCollectionRef);
-//   channelsSnapshot.forEach(doc => {
-//     console.log('ID:', doc.id);
-//     console.log('Daten:', doc.data());
-//   });
-// }
+  async giveGroupIdAndAnswerID() {
+    this.route.parent?.paramMap.subscribe(parentParams => {
+      this.groupId = parentParams.get('id'); // Gruppen-ID aus der Elternroute
+      console.log('Group ID:', this.groupId);
+    });
+  
+    this.route.paramMap.subscribe(params => {
+      this.answerId = params.get('answerId'); // Antwort-ID aus der aktuellen Route
+      console.log('Answer ID:', this.answerId);
+    });
+  }
 
 }

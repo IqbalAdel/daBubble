@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
@@ -17,7 +17,7 @@ import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/f
 @Component({
   selector: 'app-group-chat',
   standalone: true,
-  imports: [CommonModule, ChatComponent],
+  imports: [CommonModule, ChatComponent, RouterOutlet],
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
@@ -219,8 +219,9 @@ loadUserChats(): void {
     }
   }
 
-  navigateToAnswers(messageId: string) {
-    this.router.navigate(['/main/group-answer', messageId]);
+  navigateToAnswers(answerId: string) {
+    this.router.navigate([`/main/group-chat/${this.groupId}/group-answer/${answerId}`]);
+    this.userService.showGroupAnswer = true;
   }
   
 
