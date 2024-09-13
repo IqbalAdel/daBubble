@@ -96,10 +96,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   private setupMessageListener(chatId: string): void {
     if (this.messagesSubscription) {
       this.messagesSubscription.unsubscribe();
-    }
-  
-    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
-  
+    }  
+    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);  
     this.messagesSubscription = collectionData(messagesRef, { idField: 'id' })
       .subscribe(
         (messages: any[]) => {
@@ -203,11 +201,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   private checkIdInUrlAndDatabase(): void {
     const urlId = this.getIdFromUrl();
-    console.log('ID aus der URL:', urlId);
+    // console.log('ID aus der URL:', urlId);
     this.fireService.getChannelsMessages(this.channelId).subscribe({
       next: (messages) => {
-        console.log('Nachrichten aus der Datenbank:', messages);
-        
+        console.log('Nachrichten aus der Datenbank:', messages);        
         const matchingMessage = messages.find((message) => message.receivingUserId === urlId);
         
         if (matchingMessage) {
@@ -230,8 +227,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       // Dokument aktualisieren, um die Nachricht im `chats` Array hinzuzufügen
       await updateDoc(userMessagesDocRef, {
         chats: arrayUnion(message)  // Füge die Nachricht zum `chats` Array hinzu
-      });
-  
+      });  
       console.log('Nachricht erfolgreich im "chats" Array gespeichert.');
     } catch (error) {
       console.error('Fehler beim Speichern der Nachricht:', error);
@@ -286,8 +282,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.clearMessageInputAndScroll(messageInput);
     this.searchmessagesId();
   }
-  
-  
+    
   // Überprüft, ob die channelId eine User-ID ist und speichert entsprechend
   private checkIfUserAndSendMessage(message: any, messageInput: HTMLTextAreaElement): void {
     const userDocRef = doc(this.firestore, 'users', this.channelId);

@@ -8,6 +8,8 @@ import { Firestore, doc, getDoc, onSnapshot } from '@angular/fire/firestore';
 export class UserService {
 
   groupChatOpen = false;
+  showGroupAnswer: boolean = false;
+
 
   public _user: User | null = null;
 

@@ -1,6 +1,7 @@
 .chat-group {
     background-color: white;
     height: 85vh;
+    width: 100%;
     border-radius: 30px;
     margin: 20px 30px;
     box-sizing: border-box;
@@ -343,4 +344,8 @@
 h2 {
     font-family: nunito, Arial, Helvetica, sans-serif;
     font-weight: 900;
+}
+
+.all{
+    display: flex;
 }
