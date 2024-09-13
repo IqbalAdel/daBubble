@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FirebaseService } from '../../../services/firebase.service';
 import { Channel } from '../../../../models/channel.class';
 import { catchError } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dialog-channel-edit',
@@ -14,6 +15,7 @@ import { catchError } from 'rxjs';
   imports: [
     MatCard,
     CommonModule,
+    FormsModule,
   ],
   templateUrl: './dialog-channel-edit.component.html',
   styleUrls: ['./dialog-channel-edit.component.scss'],
@@ -30,15 +32,25 @@ export class DialogChannelEditComponent implements OnInit{
   editTxtValue: string = "Bearbeiten";
   editTxtValueTwo: string = "Bearbeiten";
 
+  name: string = "";
+  description: string = "";
+  channelName: string;
+  channelDescription: string;
+  
+
 
   constructor(
     public dialog: MatDialogRef<DialogChannelEditComponent>,
     private fire: FirebaseService,
     @Inject(MAT_DIALOG_DATA) public data: { 
       channelID: string; 
+      channelName: string; 
+      channelDescription: string; 
        }
   ) {
     this.channelID = data.channelID;
+    this.channelName = data.channelName;
+    this.channelDescription = data.channelDescription;
     // this.channel = this.fire.getChannelById(this.channelID);
   }
 
@@ -64,6 +76,8 @@ export class DialogChannelEditComponent implements OnInit{
     if(this.edit == true){
       this.editTxtValue = "Speichern"
     } else{
+      this.saveData('name');
+      this.channelName = this.name;
       this.editTxtValue = "Bearbeiten"
     }
   }
@@ -73,7 +87,20 @@ export class DialogChannelEditComponent implements OnInit{
     if(this.editTwo == true){
       this.editTxtValueTwo = "Speichern"
     } else{
+      this.saveData('description');
+      this.channelDescription = this.description;
       this.editTxtValueTwo = "Bearbeiten"
     }
+  }
+
+  async saveData(editField: string){
+    if(this.name.length > 0 || this.description.length >0 && this.channelID){
+      await this.fire.updateChannelData(this.channelID, editField, this.name, this.description )
+    }
+
+    console.log(this.description)
+    console.log(this.name)
+    // this.dialog.close();
+
   }
 }

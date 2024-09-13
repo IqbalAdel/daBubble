@@ -134,6 +134,25 @@ export class FirebaseService {
     }
   }
 
+  async updateChannelData(channelID: string, editField: string, newName?: string, newDescription?:string) {
+    const channelDoc = await getDoc(this.getChannelDocRef(channelID));
+    if (channelDoc.exists()) {
+      let name:string = "";
+      let description:string = "";
+      if ( editField == "name" && newName && newName.length > 0) {
+        name = newName;
+        await updateDoc(this.getChannelDocRef(channelID), { name });
+      }
+      if ( editField == "description" && newDescription && newDescription.length > 0) {
+        description = newDescription;
+        await updateDoc(this.getChannelDocRef(channelID), { description });
+      }
+      
+    } else {
+      throw new Error('Channel document does not exist.');
+    }
+  }
+
   async updateChannelUserList(userID: string, channelId: string) {
     const channelDoc = await getDoc(this.getChannelDocRef(channelId));
     if (channelDoc.exists()) {
