@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { DevspaceComponent } from './devspace/devspace.component';
@@ -11,20 +11,21 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { NewPasswordComponent } from './new-password/new-password.component';
 import { TestComponent } from './main/test/test.component';
 import { ChatComponent } from './chat/chat.component';
-
+import { NgModule } from '@angular/core';
 
 export const routes: Routes = [
-  { 
-    path: '', component: LoginComponent, 
+  {
+    path: '', component: LoginComponent,
     children: [
-      { path: '', redirectTo: 'login', pathMatch: 'full' }, // Umleitung zur LoginSectionComponent
-      { path: 'login', component: LoginSectionComponent }, // Explizite Login-Route
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: 'login', component: LoginSectionComponent },
       { path: 'sign-up', component: SignUpComponent },
       { path: 'create-avatar', component: CreateAvatarComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
       { path: 'new-password', component: NewPasswordComponent }
-    ] 
+    ]
   },
+ 
   // { 
   //   path: '', component: MainComponent, 
   //   children: [
@@ -40,7 +41,7 @@ export const routes: Routes = [
   { 
     path: 'main', component: MainComponent, 
     children: [
-      { path: '', redirectTo: 'group-chat/1S28fQQEdf7LfxdJASzJ', pathMatch: 'full' },  // Redirect to group chat list or default
+      { path: 'aa', redirectTo: 'group-chat/1S28fQQEdf7LfxdJASzJ', pathMatch: 'full' },  // Redirect to group chat list or default
       
       { path: 'group-chat/:id', component: GroupChatComponent },  // Route with ID parameter
       { path: 'chat/:id', component: SoloChatComponent },  // Route with ID parameter

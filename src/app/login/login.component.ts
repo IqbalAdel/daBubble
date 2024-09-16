@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  errorMessage: string = '';
   isVisible: boolean = true;
   constructor(private router: Router) { }
 

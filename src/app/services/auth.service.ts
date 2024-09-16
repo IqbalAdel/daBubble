@@ -76,6 +76,7 @@ async googleSignIn(): Promise < void> {
 
       await setDoc(userRef, userData, { merge: true }); // merge: true falls du vorhandene Daten aktualisieren möchtest
       console.log('User successfully signed in and stored in Firestore:', user);
+      
     }
   } catch(error) {
     console.error('Google Sign-In failed:', error);

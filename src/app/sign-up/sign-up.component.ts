@@ -20,6 +20,7 @@ export class SignUpComponent {
   user: User = new User(); // Initialisiere das User-Objekt
   isPrivacyChecked: boolean = false;
   emailExistsError: boolean = false;
+  isVisible: boolean = true;
   constructor(private router: Router, private userService: UserService, private authService: AuthService) { }
 
   ngOnInit(): void {
