@@ -46,7 +46,12 @@ export const routes: Routes = [
       { path: '', redirectTo: 'group-chat/pEylXqZMW1zKPIC0VDXL', pathMatch: 'full' },  // Redirect to group chat list or default
       
       { path: 'new-message', component: NewMessageComponent }, 
-      { path: 'group-chat/:id', component: GroupChatComponent },  // Route with ID parameter
+      {
+        path: 'group-chat/:id', component: GroupChatComponent,
+        children: [
+          { path: 'group-answer/:answerId', component: GroupAnswerComponent }
+        ]
+      },
       { path: 'chat/:id', component: SoloChatComponent },  // Route with ID parameter
     ],
   },

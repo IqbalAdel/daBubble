@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
 import { Firestore } from '@angular/fire/firestore';
 import { from, map, Observable } from 'rxjs';
-import { collection, doc, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
 
@@ -17,37 +17,41 @@ import { UserService } from '../services/user.service';
 })
 export class GroupAnswerComponent implements OnInit {
   groupId: string | null = null;
-   answerId: string | null = null;
-  messageText: string = ''; // Hier wird der Nachrichtentext gespeichert
-  groupName: string = ''; // Hier wird der Name der Gruppe gespeichert
-  answerChat:string = ''; //Hier werden die Antworten stehen!
-  userName: string = '';
-  time: string = '';
+  answerId: string | null = null;
+  messageText: string = ''; // Nachrichtentext
+  groupName: string = ''; // Gruppenname
+  answerChat: string = ''; // Antworttext
+  userName: string = ''; // Benutzername
+  time: string = ''; // Zeit
   firestore: Firestore = inject(Firestore);
   channels$: Observable<any[]>;
 
-  constructor(private route: ActivatedRoute,  public userService: UserService) {
-    // Erstelle die Referenz zur 'channels'-Sammlung
+  constructor(private route: ActivatedRoute, public userService: UserService) {
     const channelsCollection = collection(this.firestore, 'channels');
 
-    // Hole die Daten aus der Sammlung und konvertiere sie in ein Observable
+    // Daten aus der 'channels'-Sammlung holen und in Observable umwandeln
     this.channels$ = from(getDocs(channelsCollection)).pipe(
       map(snapshot => snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })))
     );
   }
 
   ngOnInit(): void {
-    // Hole die groupId aus der URL
+    // Überwache die URL-Parameteränderungen
     this.route.paramMap.subscribe(params => {
-      this.groupId = params.get('id') || '';
-      if (this.groupId) {
+      // Extrahiere groupId und answerId aus der URL
+      this.groupId = this.route.snapshot.parent?.paramMap.get('id') || null;
+      this.answerId = params.get('answerId') || null;
+      
+      // console.log('Group ID:', this.groupId);
+      // console.log('Answer ID:', this.answerId);
+      
+      if (this.groupId && this.answerId) {
         this.fetchChannelsAndMessages();
       }
     });
-    this.giveGroupIdAndAnswerID();
-
   }
 
+  // Methode zum Holen der Channels und Messages
   async fetchChannelsAndMessages() {
     try {
       const channels = await this.fetchChannels();
@@ -71,57 +75,63 @@ export class GroupAnswerComponent implements OnInit {
     }
   }
 
+  // Kanäle abrufen
   async fetchChannels() {
     try {
-      // Hole alle Kanäle
       return await this.channels$.toPromise();
     } catch (error) {
-      // console.error('Fehler beim Abrufen der Kanäle:', error);
       return [];
     }
   }
 
+  // Nachrichten für einen Kanal abrufen
   async fetchMessagesForChannel(channelId: string) {
     try {
       const messagesCollection = collection(this.firestore, `channels/${channelId}/messages`);
       const messagesSnapshot = await getDocs(messagesCollection);
       return messagesSnapshot.docs.map(doc => ({
-        ...doc.data() as { text: string, id: string, userName: string, time: string }, // Typen sicherstellen
+        ...doc.data() as { text: string, id: string, userName: string, time: string },
         id: doc.id
       }));
     } catch (error) {
-      // console.error('Fehler beim Abrufen der Nachrichten:', error);
       return [];
     }
   }
 
+  // Nachricht finden, die zur AnswerId passt
   findMatchingMessage(messages: any[]) {
-    return messages.find(message => message.id === this.groupId);
+    return messages.find(message => message.id === this.answerId);
   }
 
+  // Nachricht verarbeiten und Daten setzen
   processMatchingMessage(matchingMessage: any, channel: any) {
-    console.log(`Nachricht gefunden:`, matchingMessage); // Hier siehst du den Inhalt in der Konsole
+    console.log('Nachricht gefunden:', matchingMessage);
 
-    // Kürze die Zeit auf Stunden und Minuten
     const timeParts = matchingMessage.time.split(':');
     this.time = `${timeParts[0].padStart(2, '0')}:${timeParts[1].padStart(2, '0')}`;
 
-    // Setzen der Werte
     this.groupName = channel.name;
-    this.messageText = matchingMessage.text;  // Nachrichtentext zuweisen
+    this.messageText = matchingMessage.text;
     this.userName = matchingMessage.userName;
   }
 
-  async giveGroupIdAndAnswerID() {
+  // Methode zum Extrahieren von GroupId und AnswerId
+  giveGroupIdAndAnswerID() {
+    // GroupId von der Elternroute holen
     this.route.parent?.paramMap.subscribe(parentParams => {
       this.groupId = parentParams.get('id'); // Gruppen-ID aus der Elternroute
       console.log('Group ID:', this.groupId);
+      
+      // Wenn GroupId verfügbar ist, Channels und Messages abrufen
+      if (this.groupId) {
+        this.fetchChannelsAndMessages();
+      }
     });
-  
+
+    // AnswerId aus der aktuellen Route holen
     this.route.paramMap.subscribe(params => {
       this.answerId = params.get('answerId'); // Antwort-ID aus der aktuellen Route
-      console.log('Answer ID:', this.answerId);
+      // console.log('Answer ID:', this.answerId);
     });
   }
-
 }
