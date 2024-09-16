@@ -1,6 +1,6 @@
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription,Observable  } from 'rxjs';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service'; // Sicherstellen, dass der Import korrekt ist
@@ -39,8 +39,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   userService: UserService; // Sicherstellen, dass userService in der Klasse deklariert ist
   userName!: string;
 
-  constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore) {
+  constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore, private router: Router) {
     this.userService = userService; // Initialisiere userService
+
   }
 
   ngOnInit(): void {
@@ -56,6 +57,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.getReceivingUserIdFromUrl();
         this.checkIdInUrlAndDatabase();
         this.giveTheIdFromMessages();
+      } else if(this.router.url === '/main/new-message'){
+        console.log('correct route')
+        this.loadCurrentUser();
       }
     });
   }
@@ -77,19 +81,19 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   async loadCurrentUser() {
     try {
       const uid = await this.fireService.getCurrentUserUid();
-      // console.log('Current user UID:', uid);  // Debugging-Ausgabe für UID
+      console.log('Current user UID:', uid);  // Debugging-Ausgabe für UID
       if (uid) {
         await this.userService.loadUserById(uid);
         this.user = this.userService.getUser();
-        // console.log('Loaded user:', this.user);  // Debugging-Ausgabe für Benutzerobjekt
+        console.log('Loaded user:', this.user);  // Debugging-Ausgabe für Benutzerobjekt
         if (this.user) {
           this.userName = this.user.name;  // Setze den Benutzernamen, falls erforderlich
         }
       } else {
-        // console.error('No UID retrieved');
+        console.error('No UID retrieved');
       }
     } catch (error) {
-      // console.error('Error fetching user data:', error);
+      console.error('Error fetching user data:', error);
     }
   }
 

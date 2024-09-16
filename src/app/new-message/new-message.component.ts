@@ -14,7 +14,7 @@ import { Channel } from '../../models/channel.class';
 // Define FilterGroup for grouping Users and Channels
 export interface FilterGroup {
   type: string; // Group Type ('Channels' or 'Users')
-  items: string[]; // List of item names
+  items: { name: string; id: string }[]; // List of item names
 }
 
 @Component({
@@ -61,19 +61,28 @@ export class NewMessageComponent implements OnInit {
       startWith(''),
       switchMap(value => this._filterData(value || ''))
     ) ?? of([]); 
+
+    this.searchFieldControl.valueChanges.subscribe(selectedId => {
+      if (typeof selectedId === 'string') {
+        console.log('Selected ID:', selectedId);
+        // Handle the selected ID as needed
+      }
+    });
   }
 
   // Filter function to handle both Users and Channels
   private _filterData(value: string): Observable<FilterGroup[]> {
-    const isUserFilter = value.startsWith('@');
-    const isChannelFilter = value.startsWith('#');
+    const filterValue = typeof value === 'string' ? value : '';
+
+  const isUserFilter = filterValue.startsWith('@');
+  const isChannelFilter = filterValue.startsWith('#');
 
     if (isUserFilter) {
       const userFilterValue = value.slice(1).toLowerCase(); // Remove '@'
       return this.users$.pipe(
         map(users => {
           const filteredUsers = users.filter(user => user.name.toLowerCase().includes(userFilterValue));
-          return [{ type: 'Users', items: filteredUsers.map(user => user.name) }];
+          return [{ type: 'Users', items: filteredUsers.map(user => ({ name: user.name, id: user.id })) }];
         })
       );
     }
@@ -83,7 +92,11 @@ export class NewMessageComponent implements OnInit {
       return this.channels$.pipe(
         map(channels => {
           const filteredChannels = channels.filter(channel => channel.name.toLowerCase().includes(channelFilterValue));
-          return [{ type: 'Channels', items: filteredChannels.map(channel => channel.name) }];
+          return [{ 
+            type: 'Channels', 
+            items: filteredChannels
+            .filter(channel => channel.id)
+            .map(channel =>  ({ name: channel.name, id: channel.id! })) }];
         })
       );
     }
@@ -92,5 +105,15 @@ export class NewMessageComponent implements OnInit {
   }
 
 
-  
+  onOptionSelected(event: any) {
+    const selectedItem = event.option.value;  // Get the selected item object
+    const selectedName = selectedItem.name;   // Extract the name
+    const selectedId = selectedItem.id;       // Extract the ID
+
+    this.searchFieldControl.setValue(selectedName, { emitEvent: false });
+
+    // Update form control or handle selectedId as needed
+    console.log('Selected ID:', selectedId);
+  }
+
 }
