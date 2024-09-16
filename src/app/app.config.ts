@@ -1,6 +1,6 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth } from '@angular/fire/auth'; // Importiere Auth Module
@@ -10,7 +10,7 @@ import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideAnimationsAsync(),
+    provideAnimations(),
     provideFirebaseApp(() => initializeApp({ 
       apiKey: "AIzaSyAIi9jGtrLP4f4qdry-askwdqBCeYOeo9M",
       authDomain: "da-bubble-e728c.firebaseapp.com",
