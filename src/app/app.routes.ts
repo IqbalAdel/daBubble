@@ -48,7 +48,7 @@ export const routes: Routes = [
       { path: 'chat/:id', component: SoloChatComponent },  // Route with ID parameter
     ],
   },
-
+  { path: '**', redirectTo: 'login' } 
 ];
 
 

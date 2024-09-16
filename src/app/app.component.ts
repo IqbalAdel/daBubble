@@ -6,11 +6,11 @@ import { MainComponent } from './main/main.component';
 import { GroupChatComponent } from './group-chat/group-chat.component';
 import { TestComponent } from './main/test/test.component';
 import { HttpClientModule } from '@angular/common/http';
-
+import { Routes, RouterModule } from '@angular/router';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MatCardModule, RouterLink, MainComponent, GroupChatComponent, TestComponent, HttpClientModule, AppComponent],
+  imports: [CommonModule, RouterOutlet, MatCardModule, RouterLink, MainComponent, GroupChatComponent, TestComponent, HttpClientModule, AppComponent, RouterModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
