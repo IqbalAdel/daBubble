@@ -1,21 +1,14 @@
-@keyframes letterAppear {
+
+@keyframes moveIn {
     from {
       opacity: 0;
+      transform: translateX(0); /* Start: außerhalb des Sichtbereichs auf der linken Seite */
     }
     to {
       opacity: 1;
+      transform: translateX(+100%); /* End: sichtbar und an seiner Position */
     }
   }
-  
-  @keyframes letterMoveUp {
-    from {
-      transform: translateY(0);
-    }
-    to {
-      transform: translateY(-1000px) scale(0.5); /* Passen Sie den Wert nach Bedarf an */
-    }
-  }
-  
  
   
   @keyframes containerMove {
@@ -30,9 +23,7 @@
   }
   
   .splash-container {
-    position: fixed;
-    top: 0;
-    left: 0;
+    
     width: 100vw;
     height: 100vh;
     background: linear-gradient(to bottom, #6368cd, #363FE5); /* Helleres Blau oben, dunkleres Blau unten */
@@ -44,7 +35,7 @@
   
   .logo-text-container {
     display: flex;
-    flex-direction: row;
+   justify-content: center;
     align-items: center;
     color: white;
     /* Die Verzögerung für den Start der Container-Animation */
@@ -55,25 +46,19 @@
   .logo {
     height: 150px;
     width: auto;
-    margin-right: 20px;
+    margin-right: 0;
     /* Die Animation für das Logo kann direkt beim Laden beginnen */
    
   }
   
+
   h1 {
     font-size: 48px;
-    display: flex;
-    flex-direction: row;
     margin: 0;
     color: white;
+    position: absolute; /* Damit es sich relativ zum Container bewegt */
+    
+    white-space: nowrap; /* Verhindert Umbruch des Textes */
+    animation: moveIn 1s ease-in forwards; /* Animation für das gesamte Wort */
+   
   }
-  
-  h1 span {
-    display: inline-block;
-    opacity: 0; /* Startwert für die Animation */
-    /* Verzögerung durch den Index des Buchstabens */
-    animation: letterAppear 0.5s forwards;
-    animation-delay: calc(0.3s * var(--i)); /* Verzögerung pro Buchstabe */
-    /* Nach dem Erscheinen nach oben bewegen */
-  }
-  
