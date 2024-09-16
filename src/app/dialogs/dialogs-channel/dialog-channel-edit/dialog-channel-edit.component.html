@@ -1,6 +1,6 @@
 <mat-card class="user-profile">
     <div class="profile-aot">
-        <span class="profile-txt" ># Entwicklerteam</span>
+        <span class="profile-txt" >{{channelName}}</span>
         <img (click)="closeDialog()" class="close" [src]="imgSrc"
         (mouseover)="imgSrc = 'assets/img/close_hover.png'"
         (mouseout)="imgSrc = 'assets/img/close_default.png'" 
@@ -12,9 +12,9 @@
             <span (click)="editSwitch()" [ngClass] = "{'slide-right': edit == true, 'slide-right-back': edit == false}" class="animate-name position-right">{{editTxtValue}}</span>
         </div>
         @if(edit == true){
-            <input placeholder="#  z.B. Kooperationsprojekte" type="text">
+            <input [(ngModel)]="name" placeholder="#  z.B. Kooperationsprojekte" type="text">
         } @else {
-            <span class="txt" ><strong>#</strong> Entwicklerteam</span>
+            <span class="txt" ><strong>#</strong> {{channelName}}</span>
         }
     </div>
     
@@ -25,10 +25,10 @@
             <span [ngClass] = "{'slide-right-d': editTwo == true, 'slide-right-back-d': editTwo == false}" class="animate-name position-edit" (click)="editTwoSwitch()">{{editTxtValueTwo}}</span>
         </div>
         @if(editTwo==true){
-            <textarea [ngClass] = "{'slide-left-textarea': editTwoInput == true, 'slide-left-back-textarea': editTwoInput == false}" class="animate-textarea" placeholder="Dein Text hier" type="text" name="" id=""></textarea>
+            <textarea [(ngModel)]="description" [ngClass] = "{'slide-left-textarea': editTwoInput == true, 'slide-left-back-textarea': editTwoInput == false}" class="animate-textarea" placeholder="Dein Text hier" type="text" name="" id=""></textarea>
 
         } @else {
-            <p [ngClass] = "{'move-paragraph': editTwoInput == false}" class="description-txt animate-paragraph">Dieser Channel ist für alles rund um #dfsdf vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.</p>
+            <p [ngClass] = "{'move-paragraph': editTwoInput == false}" class="description-txt animate-paragraph">{{channelDescription}}</p>
         }
         <div [ngClass] = "{'grow-short': editTwo == true, 'grow-long': editTwo == false}" class=" animate-seperator seperator"></div>
         <div [ngClass] = "{'move-down': editTwo == true, 'move-down-back': editTwo == false}" class=" animate-creator creator">
@@ -51,7 +51,7 @@
         <input placeholder="Dein Text hier" type="text">
     </div> -->
     <div class="buttons">
-        <button>
+        <button (click)="leaveChannel()">
             <!-- <img src="" alt=""> -->
             <span>Channel verlassen</span>
         </button>

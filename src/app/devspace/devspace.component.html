@@ -52,9 +52,9 @@
         </div>
         <div class="solo-chat" *ngIf="openEmployees">
             <div class="solo-employees" *ngFor="let user of users$ | async" (click)="selectUser(user.id)"
-                [ngClass]="{'selected': user.id === selectedUserId}">
-                <img [src]="user.img" alt="">
-                <img class="online-offline" src="assets/img/Online.png" alt="">
+                [ngClass]="{'selected': user.id === selectedUserId, 'chat-blinking': user.isBlinking}">
+                <img [src]="user.img" alt="User Image">
+                <img class="online-offline" src="assets/img/Online.png" alt="Online Status">
                 {{ user.name }}<span *ngIf="user.name === loggedInUserName">(Du)</span>
             </div>
         </div>

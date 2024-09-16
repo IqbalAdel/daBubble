@@ -11,7 +11,8 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { NewPasswordComponent } from './new-password/new-password.component';
 import { TestComponent } from './main/test/test.component';
 import { ChatComponent } from './chat/chat.component';
-import { NgModule } from '@angular/core';
+import { GroupAnswerComponent } from './group-answer/group-answer.component';
+
 
 export const routes: Routes = [
   {
@@ -41,13 +42,14 @@ export const routes: Routes = [
   { 
     path: 'main', component: MainComponent, 
     children: [
-      { path: 'aa', redirectTo: 'group-chat/1S28fQQEdf7LfxdJASzJ', pathMatch: 'full' },  // Redirect to group chat list or default
+      { path: '', redirectTo: 'group-chat/1S28fQQEdf7LfxdJASzJ', pathMatch: 'full' },  // Redirect to group chat list or default
       
       { path: 'group-chat/:id', component: GroupChatComponent },  // Route with ID parameter
       { path: 'chat/:id', component: SoloChatComponent },  // Route with ID parameter
     ],
   },
 
-
 ];
+
+
 

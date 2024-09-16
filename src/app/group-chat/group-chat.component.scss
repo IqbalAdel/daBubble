@@ -1,6 +1,7 @@
 .chat-group {
     background-color: white;
     height: 85vh;
+    width: 100%;
     border-radius: 30px;
     margin: 20px 30px;
     box-sizing: border-box;
@@ -95,7 +96,8 @@
             .header-group-img {
                 gap: 10px;
                 border-radius: 50px;
-                padding: 3px 20px 3px 40px;
+                // padding: 3px 20px 3px 40px;
+                width: 220px;
                 box-sizing: border-box;
                 cursor: pointer;
 
@@ -318,6 +320,19 @@
     }
 }
 
+
+
+.member-images{
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+    padding-left: 24px;
+}
+
+.member-images::-webkit-scrollbar {
+    display: none;
+  }
+
 ::ng-deep .border-30 .mat-mdc-dialog-container {
     --mdc-dialog-container-shape: 0px 30px 30px 30px;
 }
@@ -329,4 +344,8 @@
 h2 {
     font-family: nunito, Arial, Helvetica, sans-serif;
     font-weight: 900;
+}
+
+.all{
+    display: flex;
 }

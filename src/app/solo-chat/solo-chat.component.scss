@@ -20,6 +20,7 @@
     .chat-header-group {
         padding: 20px 20px 0px 30px;
 
+
         .name {
             display: inline-flex;
             /* Verhindert, dass die Klasse die gesamte Breite einnimmt */
@@ -75,7 +76,7 @@
     }
 
     .solo-chat {
-        margin: 0;
+        margin: 0px 20px;
         display: flex;
         align-items: flex-end;
         gap: 8px;
@@ -120,6 +121,7 @@
 
     .chat {
         margin-top: 20px;
+        margin: 5px 20px;
 
         p {
             b {
@@ -173,7 +175,7 @@
 }
 
 .padding20 {
-    padding-left: 20px;
+    margin: 0px 20px;
 }
 
 .my-message {
@@ -206,4 +208,11 @@
         border-radius: 50px;
     }
 
+    .blink {
+        animation: blinker 1s linear infinite;
+      }
+      
+      @keyframes blinker {
+        50% { opacity: 0; }
+      }
 }

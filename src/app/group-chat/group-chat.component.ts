@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
@@ -12,11 +12,12 @@ import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
 import { Channel } from '../../models/channel.class';
 import {  map } from 'rxjs/operators'; 
+import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-group-chat',
   standalone: true,
-  imports: [CommonModule, ChatComponent],
+  imports: [CommonModule, ChatComponent, RouterOutlet],
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
@@ -27,8 +28,10 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   filteredChannels$: Observable<Channel[]> | undefined;
   groupId!: string;
   groupName!: string;
+  groupDescription!: string;
   userChats: ChatMessage[] = [];
   selectedUserId: string = ''; 
+  channelSubscription!: () => void; 
 
   currentDate!: string;
   currentTime!: string;
@@ -36,8 +39,10 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   userName!: string;
   loggedInUserName!: string;
   chatsNummbers: ChatMessage[] = [];
+  userImages: string[] = [];
+  dataLoaded = false;
 
-  messages: { text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
+  messages: { id:string; text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
   groupUsers: User[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
@@ -48,6 +53,8 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     public userService: UserService, // Richtiger Service Name
     private dialog: MatDialog, // Verwende nur eine Instanz von MatDialog
     private firebaseService: FirebaseService,
+    private firestore: Firestore,
+    private router: Router
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
   }
@@ -55,13 +62,16 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.groupId = params.get('id') || '';
-      this.loadGroupName();
+      // this.loadGroupName();
+      this.subscribeToGroupName();
       this.loadMessages();
       this.loadGroupUsers(); 
       this.loggedInUser();
       this.getChannelsForusers();
       this.loadUserChats();
+      this.loadChannelData(this.groupId);
     });
+
   }
 
   ngAfterViewChecked() {
@@ -83,21 +93,30 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   loadMessages(): void {
     if (this.groupId) {
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
-        (channelData: any[]) => { // Verwende any[] für channelData
+        (channelData: any[]) => {
           this.messages = this.formatMessages(channelData); // Formatierte Nachrichten setzen
         },
-        (error: any) => { // Typ für error
+        (error: any) => {
           console.error('Fehler beim Abrufen der Nachrichten:', error);
         }
       );
     }
   }
-  
+
+  formatMessageTime(timestamp: any): string {
+    const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
+    return date.toLocaleTimeString('de-DE', {
+      hour: '2-digit',    // Stunde
+      minute: '2-digit',  // Minute
+      // Sekunden weglassen
+    });
+  }
   formatMessages(messages: any[]): any[] {
     return messages.map(message => {
       return {
         ...message,
-        timestamp: this.formatTimestamp(message.timestamp)
+        timestamp: this.formatTimestamp(message.timestamp), // Datum formatieren
+        time: this.formatMessageTime(message.timestamp)   // Zeit ohne Sekunden formatieren
       };
     });
   }
@@ -148,20 +167,40 @@ loadUserChats(): void {
   }
 
 
-  async loadGroupName() {
-    try {
-      if (this.groupId) {
-        const channelData = await this.firebaseService.getChannelById(this.groupId);
-        if (channelData) {
-          this.groupName = channelData.name || 'Kein Name gefunden';  // Angenommene Struktur der Daten
-        } else {
-          this.groupName = 'Kein Name gefunden';
+  // async loadGroupName() {
+  //   try {
+  //     if (this.groupId) {
+  //       const channelData = await this.firebaseService.getChannelById(this.groupId);
+  //       if (channelData) {
+  //         this.groupName = channelData.name || 'Kein Name gefunden';  // Angenommene Struktur der Daten
+  //       } else {
+  //         this.groupName = 'Kein Name gefunden';
+  //       }
+  //     } else {
+  //       this.groupName = 'Keine Gruppen-ID vorhanden';
+  //     }
+  //   } catch (error) {
+  //     this.groupName = 'Fehler beim Laden';
+  //   }
+  // }
+
+  subscribeToGroupName(): void{
+    if(this.groupId){
+
+      const channelDocRef = doc(this.firestore, 'channels', this.groupId)
+
+      this.channelSubscription = onSnapshot(channelDocRef, 
+        (docSnapshot) =>{
+          if(docSnapshot.exists()){
+            const channelData = docSnapshot.data();
+            this.groupName = channelData?.['name'] || 'kein Name gefunde';
+            this.groupDescription = channelData?.['description'] || 'kein Name gefunde';
+          } else {
+            this.groupName = 'Kein name gefunden';
+            this.groupDescription = 'Keine Beschreibung gefunden';
+          }
         }
-      } else {
-        this.groupName = 'Keine Gruppen-ID vorhanden';
-      }
-    } catch (error) {
-      this.groupName = 'Fehler beim Laden';
+      );
     }
   }
 
@@ -179,6 +218,11 @@ loadUserChats(): void {
     } catch (error) {
       console.error('Fehler beim Laden der Channel-Benutzer:', error);
     }
+  }
+
+  navigateToAnswers(answerId: string) {
+    this.router.navigate([`/main/group-chat/${this.groupId}/group-answer/${answerId}`]);
+    this.userService.showGroupAnswer = true;
   }
   
 
@@ -201,6 +245,8 @@ loadUserChats(): void {
       height: '400px',
       data: {
         channelID: this.groupId,
+        channelName: this.groupName,
+        channelDescription: this.groupDescription,
       }
     });
   }
@@ -247,6 +293,29 @@ loadUserChats(): void {
         );
       })
     );
+  }
+
+  async loadChannelData(channelId: string){
+    const channelData = await this.firebaseService.getChannelById(channelId);
+    if(channelData){
+      const userIds = channelData.users;
+      if(userIds){
+        await this.loadUserImages(userIds);
+        this.dataLoaded = true;
+      }
+    }
+  }
+
+  async loadUserImages(userIds: string[]){
+    this.userImages = [];
+    for (const userId of userIds){
+      const userData = await this.firebaseService.getUserById(userId);
+      if(userData){
+        
+        this.userImages.push(userData.img)
+      }
+    }
+    console.log(this.userImages)
   }
   
 }

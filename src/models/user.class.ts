@@ -6,7 +6,7 @@ export class User {
     password: string;
     channels?: string[];
     chats?: string[];
-
+    isBlinking?: boolean;
     constructor(
       nameOrUser?: string | User,
       email: string = '',

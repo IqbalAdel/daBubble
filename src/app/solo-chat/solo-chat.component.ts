@@ -9,15 +9,19 @@ import { User } from '../../models/user.class';
 import { ChatComponent } from '../chat/chat.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FirebaseService } from '../services/firebase.service';
-import { collection, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, getDocs, Timestamp, updateDoc, writeBatch } from 'firebase/firestore';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 interface Chat {
   text: string;
-  timestamp: Timestamp; // Oder string, falls Timestamp anders dargestellt wird
+  timestamp: Timestamp | string; // Oder string, falls Timestamp anders dargestellt wird
+  formattedTimestamp?: string;
   time: string;
   userName: string;
   userId: string;
   receivingUserId: string;
+  isRead: boolean; // Neues Feld zum Verfolgen des Lesestatus
 }
 
 @Component({
@@ -25,7 +29,8 @@ interface Chat {
   standalone: true,
   imports: [CommonModule, FormsModule, ChatComponent, HttpClientModule],
   templateUrl: './solo-chat.component.html',
-  styleUrls: ['./solo-chat.component.scss']
+  styleUrls: ['./solo-chat.component.scss'],
+  providers: [DatePipe]
 })
 export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
@@ -35,6 +40,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   loggedInUserId!: string;
   userName!: string;
   chats: Chat[] = [];
+  isChatBlinking: boolean = false;
 
   private chatsSubscription: Subscription | null = null;
   private chatListenerUnsubscribe: (() => void) | null = null;
@@ -42,7 +48,8 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   constructor(
     private firestore: Firestore,
     private userService: UserService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private route: ActivatedRoute
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -56,7 +63,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.user$ = this.userService.selectedUserId$.pipe(
       switchMap(userId => this.handleUserSelection(userId)),
       catchError(error => {
-        console.error('Error loading user data:', error);
+        // console.error('Error loading user data:', error);
         return of(undefined);
       })
     );
@@ -97,7 +104,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
       }
     } catch (error) {
-      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+      // console.error('Fehler beim Abrufen der Benutzerdaten:', error);
     }
   }
 
@@ -125,48 +132,126 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
       }),
       catchError(error => {
-        console.error('Error loading user data:', error);
+        // console.error('Error loading user data:', error);
         return of(undefined);
       })
     );
   }
 
   // Echtzeit-Listener für die Chats eines Benutzers
-  listenToChats(userId: string): void {
-    const messagesCollectionRef = collection(this.firestore, `users/${userId}/messages`);
-  
-    this.chatListenerUnsubscribe = onSnapshot(messagesCollectionRef, (snapshot) => {
-      if (!snapshot.empty) {
-        const chats = snapshot.docs.map(doc => doc.data() as Chat);
-  
-        // Filtere Nachrichten nach Benutzer-ID
-        this.chats = chats
-          .filter(chat => 
-            chat.userId === this.loggedInUserId || chat.receivingUserId === this.loggedInUserId
-          );
-      } else {
-        this.chats = []; // Setze `chats` auf ein leeres Array, wenn keine Nachrichten vorhanden sind
-      }
-    }, (error) => {
-      console.error('Error listening to chats:', error);
-    });
+listenToChats(userId: string): void {
+  if (!this.loggedInUserId || !userId) {
+    return;
   }
-  
 
-  addMessageToUserChats(userId: string | null, message: any): Promise<void> {
-    if (userId) {
-      console.log('Attempting to add message to user chats:', userId);
-      return this.firebaseService.addMessageToUserChats(userId, message);
+  const chatId = this.createChatId(this.loggedInUserId, userId);
+  const messagesCollectionRef = collection(this.firestore, `chats/${chatId}/messages`);
+
+  this.chatListenerUnsubscribe = onSnapshot(messagesCollectionRef, (snapshot) => {
+    if (!snapshot.empty) {
+      const retrievedMessages = snapshot.docs.map(doc => doc.data());
+      this.chats = this.formatMessages(retrievedMessages);
+
+      // Prüfe, ob es ungelesene Nachrichten gibt
+      const hasUnread = retrievedMessages.some(message => !message['isRead'] && message['receivingUserId'] === this.loggedInUserId);
+
+      // Aktualisiere den Blink-Status
+      this.isChatBlinking = hasUnread;
+
+      // console.log('Formatted chats:', this.chats);
     } else {
-      return Promise.reject('No user ID available to add message to user chats.');
+      this.chats = [];
+      this.isChatBlinking = false;
+    }
+  }, (error) => {
+    // console.error('Fehler beim Abrufen der Chats:', error);
+  });
+}
+
+
+  // Funktion, um die Chat-ID zu erstellen (basierend auf alphabetischer Sortierung der IDs)
+  createChatId(userId1: string, userId2: string): string {
+    const sortedIds = [userId1, userId2].sort();  // IDs alphabetisch sortieren
+    return sortedIds.join('_');  // Kombiniere die sortierten IDs
+  }
+
+
+  getUserIdFromUrl(): string | null {
+    const userId = this.route.snapshot.params['id'];
+    if (userId) {
+      // console.log('Benutzer-ID aus der URL:', userId);
+      return userId;
+    } else {
+      // console.log('Keine Benutzer-ID in der URL gefunden.');
+      return null;
     }
   }
+
+  formatMessageTime(timestamp: any): string {
+    const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
+    return date.toLocaleTimeString('de-DE', {
+      hour: '2-digit',    // Stunde
+      minute: '2-digit',  // Minute
+    });
+  }
+
+  formatMessages(messages: any[]): any[] {
+    const sortedMessages = messages.sort((a, b) => {
+      return a.timestamp.toDate().getTime() - b.timestamp.toDate().getTime();
+    });
+  
+    return sortedMessages.map(message => {
+      return {
+        ...message,
+        timestamp: this.formatTimestamp(message.timestamp), // Datum formatieren
+        time: this.formatMessageTime(message.timestamp),   // Zeit formatieren
+        isRead: message.isRead // Status der Nachricht (gelesen/ungelesen)
+      };
+    });
+  }
+  formatTimestamp(timestamp: any): string {
+    const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
+    const today = new Date();
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Heute'; // Wenn Datum von heute ist
+    } else {
+      return date.toLocaleDateString('de-DE', { // Formatierung für deutsches Datum
+        weekday: 'long',  // Wochentag
+        day: '2-digit',   // Tag
+        month: '2-digit', // Monat
+        year: 'numeric'   // Jahr
+      });
+    }
+  }
+
+  async markMessagesAsRead(chatId: string, userId: string) {
+    const messagesCollectionRef = collection(this.firestore, `chats/${chatId}/messages`);
+    
+    const snapshot = await getDocs(messagesCollectionRef);
+    const batch = writeBatch(this.firestore);
+  
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      if (data['receivingUserId'] === userId && !data['isRead']) {
+        batch.update(doc.ref, { isRead: true });
+      }
+    });
+  
+    try {
+      await batch.commit();
+      // console.log('Messages marked as read.');
+    } catch (error) {
+      // console.error('Error marking messages as read:', error);
+    }
+  }
+
 
   private scrollToBottom(): void {
     try {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
     } catch (err) {
-      console.error('Scroll error:', err);
+      // console.error('Scroll error:', err);
     }
   }
 

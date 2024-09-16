@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query, docData } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query, docData, deleteDoc, arrayRemove } from '@angular/fire/firestore';
+import { from, map, Observable, of, switchMap } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
@@ -102,6 +102,7 @@ export class FirebaseService {
     return docData(channelDocRef);
   }
 
+
   async updateUserChannels(userID: string, channelId: string) {
     const userDoc = await getDoc(this.getUserDocRef(userID));
     if (userDoc.exists()) {
@@ -130,6 +131,25 @@ export class FirebaseService {
       }
     } else {
       throw new Error('User document does not exist.');
+    }
+  }
+
+  async updateChannelData(channelID: string, editField: string, newName?: string, newDescription?:string) {
+    const channelDoc = await getDoc(this.getChannelDocRef(channelID));
+    if (channelDoc.exists()) {
+      let name:string = "";
+      let description:string = "";
+      if ( editField == "name" && newName && newName.length > 0) {
+        name = newName;
+        await updateDoc(this.getChannelDocRef(channelID), { name });
+      }
+      if ( editField == "description" && newDescription && newDescription.length > 0) {
+        description = newDescription;
+        await updateDoc(this.getChannelDocRef(channelID), { description });
+      }
+      
+    } else {
+      throw new Error('Channel document does not exist.');
     }
   }
 
@@ -210,6 +230,35 @@ export class FirebaseService {
     });
   }
 
+  async deleteUserFromChannel(channelId:string, userId: string): Promise<void> {
+    const channelDocRef = this.getChannelDocRef(channelId)
+
+    try{
+      await updateDoc(channelDocRef,
+        {
+          users: arrayRemove(userId)
+        }
+      ); 
+      console.log('user removed from channel')
+    } catch(error){
+      console.error('errro removing user from channel', error)
+    }
+  }
+
+
+  async deleteChannelFromUser(uId:string, channelId: string){
+    const userDocRef = this.getUserDocRef(uId);
+
+    try{
+      await updateDoc(userDocRef, {
+        channels: arrayRemove(channelId)
+      });
+      console.log('channel removed from users')
+    } catch(error){
+      console.error('error removing channel from users', error)
+    }
+  }
+
   async addMessageToFirestore(channelId: string, message: { text: string; timestamp: string; time: string }): Promise<void> {
     try {
       const channelDocRef = doc(this.firestore, 'channels', channelId);
@@ -251,28 +300,27 @@ export class FirebaseService {
     return querySnapshot.docs.map(doc => doc.data());
   }
 
-  listenToPrivateMessages(userId: string, loggedInUserId: string): Observable<any[]> {
-    const messagesRef = collection(this.firestore, `users/${userId}/messages`);
-    
-    const messagesQuery = query(
-      messagesRef,
-      where('senderId', 'in', [loggedInUserId, userId]),
-      where('receiverId', 'in', [loggedInUserId, userId]),
-      orderBy('timestamp', 'asc')
-    );
-  
-    return new Observable(observer => {
-      const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-        const messages = snapshot.docs.map(doc => doc.data());
-        observer.next(messages);
-      });
-      
-      return () => unsubscribe();
-    });
+  listenToPrivateMessages(userId: string): Observable<any[]> {
+    const messagesRef = collection(this.firestore, 'messages');
+    const q = query(messagesRef, where('userIds', 'array-contains', userId));
+    return collectionData(q, { idField: 'id' });
   }
 
- 
 
- 
+  createChatId(userId1: string, userId2: string): string | null {
+    // Beispielhafte Überprüfung, ob es sich um gültige Benutzer-IDs handelt
+    // Diese Logik könnte an deine ID-Struktur angepasst werden.
+    const isValidUserId = (id: string) => id.startsWith('user_') || id.length === 28; // Beispiel: User-IDs haben ein Präfix 'user_' oder eine bestimmte Länge
+    
+    // Nur Chat-ID erstellen, wenn beide IDs Benutzer-IDs sind
+    if (isValidUserId(userId1) && isValidUserId(userId2)) {
+      const sortedIds = [userId1, userId2].sort();  // Alphabetische Sortierung
+      console.log('User IDs for chat creation:', userId1, userId2);  // Debugging: IDs ausgeben
+      return sortedIds.join('_');  // Kombinierte ID erstellen
+    } else {
+      console.warn('One or both IDs are not valid user IDs:', userId1, userId2);
+      return null;  // Gib null zurück, wenn keine Benutzer-IDs vorliegen
+    }
+  }
 
 }
