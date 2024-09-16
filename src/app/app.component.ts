@@ -21,9 +21,16 @@ export class AppComponent {
   constructor(private router: Router) { }
 
   ngOnInit() {
-    setTimeout(() => {
+    // Überprüfen, ob der Splash-Screen bereits angezeigt wurde
+    if (localStorage.getItem('splashShown') === 'true') {
       this.showSplash = false;
-    }, 4110);  
+    } else {
+      // Zeige den Splash-Screen für 5 Sekunden
+      setTimeout(() => {
+        this.showSplash = false;
+        localStorage.setItem('splashShown', 'true');
+      }, 4110); // 5 Sekunden
+    }
   }
 
 }
