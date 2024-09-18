@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { ChatComponent } from '../chat/chat.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -37,6 +37,8 @@ export class NewMessageComponent implements OnInit {
   private _formBuilder = inject(FormBuilder);
   private firebaseService = inject(FirebaseService); // Inject Firebase service
 
+  @ViewChild(ChatComponent) chatComponent!: ChatComponent;
+ 
   stateForm = this._formBuilder.group({
     searchField: '', // Use searchField for the input field
   });
@@ -114,6 +116,10 @@ export class NewMessageComponent implements OnInit {
 
     // Update form control or handle selectedId as needed
     console.log('Selected ID:', selectedId);
+    this.chatComponent.channelId = selectedId;
+    this.chatComponent.receiverUserId = selectedId;
+    console.log(this.chatComponent.receiverUserId)
+    console.log(this.chatComponent.channelId)
   }
 
 }

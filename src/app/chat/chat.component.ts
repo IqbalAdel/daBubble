@@ -29,6 +29,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('messageInput') messageInputRef!: ElementRef;
 
   channelId!: string;
+  receiverUserId: string | null = "";
   messages: any[] = [];
   messageIds: string[] = [];
   answerId!: string;
@@ -39,13 +40,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   private routeSubscription: Subscription | null = null;
   userService: UserService; // Sicherstellen, dass userService in der Klasse deklariert ist
   userName!: string;
+  imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
 
   constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore, private router: Router) {
     this.userService = userService; // Initialisiere userService
 
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.loadCurrentUser(); // Die Methode laden, die den Benutzer lädt
     // Beobachten Sie Änderungen in den URL-Parametern
     this.routeSubscription = this.route.params.subscribe(params => {
       const id = params['id']; // ID aus der URL (z.B. Kanal- oder Benutzer-ID)
@@ -58,103 +61,53 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       } else if (id) {
         // Wenn keine answerId vorhanden ist, lade die Daten basierend auf der ID (z.B. Kanal oder Benutzer)
         this.channelId = id;
-        this.loadDataBasedOnId(id);
-        this.setupMessageListener(id);
-        this.loadCurrentUser(); // Die Methode laden, die den Benutzer lädt
-        this.getReceivingUserIdFromUrl();
-        this.checkIdInUrlAndDatabase();
+
+        // this.loadDataBasedOnId(id);
+        // this.setupMessageListener(id);
+        // this.getReceivingUserIdFromUrl();
+        // this.checkIdInUrlAndDatabase();
         this.giveTheIdFromMessages();
       } else if(this.router.url === '/main/new-message'){
-        console.log('correct route')
-        this.loadCurrentUser();
       }
     });
   }
 
-  ngOnDestroy(): void {
-    // Abonnements aufheben, wenn die Komponente zerstört wird
-    if (this.messagesSubscription) {
-      this.messagesSubscription.unsubscribe();
-    }
-    if (this.routeSubscription) {
-      this.routeSubscription.unsubscribe();
-    }
-  }
 
-  ngAfterViewChecked() {
-    this.scrollToBottom();
-  }
-
-  async loadCurrentUser() {
-    try {
-      const uid = await this.fireService.getCurrentUserUid();
-      // console.log('Current user UID:', uid);  // Debugging-Ausgabe für UID
-      if (uid) {
-        await this.userService.loadUserById(uid);
-        this.user = this.userService.getUser();
-        // console.log('Loaded user:', this.user);  // Debugging-Ausgabe für Benutzerobjekt
-        if (this.user) {
-          this.userName = this.user.name;  // Setze den Benutzernamen, falls erforderlich
-        }
-      } else {
-        // console.error('No UID retrieved');
-      }
-    } catch (error) {
-      // console.error('Error fetching user data:', error);
-    }
-  }
-
-  private setupMessageListener(chatId: string): void {
-    if (this.messagesSubscription) {
-      this.messagesSubscription.unsubscribe();
-    }  
-    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);  
-    this.messagesSubscription = collectionData(messagesRef, { idField: 'id' })
-      .subscribe(
-        (messages: any[]) => {
-          this.messages = messages;
-          // Bei neuer Nachricht Blinken aktivieren
-          // messages.forEach(message => this.receiveMessage(message));
-        },
-        (error: any) => {
-        }
-      );
-  }
+  //  -------- Kernfuntionen (4) --------
   
-
-  private async loadDataBasedOnId(id: string): Promise<void> {
-    try {
-      const channel = await this.fireService.getChannelById(id);
-      if (channel) {
-        this.placeholderText = `Nachricht an #${channel.name}`;
-      } else {
-        const user = await this.fireService.getUserById(id);
-        if (user) {
-          this.placeholderText = `Nachricht an ${user.name}`;
-        } else {
-          const answersChatId = await getDoc(this.fireService.getChannelDocRef(id))
-          this.placeholderText = 'Antworten';
-          
-        }
-      }
-    } catch (error) {
+  sendMessage(messageText: string): void {
+    if (!this.user) {
+      return;
     }
-  }
 
-  imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
-
-  changeAdd(isHover: boolean) {
-    this.imgTextarea[0] = isHover ? 'assets/img/smiley/add-blue.png' : 'assets/img/add.png';
-  }
-
-  addSmiley(isHover: boolean) {
-    this.imgTextarea[1] = isHover ? 'assets/img/smiley/sentiment_satisfied-blue.png' : 'assets/img/smiley/sentiment_satisfied.png';
-  }
-  addEmailContact(isHover: boolean) {
-    this.imgTextarea[2] = isHover ? 'assets/img/smiley/alternate_email-blue.png' : 'assets/img/smiley/alternate_email.png';
-  }
-  sendNews(isHover: boolean) {
-    this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
+    if(this.getReceivingUserIdFromUrl()){
+      this.receiverUserId = this.getReceivingUserIdFromUrl();
+      if (!this.receiverUserId) {
+        return;
+      }
+    }
+  
+  
+    this.sendMessageToUser(messageText, this.receiverUserId!);
+    
+    const messageInput = this.messageInputRef.nativeElement;
+    const message = {
+      text: messageText,
+      timestamp: Timestamp.now(),
+      userName: this.userName || 'Gast',
+      userId: this.user.id,
+      receivingUserId: this.receiverUserId,
+      time: new Date().toLocaleTimeString(),
+      chats:[],
+      isRead:false
+    };
+    if (this.channelId === this.receiverUserId) {
+      this.saveMessageToUserChats(this.receiverUserId, message);
+    }
+    
+    this.checkIfUserAndSendMessage(message, messageInput);
+    this.clearMessageInputAndScroll(messageInput);
+    this.searchmessagesId();
   }
 
   sendMessageToUser(messageText: string, receivingUserId: string): void {
@@ -184,39 +137,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     } else {
     }
   }
- 
-  searchmessagesId(){
-    const channelId = this.channelId;
-    this.fireService.getChannelsMessages(channelId).subscribe({
-      next: (messages) => {
-        // Hier erhältst du die Nachrichten
-        messages.forEach(message => {
-        });
-      },
-      error: (error) => {
-      }
-    });
-  }
-
-  private getIdFromUrl(): string | null {
-    return this.route.snapshot.paramMap.get('id');  // 'id' ist der URL-Parameter-Name
-  }
-
-  private checkIdInUrlAndDatabase(): void {
-    const urlId = this.getIdFromUrl();
-    // console.log('ID aus der URL:', urlId);
-    this.fireService.getChannelsMessages(this.channelId).subscribe({
-      next: (messages) => {
-        const matchingMessage = messages.find((message) => message.receivingUserId === urlId);
-        
-        if (matchingMessage) {
-        } else {
-        }
-      },
-      error: (error) => {
-      }
-    });
-  }
 
   private async saveMessageToUserChats(userId: string, message: any): Promise<void> {
     try {
@@ -230,51 +150,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     } catch (error) {
     }
   }
-
-  async giveTheIdFromMessages() {
-    const messagesCollectionRef = collection(this.firestore, 'channels', this.channelId, 'messages');
-
-    collectionData(messagesCollectionRef, { idField: 'id' }).subscribe((messages: any[]) => {
-      this.messageIds = messages.map(message => message.id); // IDs in die Property speichern
-    }, (error: any) => {
-    });
-  }
-  
-  
-  sendMessage(messageText: string): void {
-    if (!this.user) {
-      return;
-    }
-  
-    const receivingUserId = this.getReceivingUserIdFromUrl();
-    if (!receivingUserId) {
-      return;
-    }
-  
-  
-    this.sendMessageToUser(messageText, receivingUserId);
     
-    const messageInput = this.messageInputRef.nativeElement;
-    const message = {
-      text: messageText,
-      timestamp: Timestamp.now(),
-      userName: this.userName || 'Gast',
-      userId: this.user.id,
-      receivingUserId: receivingUserId,
-      time: new Date().toLocaleTimeString(),
-      chats:[],
-      isRead:false
-    };
-    if (this.channelId === receivingUserId) {
-      this.saveMessageToUserChats(receivingUserId, message);
-    }
-    
-    this.checkIfUserAndSendMessage(message, messageInput);
-    this.clearMessageInputAndScroll(messageInput);
-    this.searchmessagesId();
-  }
-    
-  // Überprüft, ob die channelId eine User-ID ist und speichert entsprechend
+  //  Überprüft, ob die channelId eine User-ID ist und speichert entsprechend
   private checkIfUserAndSendMessage(message: any, messageInput: HTMLTextAreaElement): void {
     const userDocRef = doc(this.firestore, 'users', this.channelId);
   
@@ -295,6 +172,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       });
   }
 
+
+  //  ----------- Bisher nicht verwendete Funktionen --------
+
   private saveMessageToAnswers(answerId: string, message: any): void {
     const answerDocRef = doc(this.firestore, `channels/${answerId}/messages`, 'chats'); // Angenommener Pfad
     updateDoc(answerDocRef, {
@@ -306,7 +186,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       .catch((error) => {
         console.error('Error saving message to answers:', error);
       });
-
   
   }
 
@@ -333,6 +212,70 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.saveMessageToChannels(message, messageInput);
       }
     }, (error) => {
+    });
+  }
+
+
+  // ----------  Hilfesfunktionen --------------
+
+  private setupMessageListener(chatId: string): void {
+    if (this.messagesSubscription) {
+      this.messagesSubscription.unsubscribe();
+    }  
+    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);  
+    this.messagesSubscription = collectionData(messagesRef, { idField: 'id' })
+      .subscribe(
+        (messages: any[]) => {
+          this.messages = messages;
+          // Bei neuer Nachricht Blinken aktivieren
+          // messages.forEach(message => this.receiveMessage(message));
+        },
+        (error: any) => {
+        }
+      );
+  }
+
+  private async loadDataBasedOnId(id: string): Promise<void> {
+    try {
+      const channel = await this.fireService.getChannelById(id);
+      if (channel) {
+        this.placeholderText = `Nachricht an #${channel.name}`;
+      } else {
+        const user = await this.fireService.getUserById(id);
+        if (user) {
+          this.placeholderText = `Nachricht an ${user.name}`;
+        } else {
+          const answersChatId = await getDoc(this.fireService.getChannelDocRef(id))
+          this.placeholderText = 'Antworten';
+          
+        }
+      }
+    } catch (error) {
+    }
+  }
+
+  private checkIdInUrlAndDatabase(): void {
+    const urlId = this.getIdFromUrl();
+    // console.log('ID aus der URL:', urlId);
+    this.fireService.getChannelsMessages(this.channelId).subscribe({
+      next: (messages) => {
+        const matchingMessage = messages.find((message) => message.receivingUserId === urlId);
+        
+        if (matchingMessage) {
+        } else {
+        }
+      },
+      error: (error) => {
+      }
+    });
+  }
+
+  async giveTheIdFromMessages() {
+    const messagesCollectionRef = collection(this.firestore, 'channels', this.channelId, 'messages');
+
+    collectionData(messagesCollectionRef, { idField: 'id' }).subscribe((messages: any[]) => {
+      this.messageIds = messages.map(message => message.id); // IDs in die Property speichern
+    }, (error: any) => {
     });
   }
   
@@ -369,6 +312,40 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     };
   }
 
+  
+
+  // 3. Nachricht an Firestore senden
+  sendMessageToFirestore(message: any): Promise<void> {
+    // console.log('Attempting to send message to channel:', this.channelId);
+    return this.fireService.addMessageToFirestore(this.channelId, message);
+  }
+
+  // 4. Überprüfung der Nachrichteneingabe
+  validateMessageInput(messageText: string): boolean {
+    return messageText.trim() !== '' && !!this.channelId;
+  }
+
+
+  handleKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
+    if (event.key === 'Enter' && !event.shiftKey) {  // Prüfe, ob Enter gedrückt wurde (ohne Shift für Zeilenumbruch)
+      event.preventDefault();  // Verhindere den Standard-Enter-Verhalten (z. B. Zeilenumbruch)
+      this.sendMessage(messageInput.value);
+    }
+  }
+
+
+  private scrollToBottom(): void {
+    try {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error('Scroll error:', err);
+    }
+  }
+
+  private getIdFromUrl(): string | null {
+    return this.route.snapshot.paramMap.get('id');  // 'id' ist der URL-Parameter-Name
+  }
+
   getReceivingUserId(): string | null {
     const receivingUserId = this.route.snapshot.queryParams['receiverId']; // Oder 'params', je nach URL-Struktur
     if (receivingUserId) {
@@ -385,31 +362,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     return receivingUserId;
   }
 
-  // 3. Nachricht an Firestore senden
-  sendMessageToFirestore(message: any): Promise<void> {
-    // console.log('Attempting to send message to channel:', this.channelId);
-    return this.fireService.addMessageToFirestore(this.channelId, message);
-  }
-
-  // 4. Überprüfung der Nachrichteneingabe
-  validateMessageInput(messageText: string): boolean {
-    return messageText.trim() !== '' && !!this.channelId;
-  }
-
-  handleKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
-    if (event.key === 'Enter' && !event.shiftKey) {  // Prüfe, ob Enter gedrückt wurde (ohne Shift für Zeilenumbruch)
-      event.preventDefault();  // Verhindere den Standard-Enter-Verhalten (z. B. Zeilenumbruch)
-      this.sendMessage(messageInput.value);
-    }
-  }
-
-  private scrollToBottom(): void {
-    try {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch (err) {
-      console.error('Scroll error:', err);
-    }
-  }
 
   getUserIdFromUrl(): string | null {
     const userId = this.route.snapshot.params['id'];
@@ -421,4 +373,64 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  searchmessagesId(){
+    const channelId = this.channelId;
+    this.fireService.getChannelsMessages(channelId).subscribe({
+      next: (messages) => {
+        // Hier erhältst du die Nachrichten
+        messages.forEach(message => {
+        });
+      },
+      error: (error) => {
+      }
+    });
+  }
+
+
+  changeAdd(isHover: boolean) {
+    this.imgTextarea[0] = isHover ? 'assets/img/smiley/add-blue.png' : 'assets/img/add.png';
+  }
+
+  addSmiley(isHover: boolean) {
+    this.imgTextarea[1] = isHover ? 'assets/img/smiley/sentiment_satisfied-blue.png' : 'assets/img/smiley/sentiment_satisfied.png';
+  }
+  addEmailContact(isHover: boolean) {
+    this.imgTextarea[2] = isHover ? 'assets/img/smiley/alternate_email-blue.png' : 'assets/img/smiley/alternate_email.png';
+  }
+  sendNews(isHover: boolean) {
+    this.imgTextarea[3] = isHover ? 'assets/img/smiley/send-light-blue.png' : 'assets/img/smiley/send.png';
+  }
+
+  async loadCurrentUser() {
+    try {
+      const uid = await this.fireService.getCurrentUserUid();
+      // console.log('Current user UID:', uid);  // Debugging-Ausgabe für UID
+      if (uid) {
+        await this.userService.loadUserById(uid);
+        this.user = this.userService.getUser();
+        // console.log('Loaded user:', this.user);  // Debugging-Ausgabe für Benutzerobjekt
+        if (this.user) {
+          this.userName = this.user.name;  // Setze den Benutzernamen, falls erforderlich
+        }
+      } else {
+        // console.error('No UID retrieved');
+      }
+    } catch (error) {
+      // console.error('Error fetching user data:', error);
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Abonnements aufheben, wenn die Komponente zerstört wird
+    if (this.messagesSubscription) {
+      this.messagesSubscription.unsubscribe();
+    }
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
 }
