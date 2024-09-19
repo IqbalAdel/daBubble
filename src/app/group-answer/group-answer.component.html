@@ -1,11 +1,13 @@
 <!-- group-answer.component.html -->
 <div class="main" *ngIf="userService.showGroupAnswer">
-    <div class="header">
-      <h1>Thread</h1>
-      <span># {{ groupName }}</span>
-    </div>
-    <div class="line"></div>
-    <div class="message-content">
+  <div class="header">
+    <h1>Thread</h1>
+    <span># {{ groupName }}</span>
+    <img (click)="closeAnswer()" src="assets/img/close_default.png" alt="" >
+  </div>
+  <div class="line"></div>
+  <div class="commplet-chat" #scrollContainer>
+    <div [ngClass]="{'my-message': userName === loggedInUserName, 'complete-container': userName !== loggedInUserName}">
       <img src="assets/img/avatar-1.png" alt="">
       <div class="messages">
         <div class="name-and-time">
@@ -16,19 +18,22 @@
       </div>
     </div>
     <div class="answers-and-line">
-      <div class="answer"> 2 Antworten</div>
+      <!-- <div > {{ answerChats.length }} Antworten</div> -->
+      <ng-container *ngIf="answerChats.length === 0">Antworten</ng-container>
+                                        <ng-container *ngIf="answerChats.length === 1">1 Antwort</ng-container>
+                                        <ng-container *ngIf="answerChats.length > 1"> Antworten </ng-container>
       <div class="line-two"></div>
     </div>
-    <div class="message-content">
+    <div *ngFor="let chat of answerChats" [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
       <img src="assets/img/avatar-1.png" alt="">
       <div class="messages">
         <div class="name-and-time">
-          <div class="name">Name</div>
-          <div class="time">Zeit Uhr</div>
+          <div class="name">{{ chat.userName || 'Unbekannter Benutzer' }}</div>
+          <div class="time">{{ chat.time }} Uhr</div>
         </div>
-        <div class="massage">answerChat</div>
+        <div class="massage">{{ chat.text }}</div>
       </div>
     </div>
-    <app-chat [groupId]="groupId" [answerId]="answerId"></app-chat>
   </div>
-  
+  <app-chat [groupId]="groupId" [answerId]="answerId"></app-chat>
+</div>

@@ -11,13 +11,14 @@ import { Observable, switchMap } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
 import { Channel } from '../../models/channel.class';
-import {  map } from 'rxjs/operators'; 
+import { map } from 'rxjs/operators';
 import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-group-chat',
   standalone: true,
-  imports: [CommonModule, ChatComponent, RouterOutlet],
+  imports: [CommonModule, ChatComponent, RouterOutlet, FormsModule],
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
@@ -30,8 +31,10 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   groupName!: string;
   groupDescription!: string;
   userChats: ChatMessage[] = [];
-  selectedUserId: string = ''; 
-  channelSubscription!: () => void; 
+  isEditing: { [key: string]: boolean } = {};
+  editedMessageText: { [key: string]: string } = {};
+  selectedUserId: string = '';
+  channelSubscription!: () => void;
 
   currentDate!: string;
   currentTime!: string;
@@ -42,9 +45,9 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   userImages: string[] = [];
   dataLoaded = false;
 
-  messages: { id:string; text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
+  messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string }[] = [];
   groupUsers: User[] = [];
-  imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png'];
+  imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png', 'assets/more_vert.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
 
@@ -65,7 +68,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       // this.loadGroupName();
       this.subscribeToGroupName();
       this.loadMessages();
-      this.loadGroupUsers(); 
+      this.loadGroupUsers();
       this.loggedInUser();
       this.getChannelsForusers();
       this.loadUserChats();
@@ -89,7 +92,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       }
     );
   }
-  
+
   loadMessages(): void {
     if (this.groupId) {
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
@@ -124,7 +127,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   formatTimestamp(timestamp: any): string {
     const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
     const today = new Date();
-  
+
     if (date.toDateString() === today.toDateString()) {
       return 'Heute'; // Wenn Datum von heute ist
     } else {
@@ -137,19 +140,19 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-loadUserChats(): void {
-  if (this.selectedUserId) {
-    this.firebaseService.getChatsForUser(this.selectedUserId).subscribe(
-      (chats: ChatMessage[]) => {
-        this.userChats = chats;
-        // Optional: Verarbeite die Daten weiter, falls notwendig
-      },
-      (error) => {
-        console.error('Fehler beim Abrufen der Chats:', error);
-      }
-    );
+  loadUserChats(): void {
+    if (this.selectedUserId) {
+      this.firebaseService.getChatsForUser(this.selectedUserId).subscribe(
+        (chats: ChatMessage[]) => {
+          this.userChats = chats;
+          // Optional: Verarbeite die Daten weiter, falls notwendig
+        },
+        (error) => {
+          console.error('Fehler beim Abrufen der Chats:', error);
+        }
+      );
+    }
   }
-}
 
   async loggedInUser() {
     try {
@@ -184,14 +187,14 @@ loadUserChats(): void {
   //   }
   // }
 
-  subscribeToGroupName(): void{
-    if(this.groupId){
+  subscribeToGroupName(): void {
+    if (this.groupId) {
 
       const channelDocRef = doc(this.firestore, 'channels', this.groupId)
 
-      this.channelSubscription = onSnapshot(channelDocRef, 
-        (docSnapshot) =>{
-          if(docSnapshot.exists()){
+      this.channelSubscription = onSnapshot(channelDocRef,
+        (docSnapshot) => {
+          if (docSnapshot.exists()) {
             const channelData = docSnapshot.data();
             this.groupName = channelData?.['name'] || 'kein Name gefunde';
             this.groupDescription = channelData?.['description'] || 'kein Name gefunde';
@@ -211,7 +214,7 @@ loadUserChats(): void {
         const userIds = channelData.users;  // Angenommene Struktur: users ist ein Array von User-IDs
         const userPromises = userIds.map((userId: string) => this.firebaseService.getUserById(userId));
         const users = await Promise.all(userPromises);
-  
+
         // Filtere Benutzer, die null sind, heraus
         this.groupUsers = users.filter((user): user is User => user !== null);
       }
@@ -224,7 +227,7 @@ loadUserChats(): void {
     this.router.navigate([`/main/group-chat/${this.groupId}/group-answer/${answerId}`]);
     this.userService.showGroupAnswer = true;
   }
-  
+
 
   changeImageSmiley(isHover: boolean) {
     this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.png' : 'assets/img/smiley/add_reaction.png';
@@ -236,6 +239,9 @@ loadUserChats(): void {
 
   changeImageAddContat(isHover: boolean) {
     this.imgSrc[2] = isHover ? 'assets/person_add_blue.png' : 'assets/person_add.png';
+  }
+  changeImageMoreVert(isHover: boolean) {
+    this.imgSrc[3] = isHover ? 'assets/more_vert_hover.png' : 'assets/more_vert.png';
   }
 
   openDialog() {
@@ -295,29 +301,54 @@ loadUserChats(): void {
     );
   }
 
-  async loadChannelData(channelId: string){
+  async loadChannelData(channelId: string) {
     const channelData = await this.firebaseService.getChannelById(channelId);
-    if(channelData){
+    if (channelData) {
       const userIds = channelData.users;
-      if(userIds){
+      if (userIds) {
         await this.loadUserImages(userIds);
         this.dataLoaded = true;
       }
     }
   }
 
-  async loadUserImages(userIds: string[]){
+  async loadUserImages(userIds: string[]) {
     this.userImages = [];
-    for (const userId of userIds){
+    for (const userId of userIds) {
       const userData = await this.firebaseService.getUserById(userId);
-      if(userData){
-        
+      if (userData) {
+
         this.userImages.push(userData.img)
       }
     }
     console.log(this.userImages)
   }
+
+  editText(messageId: string) {
+    this.isEditing[messageId] = true;  // Aktiviert den Bearbeitungsmodus
+    const currentText = this.messages.find(msg => msg.id === messageId)?.text;  // Findet den aktuellen Text der Nachricht
+    if (currentText) {
+      this.editedMessageText[messageId] = currentText;  // Speichert den aktuellen Text
+    }
+  }
+
+  saveText(messageId: string) {
+    this.isEditing[messageId] = false;  // Deaktiviert den Bearbeitungsmodus
+    const newText = this.messages.find(msg => msg.id === messageId)?.text;  // Hole den neuen Text aus message.text
+  
+    if (newText) {
+      this.firebaseService.updateMessage(messageId, newText)
+        .then(() => {
+          console.log('Nachricht erfolgreich gespeichert:', newText);
+        })
+        .catch(error => {
+          console.error('Fehler beim Speichern der Nachricht:', error);
+        });
+    } else {
+      console.log('Keine Änderungen im Text, nichts zu speichern.');
+    }
+  }
   
 }
-  
-  
+
+
