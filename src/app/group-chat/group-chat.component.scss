@@ -35,18 +35,18 @@
             &:hover {
                 .add-smiley {
                     display: flex;
-                    align-items: center;
+                    // align-items: center;
                     background-color: white;
                     width: 320px;
                     height: 40px;
                     border-top-left-radius: 30px;
                     border-bottom-left-radius: 30px;
                     border-top-right-radius: 30px;
-                    padding: 8px 20px;
+                    // padding: 8px 20px;
                     gap: 20px;
                     position: absolute;
                     left: 20px;
-                    margin-top: -40px;
+                    // margin-top: -40px;
                     border: 2px solid rgba(51, 38, 235, 0.2);
                 }
                 span{
@@ -191,22 +191,22 @@
                 background-color: white;
             }
 
-            .add-smiley {
-                display: flex;
-                align-items: center;
-                background-color: white;
-                width: auto;
-                height: 40px;
-                border-top-left-radius: 30px;
-                border-bottom-left-radius: 30px;
-                border-top-right-radius: 30px;
-                padding: 8px 20px;
-                gap: 20px;
-                position: absolute;
-                right: 20px;
-                margin-top: -40px;
-                border: 2px solid rgba(51, 38, 235, 0.2);
-            }
+            // .add-smiley {
+            //     display: flex;
+            //     align-items: center;
+            //     background-color: white;
+            //     width: auto;
+            //     height: 40px;
+            //     border-top-left-radius: 30px;
+            //     border-bottom-left-radius: 30px;
+            //     border-top-right-radius: 30px;
+            //     padding: 8px 20px;
+            //     gap: 20px;
+            //     position: absolute;
+            //     right: 20px;
+            //     margin-top: -40px;
+            //     border: 2px solid rgba(51, 38, 235, 0.2);
+            // }
         }
 
         .chat {

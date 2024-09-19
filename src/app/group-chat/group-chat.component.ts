@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
@@ -47,7 +47,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
 
   messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string }[] = [];
   groupUsers: User[] = [];
-  imgSrc = ['assets/img/smiley/add_reaction.png', 'assets/img/smiley/comment.png', 'assets/person_add.png', 'assets/more_vert.png'];
+  imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.png', 'assets/person_add.svg', 'assets/more_vert.png'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
 
@@ -78,7 +78,38 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    this.scrollToBottom();
+    // this.scrollToBottom();
+  }
+
+  isFirstMessageOfDay(currentMessage: any, index: number): boolean {
+    if (index === 0) {
+      return true; // Always show the date for the first message
+    }
+  
+    const previousMessage = this.messages[index - 1];
+    
+    // Convert the timestamps to a valid Date object or ISO string
+    const currentDate = this.parseGermanDate(currentMessage.timestamp); 
+    const previousDate = this.parseGermanDate(previousMessage.timestamp); 
+  
+    // Ensure both dates are valid before comparing
+    if (isNaN(currentDate.getTime()) || isNaN(previousDate.getTime())) {
+      console.error('Invalid date format:', currentMessage.timestamp, previousMessage.timestamp);
+      return false;
+    }
+  
+    // Compare the dates without time
+    return currentDate.toDateString() !== previousDate.toDateString();
+  }
+
+  // Parse a German date string (e.g., 'Mittwoch, 18.09.2024')
+  parseGermanDate(dateString: string): Date {
+    // Extract the part after the day of the week
+    const datePart = dateString.split(', ')[1]; // Get the '18.09.2024' part
+    const [day, month, year] = datePart.split('.');
+  
+    // Return a Date object in the format 'YYYY-MM-DD'
+    return new Date(`${year}-${month}-${day}`);
   }
 
   loadChats(): void {
@@ -115,11 +146,18 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     });
   }
   formatMessages(messages: any[]): any[] {
-    return messages.map(message => {
+    let previousDate: string = "";
+  
+    return messages.map((message, index) => {
+      const currentDate = this.formatTimestamp(message.timestamp); // Format the date
+      const isFirstMessageOfDay = currentDate !== previousDate; // Check if it's the first message of the day
+  
+      previousDate = currentDate; // Update previousDate for next iteration
+  
       return {
         ...message,
-        timestamp: this.formatTimestamp(message.timestamp), // Datum formatieren
-        time: this.formatMessageTime(message.timestamp)   // Zeit ohne Sekunden formatieren
+        timestamp: isFirstMessageOfDay ? currentDate : null, // Show date only for the first message of the day
+        time: this.formatMessageTime(message.timestamp)      // Always show the time
       };
     });
   }
@@ -128,9 +166,20 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
     const today = new Date();
 
+        // Create a Date object for yesterday
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    // If the message is from today, display 'Heute'
     if (date.toDateString() === today.toDateString()) {
-      return 'Heute'; // Wenn Datum von heute ist
-    } else {
+      return 'Heute';
+    }
+    // If the message is from yesterday, display 'Gestern'
+    else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Gestern';
+    } 
+    
+    else {
       return date.toLocaleDateString('de-DE', { // Formatierung für deutsches Datum
         weekday: 'long',  // Wochentag
         day: '2-digit',   // Tag
@@ -230,7 +279,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
 
 
   changeImageSmiley(isHover: boolean) {
-    this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.png' : 'assets/img/smiley/add_reaction.png';
+    this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.svg' : 'assets/img/smiley/add_reaction.svg';
   }
 
   changeImageComment(isHover: boolean) {
@@ -238,7 +287,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   }
 
   changeImageAddContat(isHover: boolean) {
-    this.imgSrc[2] = isHover ? 'assets/person_add_blue.png' : 'assets/person_add.png';
+    this.imgSrc[2] = isHover ? 'assets/person_add_blue.svg' : 'assets/person_add.svg';
   }
   changeImageMoreVert(isHover: boolean) {
     this.imgSrc[3] = isHover ? 'assets/more_vert_hover.png' : 'assets/more_vert.png';
