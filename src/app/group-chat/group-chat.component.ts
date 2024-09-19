@@ -308,11 +308,12 @@ loadUserChats(): void {
 
   async loadUserImages(userIds: string[]){
     this.userImages = [];
+    let i = 0; 
     for (const userId of userIds){
       const userData = await this.firebaseService.getUserById(userId);
-      if(userData){
-        
+      if(userData && i<5){
         this.userImages.push(userData.img)
+        i++;
       }
     }
     console.log(this.userImages)

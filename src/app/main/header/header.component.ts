@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule, MatLabel} from '@angular/material/form-field';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDialogModule, MatDialogRef, MatDialog} from '@angular/material/dialog';
@@ -16,6 +16,11 @@ import {MatSelectModule} from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { UserService } from '../../services/user.service';
 import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference, arrayUnion, writeBatch, DocumentReference } from '@angular/fire/firestore';
+import { ChatComponent } from '../../chat/chat.component';
+import { FilterGroup } from '../../new-message/new-message.component';
+import { map, Observable, of, startWith, switchMap } from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { AsyncPipe, CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -31,6 +36,10 @@ import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateD
     MatOptionModule,
     MatLabel,
     MatCardModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
+    AsyncPipe,
+    CommonModule,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -59,9 +68,8 @@ export class HeaderComponent implements OnInit{
     private firebaseService: FirebaseService,
     public userService: UserService,
     private firestore: Firestore,
-  ) {    
- 
-  }
+  ) {}
+
   async ngOnInit(): Promise<void> {
     await this.getActiveUser();
 
@@ -78,25 +86,90 @@ export class HeaderComponent implements OnInit{
       });
     }
 
-    // if (this.user && this.user.id) {
-    //   this.userService.subscribeToUserChanges(this.user.id, (updatedUser) => {
-    //     this.user = updatedUser;
-    //   });
-    // }
-
-    // const usersCollection = this.firebaseService.getUsersRef();
-
-    // const userSub = onSnapshot(usersCollection, (snapshot) => {
-    //   snapshot.docChanges().forEach((change) => {
-    //     if (change.type === "modified") {
-    //       let changedUser = change.doc.data();
-    //       this.user.name = changedUser['name'];
-    //     }
-    //   });
-    // });
-
-    
+      // Fetch users and channels from Firestore
+      this.users$ = this.firebaseService.getUsers();
+      this.channels$ = this.firebaseService.getChannels();
+  
+      this.filterGroupOptions = this.searchFieldControl.valueChanges.pipe(
+        startWith(''),
+        switchMap(value => this._filterData(value || ''))
+      ) ?? of([]); 
+  
+      this.searchFieldControl.valueChanges.subscribe(selectedId => {
+        if (typeof selectedId === 'string') {
+          console.log('Selected ID:', selectedId);
+          // Handle the selected ID as needed
+        }
+      });
   }
+
+
+  // ------------
+
+  private _formBuilder = inject(FormBuilder);
+ 
+  stateForm = this._formBuilder.group({
+    searchField: '', // Use searchField for the input field
+  });
+
+  filterGroups: FilterGroup[] = []; // To store the filter group results
+  filterGroupOptions: Observable<FilterGroup[]> = new Observable(); // Observable to hold filtered data
+
+  users$: Observable<User[]> = new Observable(); // Users from Firebase
+  channels$: Observable<Channel[]> = new Observable(); // Channels from Firebase
+
+   // Getter for the 'searchField' form control
+   get searchFieldControl(): FormControl {
+    return this.stateForm.get('searchField') as FormControl;
+  }
+
+  // Filter function to handle both Users and Channels
+  private _filterData(value: string): Observable<FilterGroup[]> {
+    const filterValue = value // Convert input to lowercase for case-insensitive search
+  
+    return this.users$.pipe(
+      switchMap(users =>
+        this.channels$.pipe(
+          map(channels => {
+            const filteredUsers = users
+              .filter(user => user.name.toLowerCase().includes(filterValue)) // Filter users by name
+              .filter(user => !!user.id); // Ensure only users with an ID are included
+  
+            const filteredChannels = channels
+              .filter(channel => channel.name.toLowerCase().includes(filterValue)) // Filter channels by name
+              .filter(channel => !!channel.id); // Ensure only channels with an ID are included
+  
+            return [
+              {
+                type: 'Users',
+                items: filteredUsers.map(user => ({ name: user.name, id: user.id!, img: user.img })) // Map user with name and id
+              },
+              {
+                type: 'Channels',
+                items: filteredChannels.map(channel => ({ name: channel.name, id: channel.id!, img: "" })) // Map channel with name and id
+              }
+            ];
+          })
+        )
+      )
+    );
+  }
+
+
+  onOptionSelected(event: any) {
+    const selectedItem = event.option.value;  // Get the selected item object
+    const selectedName = selectedItem.name;   // Extract the name
+    const selectedId = selectedItem.id;       // Extract the ID
+
+    this.searchFieldControl.setValue(selectedName, { emitEvent: false });
+
+    // Update form control or handle selectedId as needed
+    console.log('Selected ID:', selectedItem.img);
+  }
+
+
+  // ------------
+
 
   async getActiveUser(){
     try {
@@ -122,9 +195,7 @@ export class HeaderComponent implements OnInit{
       width: '200px',
       height: '130px',
       position: {top: '90px', right: '15px'},
-
     });
-
   }
 
   

@@ -14,7 +14,7 @@ import { Channel } from '../../models/channel.class';
 // Define FilterGroup for grouping Users and Channels
 export interface FilterGroup {
   type: string; // Group Type ('Channels' or 'Users')
-  items: { name: string; id: string }[]; // List of item names
+  items: { name: string; id: string , img: string}[]; // List of item names
 }
 
 @Component({
@@ -84,7 +84,7 @@ export class NewMessageComponent implements OnInit {
       return this.users$.pipe(
         map(users => {
           const filteredUsers = users.filter(user => user.name.toLowerCase().includes(userFilterValue));
-          return [{ type: 'Users', items: filteredUsers.map(user => ({ name: user.name, id: user.id })) }];
+          return [{ type: 'Users', items: filteredUsers.map(user => ({ name: user.name, id: user.id , img: user.img})) }];
         })
       );
     }
@@ -98,7 +98,7 @@ export class NewMessageComponent implements OnInit {
             type: 'Channels', 
             items: filteredChannels
             .filter(channel => channel.id)
-            .map(channel =>  ({ name: channel.name, id: channel.id! })) }];
+            .map(channel =>  ({ name: channel.name, id: channel.id!, img: ""})) }];
         })
       );
     }

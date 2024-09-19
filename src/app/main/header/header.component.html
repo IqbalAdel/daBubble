@@ -4,10 +4,33 @@
       <span>DABubble</span>
     </div>
     <div class="search-container">
-        <form class="search-bar">
-          <input type="text" placeholder="Code learning durchsuchen">
+        
+        <form class="search-bar" [formGroup]="stateForm">
+          <input
+              placeholder="Code learning durchsuchen"
+              type="text"
+              matInput
+              [formControl]="searchFieldControl"
+              [matAutocomplete]="auto"
+          />
           <mat-icon>search</mat-icon>
-        </form>
+
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)">
+              <ng-container *ngFor="let group of filterGroupOptions | async">
+              <mat-optgroup [label]="group.type">
+                  <mat-option *ngFor="let item of group.items" [value]="item">
+                    @if(item.img){
+                      <img src="{{item.img}}" alt="">
+                    } @else {
+                      <div class="channel-tag">#</div>
+                    }
+                    <span>{{ item.name }}</span>
+                  
+                  </mat-option>
+              </mat-optgroup>
+              </ng-container>
+          </mat-autocomplete>
+        </form> 
       </div>
     <div (mouseover)="imgSrc = 'assets/img/keyboard_arrow_down_v3.png'"
     (mouseout)="imgSrc = 'assets/img/keyboard_arrow_down_v2.png'" (click)="openDialog()" class="profile">
