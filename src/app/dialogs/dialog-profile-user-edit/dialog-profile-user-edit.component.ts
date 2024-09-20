@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class DialogProfileUserEditComponent implements OnInit{
 
-  imgSrc: string = "assets/img/close_default.png";
+  imgSrc: string = "assets/img/close_default.svg";
   user: User = {
     name: 'Frederick Beck',
     email: 'Test@gmx.de',

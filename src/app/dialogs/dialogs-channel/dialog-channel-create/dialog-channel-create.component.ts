@@ -25,7 +25,7 @@ import { MatInput, MatInputModule } from '@angular/material/input';
 })
 export class DialogChannelCreateComponent {
 
-  imgSrc: string = "assets/img/close_default.png";
+  imgSrc: string = "assets/img/close_default.svg";
   name: string = '';
   description: string = '';
   

@@ -29,6 +29,7 @@ export class GroupAnswerComponent implements OnInit {
   firestore: Firestore = inject(Firestore);
   channels$: Observable<any[]>;
   loggedInUserName!: string;
+  imgClose: string = 'assets/img/close_default.svg';
   messages: { id:string; text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 

@@ -1,3 +1,12 @@
+.smiley-div{
+    padding: 7px;
+
+    &:hover{
+        border-radius: 50%;
+        background-color: rgb(236, 238, 254);
+    }
+}
+
 .chat-group {
     background-color: white;
     height: 85vh;
@@ -35,25 +44,30 @@
             &:hover {
                 .add-smiley {
                     display: flex;
-                    // align-items: center;
+                    align-items: center;
                     background-color: white;
                     width: 320px;
                     height: 40px;
                     border-top-left-radius: 30px;
                     border-bottom-left-radius: 30px;
                     border-top-right-radius: 30px;
-                    // padding: 8px 20px;
+                    padding: 8px 20px;
                     gap: 20px;
                     position: absolute;
                     left: 20px;
-                    // margin-top: -40px;
-                    border: 2px solid rgba(51, 38, 235, 0.2);
+                    margin-top: -40px;
+                    border: 1px solid rgba(51, 38, 235, 0.2);
                 }
                 span{
                     background-color: white;
                 }
             }
         }
+    }
+
+    .hands-up{
+        width: 40px !important; 
+        height: 40px !important;
     }
 
     .answer {
@@ -149,7 +163,7 @@
         img {
             height: 65px;
             width: 65px;
-            border-radius: 50px;
+            // border-radius: 50px;
         }
     }
 
@@ -191,22 +205,22 @@
                 background-color: white;
             }
 
-            // .add-smiley {
-            //     display: flex;
-            //     align-items: center;
-            //     background-color: white;
-            //     width: auto;
-            //     height: 40px;
-            //     border-top-left-radius: 30px;
-            //     border-bottom-left-radius: 30px;
-            //     border-top-right-radius: 30px;
-            //     padding: 8px 20px;
-            //     gap: 20px;
-            //     position: absolute;
-            //     right: 20px;
-            //     margin-top: -40px;
-            //     border: 2px solid rgba(51, 38, 235, 0.2);
-            // }
+            .add-smiley {
+                display: flex;
+                align-items: center;
+                background-color: white;
+                width: auto;
+                height: 20px;
+                border-top-left-radius: 30px;
+                border-bottom-left-radius: 30px;
+                border-top-right-radius: 30px;
+                padding: 8px 20px;
+                gap: 20px;
+                position: absolute;
+                right: 20px;
+                margin-top: -40px;
+                border: 1px solid rgba(51, 38, 235, 0.2);
+            }
         }
 
         .chat {
@@ -242,10 +256,10 @@
             display: none;
 
             img {
-                height: 40px;
+                height: 20px;
                 width: auto;
-                padding: 10px;
-                border-radius: 50%;
+                // padding: 10px;
+                // border-radius: 50%;
 
                 &:hover {
                     background-color: rgb(236, 238, 254);

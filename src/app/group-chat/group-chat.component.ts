@@ -47,7 +47,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
 
   messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string }[] = [];
   groupUsers: User[] = [];
-  imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.png', 'assets/person_add.svg', 'assets/more_vert.png'];
+  imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
 
@@ -283,14 +283,14 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   }
 
   changeImageComment(isHover: boolean) {
-    this.imgSrc[1] = isHover ? 'assets/img/smiley/comment-blue.png' : 'assets/img/smiley/comment.png';
+    this.imgSrc[1] = isHover ? 'assets/img/smiley/comment-blue.svg' : 'assets/img/smiley/comment.svg';
   }
 
   changeImageAddContat(isHover: boolean) {
     this.imgSrc[2] = isHover ? 'assets/person_add_blue.svg' : 'assets/person_add.svg';
   }
   changeImageMoreVert(isHover: boolean) {
-    this.imgSrc[3] = isHover ? 'assets/more_vert_hover.png' : 'assets/more_vert.png';
+    this.imgSrc[3] = isHover ? 'assets/more_vert_hover.svg' : 'assets/more_vert.svg';
   }
 
   openDialog() {

@@ -18,7 +18,7 @@ button {
     font-weight: 500;
     z-index: 999;
 
-    .image-open {
+    .image-open, .image-close {
         display: flex;
         align-items: center;
     }
@@ -141,7 +141,7 @@ button {
                 content: '';
                 width: 20px;
                 height: 20px;
-                background-image: url('/assets/workspaces.png');
+                background-image: url('/assets/workspaces.svg');
                 background-size: cover;
                 background-position: center;
             }
@@ -152,7 +152,7 @@ button {
                 &::before {
                     width: 20px;
                     height: 20px;
-                    background-image: url('/assets/workspaces_blue.png');
+                    background-image: url('/assets/workspaces_blue.svg');
                     background-size: cover;
                     background-position: center;
                 }
@@ -193,7 +193,7 @@ button {
                 content: '';
                 width: 30px;
                 height: 30px;
-                background-image: url('/assets/account_circle.png');
+                background-image: url('/assets/account_circle.svg');
                 background-size: cover;
                 background-position: center;
             }
@@ -202,7 +202,7 @@ button {
                 color: blue;
 
                 &::before {
-                    background-image: url('/assets/account_circle_blue.png');
+                    background-image: url('/assets/account_circle_blue.svg');
                 }
             }
         }
@@ -278,7 +278,7 @@ button {
             bottom: 0;
             width: 25px;
             height: 25px;
-            background-image: url('/assets/img/add_circle.png');
+            background-image: url('/assets/img/add_circle.svg');
             background-size: cover;
             background-position: center;
         }
@@ -287,7 +287,7 @@ button {
             color: blue;
 
             &::before {
-                background-image: url('/assets/add_circle_blue.png');
+                background-image: url('/assets/add_circle_blue.svg');
             }
         }
     }

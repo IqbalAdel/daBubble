@@ -3,7 +3,11 @@
   <div class="header">
     <h1>Thread</h1>
     <span># {{ groupName }}</span>
-    <img (click)="closeAnswer()" src="assets/img/close_default.png" alt="" >
+    <img (click)="closeAnswer()"
+     [src]="imgClose"
+     (mouseover)="imgClose = 'assets/img/close_hover.svg'" 
+    (mouseleave)="imgClose = 'assets/img/close_default.svg'"
+     alt="" >
   </div>
   <div class="line"></div>
   <div class="commplet-chat" #scrollContainer>

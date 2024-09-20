@@ -50,7 +50,7 @@ export class DevspaceComponent implements OnInit{
   openChannels = true;
   isDavspaceVisible = true;
   showGroupChat = true;
-  imgSrc = ['assets/GroupClose.png', 'assets/Hide-navigation.png'];
+  imgSrc = ['assets/GroupClose.svg', 'assets/Hide-navigation.svg'];
 
   selectedUserId: string | null = null; // Variable to track the selected user
 
@@ -151,11 +151,11 @@ export class DevspaceComponent implements OnInit{
   }
 
   changeImage(isHover: boolean) {
-    this.imgSrc[0] = isHover ? 'assets/groupCloseBlue.png' : 'assets/GroupClose.png';
+    this.imgSrc[0] = isHover ? 'assets/groupCloseBlue.svg' : 'assets/GroupClose.svg';
   }
 
   changeImageTwo(isHover: boolean) {
-    this.imgSrc[0] = isHover ? 'assets/Hide-navigation-blue.png' : 'assets/Hide-navigation.png';
+    this.imgSrc[0] = isHover ? 'assets/Hide-navigation-blue.svg' : 'assets/Hide-navigation.svg';
   }
 
   openGroupChat(name: any): void {
