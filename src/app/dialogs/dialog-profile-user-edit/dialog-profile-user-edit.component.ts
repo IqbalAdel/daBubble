@@ -72,8 +72,8 @@ export class DialogProfileUserEditComponent implements OnInit{
       await this.fire.updateUserData(this.userID, this.name, this.email )
     }
 
-    console.log(this.email)
-    console.log(this.name)
+    // console.log(this.email)
+    // console.log(this.name)
     this.dialog.close();
 
   }

@@ -44,6 +44,17 @@ export class FirebaseService {
     });
   }
 
+async updateMessage(messageId: string, newText: string): Promise<void> {
+  const messageRef = doc(this.firestore, 'channels','messages', messageId);
+  const messageSnapshot = await getDoc(messageRef);
+
+  if (messageSnapshot.exists()) {
+    await updateDoc(messageRef, { text: newText });
+    console.log('Message updated successfully');
+  } else {
+    console.error('Message does not exist:', messageId);
+  }
+}
 
   getUsersRef(): CollectionReference<DocumentData> {
     return collection(this.firestore, 'users') as CollectionReference<DocumentData>;
@@ -308,8 +319,6 @@ export class FirebaseService {
 
 
   createChatId(userId1: string, userId2: string): string | null {
-    // Beispielhafte Überprüfung, ob es sich um gültige Benutzer-IDs handelt
-    // Diese Logik könnte an deine ID-Struktur angepasst werden.
     const isValidUserId = (id: string) => id.startsWith('user_') || id.length === 28; // Beispiel: User-IDs haben ein Präfix 'user_' oder eine bestimmte Länge
     
     // Nur Chat-ID erstellen, wenn beide IDs Benutzer-IDs sind
@@ -322,5 +331,6 @@ export class FirebaseService {
       return null;  // Gib null zurück, wenn keine Benutzer-IDs vorliegen
     }
   }
+
 
 }

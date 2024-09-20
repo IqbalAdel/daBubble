@@ -28,6 +28,10 @@ export class UserService {
     this._user = user;
   }
 
+  getUserProfilePicture(): string {
+    return this._user?.img || 'assets/img/default-avatar.png'; // Standardbild, falls kein Profilbild vorhanden ist
+  }
+
   getUser(): User | null {
     return this._user ? new User(this._user) : null;
   }
