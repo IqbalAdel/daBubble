@@ -91,6 +91,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        height: 72px;
 
         .persons-group {
             display: flex;
@@ -103,48 +104,58 @@
             .invite-people {
                 background-color: rgba(236, 238, 254, 1);
                 border-radius: 50%;
-                padding: 3px;
                 cursor: pointer;
+
+                img{
+                    width: 40px;
+                    height: auto;   
+                }
             }
 
             .header-group-img {
                 gap: 10px;
                 border-radius: 50px;
-                width: 220px;
+                width: fit-content;
+                max-width: 300px;
                 box-sizing: border-box;
                 cursor: pointer;
+                padding-right: 5px;
 
                 img {
-                    height: 70px;
+                    height: 50px;
                     border-radius: 100%;
-                    margin-left: -25px;
+                    margin-left: -18px;
                     background-color: white;
                     padding: 3px;
                 }
 
                 &:hover {
                     background-color: rgba(236, 238, 254, 1);
-                    color: blue;
+                    // color: blue;
                 }
             }
         }
     }
 
     .name {
-        height: 96px;
-        padding: 40px;
+        // height: 96px;
         box-sizing: border-box;
         cursor: pointer;
+        margin-left: 20px;
 
+        display: flex;
+        align-items: center;
+        
+        &:hover {
+            background-color: rgba(236, 238, 254, 1);
+            border-radius: 30px;
+            color: blue;
+        }
         h2 {
-            padding: 4px 20px;
+            padding: 4px 10px;
             box-sizing: border-box;
+            margin: 0;
 
-            &:hover {
-                background-color: rgba(236, 238, 254, 1);
-                border-radius: 30px;
-
-            }
         }
     }
 
@@ -210,7 +221,7 @@
                 align-items: center;
                 background-color: white;
                 width: auto;
-                height: 20px;
+                height: 40px;
                 border-top-left-radius: 30px;
                 border-bottom-left-radius: 30px;
                 border-top-right-radius: 30px;

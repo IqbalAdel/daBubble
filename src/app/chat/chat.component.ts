@@ -27,7 +27,7 @@ export interface ChatMessage {
 export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
-  imgTextarea = ['assets/img/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
+  imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
   channelId!: string;
   receiverUserId: string | null = "";
   messages: any[] = [];
@@ -313,7 +313,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   changeAdd(isHover: boolean) {
-    this.imgTextarea[0] = isHover ? 'assets/img/smiley/add-blue3.svg' : 'assets/img/add.png';
+    this.imgTextarea[0] = isHover ? 'assets/add-hover-blue.svg' : 'assets/add.svg';
   }
 
   addSmiley(isHover: boolean) {

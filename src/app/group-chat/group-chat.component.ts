@@ -14,6 +14,7 @@ import { Channel } from '../../models/channel.class';
 import { map } from 'rxjs/operators';
 import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
+import { group } from '@angular/animations';
 
 @Component({
   selector: 'app-group-chat',
@@ -50,6 +51,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
+  imgKeyboard: string = 'assets/img/keyboard_arrow_down.svg'
 
   constructor(
     private route: ActivatedRoute,
@@ -63,6 +65,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
+    this.userImages = [];
     this.route.paramMap.subscribe(params => {
       this.groupId = params.get('id') || '';
       // this.loadGroupName();
@@ -362,13 +365,14 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   }
 
   async loadUserImages(userIds: string[]) {
+    const currentChannel = this.groupId;
     this.userImages = [];
-    let i = 0; 
+    // let i = 0; 
     for (const userId of userIds){
       const userData = await this.firebaseService.getUserById(userId);
-      if(userData && i<5){
+      if(userData && currentChannel == this.groupId){
         this.userImages.push(userData.img)
-        i++;
+        // i++;
       }
     }
     console.log(this.userImages)

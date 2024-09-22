@@ -43,7 +43,7 @@ export class DevspaceComponent implements OnInit{
   };
   currentUserChannels: Channel[] = [];
   user: User | null = null;
-  selectedChannelId: string | null = null;
+  selectedChannelId: string | null = 'pEylXqZMW1zKPIC0VDXL';
   loggedInUserName!: string;
   showFiller = false;
   openEmployees = true;
@@ -51,6 +51,15 @@ export class DevspaceComponent implements OnInit{
   isDavspaceVisible = true;
   showGroupChat = true;
   imgSrc = ['assets/GroupClose.svg', 'assets/Hide-navigation.svg'];
+  imgEdit = 'assets/edit_square.svg'
+  imgAdd='assets/img/add_circle.svg'
+  imgAdd2='assets/img/add.svg'
+  imgDropDown = "assets/arrow_drop_down.svg";
+  imgDropDownRight = "assets/arrow_drop_down-right.svg";
+  imgDropDown2 = "assets/arrow_drop_down.svg";
+  imgDropDownRight2 = "assets/arrow_drop_down-right.svg";
+  imgAccountCircle = "assets/account_circle.svg";
+  imgAccountCircle2 = "assets/account_circle.svg";
 
   selectedUserId: string | null = null; // Variable to track the selected user
 

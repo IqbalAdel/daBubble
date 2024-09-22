@@ -32,40 +32,44 @@ button {
         margin-left: 10px;
     }
 }
+section{
+    margin-left: 30px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 30px;
+    padding-top: 30px;
+    padding-right: 10px;
+
+}
 
 .davspace {
     height: 85vh;
     width: 366px;
     background-color: white;
-    border-radius: 30px;
-    margin-left: 30px;
     transition: left 1s ease-in-out, opacity 1s ease-in-out;
     opacity: 1;
     display: flex;
     flex-direction: column;
-    margin-top: 20px;
+    
     transition: all 0.3s ease-in-out;
 
-    .solo-chat {
-        flex: 1;
-        overflow-y: auto;
-        max-height: 100%;
-        margin-bottom: 20px;
-
+    overflow-y: auto;
         &::-webkit-scrollbar {
             width: 4px;
         }
 
         &::-webkit-scrollbar-thumb {
-            background-color: #888;
+            background-color: rgba(136, 136, 136, 0.3);
             border-radius: 2px;
         }
 
         &::-webkit-scrollbar-thumb:hover {
-            background-color: #555;
+            background-color: rgba(0, 0, 255, 0.5);
         }
 
-        
+    .solo-chat {
+        flex: 1;
+        max-height: 100%;
           
          
     }
@@ -86,12 +90,18 @@ button {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin: 20px 30px;
-        padding-top: 20px;
+        margin: 0 30px;
+        // padding-top: 10px;
 
-        img {
+        .icon {
+            cursor: pointer;
+            border-radius: 100%;
             &:hover {
                 background-color: rgba(236, 238, 254, 1);
+            }
+
+            img{
+                padding: 5px;
             }
         }
 
@@ -102,9 +112,6 @@ button {
             cursor: default;
         }
 
-        .icon {
-            cursor: pointer;
-        }
     }
 
     h2 {
@@ -130,6 +137,16 @@ button {
             align-items: center;
             gap: 15px;
             padding: 5px 10px 5px 0px;
+
+            &:hover{
+                color: blue;
+            }
+
+            &:active{
+                .channels-block{
+                    color: black;
+                }
+            }
         }
 
         .channels-block {
@@ -137,26 +154,24 @@ button {
             align-items: center;
             gap: 10px;
 
-            &::before {
-                content: '';
-                width: 20px;
-                height: 20px;
-                background-image: url('/assets/workspaces.svg');
-                background-size: cover;
-                background-position: center;
-            }
+            // &::before {
+            //     content: '';
+            //     width: 20px;
+            //     height: 20px;
+            //     background-image: url('/assets/workspaces.svg');
+            //     background-size: cover;
+            //     background-position: center;
+            // }
 
-            &:hover {
-                color: blue;
-
-                &::before {
-                    width: 20px;
-                    height: 20px;
-                    background-image: url('/assets/workspaces_blue.svg');
-                    background-size: cover;
-                    background-position: center;
-                }
-            }
+            // &:hover {
+            //     &::before {
+            //         width: 20px;
+            //         height: 20px;
+            //         background-image: url('/assets/workspaces_blue.svg');
+            //         background-size: cover;
+            //         background-position: center;
+            //     }
+            // }
         }
 
         .add {
@@ -166,9 +181,9 @@ button {
             width: 30px;
             display: flex;
 
-            &:hover {
-                background-color: rgba(236, 238, 254, 1);
-            }
+            // &:hover {
+            //     background-color: rgba(236, 238, 254, 1);
+            // }
         }
     }
 
@@ -180,6 +195,16 @@ button {
         margin: 20px 30px;
         gap: 7px;
 
+        &:hover{
+            color: blue;
+        }
+
+        &:active{
+            h2{
+                color: black;
+            }
+        }
+
         .direct-messages-box {
             display: flex;
             background-color: transparent;
@@ -189,22 +214,7 @@ button {
                 height: 30px;
             }
 
-            &::before {
-                content: '';
-                width: 30px;
-                height: 30px;
-                background-image: url('/assets/account_circle.svg');
-                background-size: cover;
-                background-position: center;
-            }
-
-            &:hover {
-                color: blue;
-
-                &::before {
-                    background-image: url('/assets/account_circle_blue.svg');
-                }
-            }
+            
         }
     }
 
@@ -250,10 +260,6 @@ button {
       }
 
 
-    img {
-        border-radius: 50%;
-
-    }
 
     .new-channel {
         display: flex;
@@ -265,30 +271,36 @@ button {
         margin: 10px 0px;
 
 
+        &:active{
+            span{
+                color: black;
+            }
+        }
         img {
             width: 24px;
             height: 24px;
+
         }
 
-        &::before {
-            content: '';
-            position: absolute;
-            left: 70px;
-            top: 6px;
-            bottom: 0;
-            width: 25px;
-            height: 25px;
-            background-image: url('/assets/img/add_circle.svg');
-            background-size: cover;
-            background-position: center;
-        }
+        // &::before {
+        //     content: '';
+        //     position: absolute;
+        //     left: 70px;
+        //     top: 6px;
+        //     bottom: 0;
+        //     width: 25px;
+        //     height: 25px;
+        //     background-image: url('/assets/img/add_circle.svg');
+        //     background-size: cover;
+        //     background-position: center;
+        // }
 
         &:hover {
             color: blue;
 
-            &::before {
-                background-image: url('/assets/add_circle_blue.svg');
-            }
+            // &::before {
+            //     background-image: url('/assets/add_circle_blue.svg');
+            // }
         }
     }
 }
@@ -312,12 +324,20 @@ button {
         background-color: rgba(0, 0, 255, 0.1);
         color: blue;
         font-weight: 600;
+
+        &:hover{
+            color: blue;
+        }
     }
 
 
     &:hover {
         background-color: rgba(236, 238, 254, 1);
-        color: blue;
+        color: black;
+
+        span{
+            color: blue;
+        }
     }
 }
 
