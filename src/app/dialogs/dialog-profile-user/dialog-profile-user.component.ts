@@ -18,7 +18,7 @@ import { FirebaseService } from '../../services/firebase.service';
 })
 export class DialogProfileUserComponent implements OnInit{
 
-  imgSrc:string = "assets/img/close_default.png";
+  imgSrc:string = "assets/img/close_default.svg";
 
   user: User = {
     name: '',

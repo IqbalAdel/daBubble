@@ -44,7 +44,7 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
   @ViewChild(ChipsAddMembersComponent) chipsAddMembersComponent!: ChipsAddMembersComponent;
 
 
-  imgSrc: string = "assets/img/close_default.png";
+  imgSrc: string = "assets/img/close_default.svg";
   inputState: string = 'hidden';
   selectedValue: string = '';
   newChannel = new Channel();

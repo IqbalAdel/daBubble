@@ -18,7 +18,7 @@ import { User } from '../../../models/user.class';
 })
 export class DialogProfileUserCenterComponent {
 
-  imgSrc: string = "assets/img/close_default.png";
+  imgSrc: string = "assets/img/close_default.svg";
   public username: string;
   public email: string;
   public image: string;

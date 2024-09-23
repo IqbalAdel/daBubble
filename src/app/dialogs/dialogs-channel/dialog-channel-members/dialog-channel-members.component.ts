@@ -22,7 +22,7 @@ import { CommonModule } from '@angular/common';
 })
 export class DialogChannelMembersComponent{
 
-  imgSrc: string = "assets/img/close_default.png";
+  imgSrc: string = "assets/img/close_default.svg";
   imgSrcAdd: string = "assets/img/person_add_default.png";
 
   allUsers: User[] = [];

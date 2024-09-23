@@ -28,7 +28,7 @@ export class DialogChannelEditComponent implements OnInit{
   editTwo!:boolean ;
   editTwoInput!:boolean ;
 
-  imgSrc: string = "assets/img/close_default.png";
+  imgSrc: string = "assets/img/close_default.svg";
   channelID: string = "";
   channel: Channel | null = null;
   editTxtValue: string = "Bearbeiten";

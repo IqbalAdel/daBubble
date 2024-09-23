@@ -28,7 +28,7 @@ export class DialogChannelAddMembersComponent{
   @ViewChild(ChipsAddMembersComponent) chipsAddMembersComponent!: ChipsAddMembersComponent;
   
 
-  imgSrc: string = "assets/img/close_default.png";
+  imgSrc: string = "assets/img/close_default.svg";
   allUsers: User[] = []
   test = 'Hello';
   channelID: string = "";

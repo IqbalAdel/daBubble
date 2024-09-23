@@ -1,12 +1,15 @@
 <div class="all">
     <div class="chat-group">
         <div class="chat-header-group">
-            <div (click)="openDialog()" class="name">
+            <div (click)="openDialog()" class="name"
+            (mouseover)="imgKeyboard = 'assets/img/keyboard_arrow_down-blue.svg'"
+            (mouseleave)="imgKeyboard = 'assets/img/keyboard_arrow_down.svg'"
+            >
                 <h2 *ngIf="groupName; else loading"># {{ groupName }}</h2>
                 <ng-template #loading>
                     <h2>Lädt...</h2>
                 </ng-template>
-                <!-- <img src="assets/img/keyboard_arrow_down_v2.png" alt=""> -->
+                <img [src]="imgKeyboard" alt="">
             </div>
             <div class="persons-group" *ngIf="filteredChannels$ | async as channels; else loading">
                 <!-- Iteriere über die gefilterten Kanäle -->
@@ -69,14 +72,18 @@
                                 </div>
                             </div>
                             <div class="add-smiley">
-                                <img src="assets/img/smiley/check mark green.png" alt="">
-                                <img src="assets/img/smiley/hands in celebration.png" alt="">
-                                <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
-                                [src]="imgSrc[0]" alt="">
-                                <img (mouseover)="changeImageComment(true)" (mouseout)="changeImageComment(false)"[src]="imgSrc[1]" alt="" (click)="navigateToAnswers(message.id)">
-                                <img *ngIf="message.userName === loggedInUserName"
-                                (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)"
-                                [src]="imgSrc[3]" (click)="editText(message.id)" alt="">
+                                <div class="smiley-div"><img src="assets/img/smiley/check-mark-green.svg" alt=""></div>
+                                <div class="smiley-div"><img src="assets/img/smiley/hands_in_celebration.svg" alt=""></div>
+                                <div class="smiley-div"><img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
+                                    [src]="imgSrc[0]" alt=""></div>
+                                <div class="smiley-div"><img (mouseover)="changeImageComment(true)" (mouseout)="changeImageComment(false)"[src]="imgSrc[1]" alt="" (click)="navigateToAnswers(message.id)"></div>
+                                <div class="smiley-div"><img *ngIf="message.userName === loggedInUserName"
+                                    (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)"
+                                    [src]="imgSrc[3]" (click)="editText(message.id)" alt=""></div>
+                                
+                                
+                                
+                                
                             </div>
                         </div>
                     </div>
