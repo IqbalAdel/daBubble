@@ -61,7 +61,12 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private initializeUserObservable(): void {
     this.user$ = this.userService.selectedUserId$.pipe(
-      switchMap(userId => this.handleUserSelection(userId)),
+      tap(userId => {
+        console.log('Selected user ID tap:', userId);  // Log the userId here
+      }),
+      switchMap(userId => 
+        this.handleUserSelection(userId)
+      ),
       catchError(error => {
         // console.error('Error loading user data:', error);
         return of(undefined);
@@ -71,9 +76,11 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private handleUserSelection(userId: string | null): Observable<User | undefined> {
     if (userId) {
+      console.log('success solo chat', userId)
       return this.loadUserAndListen(userId);
     } else {
       const lastSelectedUserId = this.userService.getLastSelectedUserId();
+      console.log('failure solo-chat', lastSelectedUserId)
       if (lastSelectedUserId) {
         return this.loadUserAndListen(lastSelectedUserId);
       } else {

@@ -43,7 +43,7 @@
     }
 }
 
-.active{
+.status{
     @include d-flex($jc: flex-start);
     margin-bottom: 25px;
     div{
@@ -55,6 +55,25 @@
     }
     span{
         color: #92C83E;
+    }
+}
+
+
+.online{
+    div{
+        background-color: #92C83E;
+    }
+    span{
+        color: #92C83E;
+    }
+}
+
+.offline{
+    div{
+        background-color: #686868;
+    }
+    span{
+        color: #686868;
     }
 }
 

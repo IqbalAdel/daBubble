@@ -37,6 +37,8 @@ export class DevspaceComponent implements OnInit{
     password: '',
     channels: [],
     chats: [],
+    state: 'offline',
+    lastChanged: Date.now(),
     usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
       throw new Error('Function not implemented.');
     }
@@ -62,6 +64,9 @@ export class DevspaceComponent implements OnInit{
   imgAccountCircle2 = "assets/account_circle.svg";
 
   selectedUserId: string | null = null; // Variable to track the selected user
+  userStatus: { [key: string]: boolean } = {};
+  userStatusFetched: { [userId: string]: boolean } = {};
+
 
   constructor(
     private router: Router,
@@ -94,9 +99,10 @@ export class DevspaceComponent implements OnInit{
 
     this.loadChannels();
     this.loadUsers();
-    this.selectUser;
+    // this.selectUser;
     this.loggedInUser();
   }
+
 
   getUsers$(): Observable<any[]> {
     const fireUsers = collection(this.firestore, 'users');
@@ -178,6 +184,7 @@ export class DevspaceComponent implements OnInit{
 
   selectUser(userId: string): void {
     this.selectedUserId = userId;
+    console.log('devspace, user has been selected:', userId)
     this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
     this.router.navigate(['/main/chat', userId]);
     this.selectedChannelId = null;

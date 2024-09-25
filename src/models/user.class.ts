@@ -7,6 +7,9 @@ export class User {
     channels?: string[];
     chats?: string[];
     isBlinking?: boolean;
+    state: 'online' | 'offline';  // Default state is offline
+    lastChanged: number; 
+
     constructor(
       nameOrUser?: string | User,
       email: string = '',
@@ -14,7 +17,9 @@ export class User {
       img: string = '',
       password: string = '',
       channels: string[] = [],
-      chats: string[] = []
+      chats: string[] = [],
+      state: 'online' | 'offline' = 'offline',
+      lastChanged: number = Date.now(),
     ) {
       if (typeof nameOrUser === 'string' || nameOrUser === undefined) {
         // Initialize with provided parameters or defaults
@@ -25,6 +30,9 @@ export class User {
         this.password = password;
         this.channels = channels;
         this.chats = chats;
+        this.state = state;
+        this.lastChanged = lastChanged;
+
       } else {
         // Initialize with a copy of another User instance
         this.name = nameOrUser.name;
@@ -34,6 +42,8 @@ export class User {
         this.password = nameOrUser.password;
         this.channels = nameOrUser.channels ? [...nameOrUser.channels] : [];
         this.chats = nameOrUser.chats ? [...nameOrUser.chats] : [];
+        this.state = nameOrUser.state;
+        this.lastChanged = nameOrUser.lastChanged;
       }
     }
 

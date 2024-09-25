@@ -6,6 +6,8 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth } from '@angular/fire/auth'; // Importiere Auth Module
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { routes } from './app.routes';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
+// import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,10 +19,13 @@ export const appConfig: ApplicationConfig = {
       projectId: "da-bubble-e728c",
       storageBucket: "da-bubble-e728c.appspot.com",
       messagingSenderId: "255571591771",
-      appId: "1:255571591771:web:030b649a0f5865b2bbf57e"
+      appId: "1:255571591771:web:030b649a0f5865b2bbf57e",
+      databaseURL: "https://da-bubble-e728c-default-rtdb.europe-west1.firebasedatabase.app",
     })),
     provideAuth(() => getAuth()), // Stelle Auth bereit
     provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()) 
+    provideStorage(() => getStorage()),
+    // provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideDatabase(() => getDatabase())
   ]
 };

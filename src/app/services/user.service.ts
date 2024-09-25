@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User } from '../../models/user.class';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Firestore, doc, getDoc, onSnapshot } from '@angular/fire/firestore';
+import { FirebaseService } from './firebase.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -9,6 +10,12 @@ export class UserService {
 
   groupChatOpen = false;
   showGroupAnswer: boolean = false;
+
+  userStatus: { [key: string]: boolean } = {};
+  userStatusFetched: { [userId: string]: boolean } = {};
+  retryCount: { [userId: string]: number } = {};
+  maxRetries = 5; // Maximum number of retries
+  retryDelay = 1000; // 1 second delay between retries
 
 
   public _user: User | null = null;
@@ -22,7 +29,10 @@ export class UserService {
   private selectedUserIdSubject = new BehaviorSubject<string | null>(null);
   selectedUserId$ = this.selectedUserIdSubject.asObservable();
 
-  constructor(private firestore: Firestore) {}
+  constructor(
+    private firestore: Firestore,
+    private firebaseservice: FirebaseService
+  ) {}
 
   setUser(user: User | null): void {
     this._user = user;
@@ -57,7 +67,7 @@ export class UserService {
               userData.chats || []
           );
           this.setUser(user);
-          this.selectedUserIdSubject.next(uid);
+          // this.selectedUserIdSubject.next(uid);
         }
       } else {
         console.warn('Benutzerdokument nicht gefunden!');
@@ -73,13 +83,19 @@ export class UserService {
   }
 
   getLastSelectedUserId(): string | null {
+    console.log('4: get id im service', localStorage.getItem('lastSelectedUserId') )
     return localStorage.getItem('lastSelectedUserId');
   }
 
   setSelectedUserId(userId: string | null): void {
+    console.log('1: set ID im service', userId)
     this.selectedUserIdSubject.next(userId);
+    console.log('2: set ID im service', userId)
+
     if (userId) {
       localStorage.setItem('lastSelectedUserId', userId);
+      console.log('3: stored im service', userId)
+
     } else {
       localStorage.removeItem('lastSelectedUserId');
     }
@@ -91,6 +107,41 @@ export class UserService {
       if (doc.exists()) {
         const updatedUser = new User(doc.data() as User);
         callback(updatedUser);
+      }
+    });
+  }
+
+  getUserStatus(userId: string): boolean {
+    if (!(userId in this.userStatusFetched)) {
+      // Mark as being fetched
+      this.userStatusFetched[userId] = true;
+
+      this.retryCount[userId] = 0; // Initialize retry counter
+    
+      // Fetch the status with retries
+      this.fetchUserStatusWithRetries(userId)
+  
+    // Return stored status or false if not yet determined
+  }
+  return this.userStatus[userId] !== undefined ? this.userStatus[userId] : false;
+}
+
+  fetchUserStatusWithRetries(userId: string) {
+    // Try fetching the status
+    this.firebaseservice.getUserStatus(userId).subscribe(status => {
+      if (status && status.state && status.state == 'online') {
+        // If we have a valid status, store it and stop retrying
+        this.userStatus[userId] = status.state === 'online';
+        console.log(status.state, 'current state');
+      } else if (this.retryCount[userId] < this.maxRetries) {
+        // If the status is null/undefined and retry limit not reached, retry
+        this.retryCount[userId]++;
+        console.log(`Retrying to fetch status for user ${userId}... Attempt ${this.retryCount[userId]}`);
+        setTimeout(() => this.fetchUserStatusWithRetries(userId), this.retryDelay);
+      } else {
+        // If max retries reached, assume offline
+        this.userStatus[userId] = false;
+        console.log('Max retries reached, assuming offline');
       }
     });
   }

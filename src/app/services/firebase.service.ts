@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query, docData, deleteDoc, arrayRemove } from '@angular/fire/firestore';
+import { Inject, Injectable, inject } from '@angular/core';
+import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, DocumentData, CollectionReference, arrayUnion, query, docData, deleteDoc, arrayRemove,  } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap } from 'rxjs';
 import { Channel } from './../../models/channel.class';
 import { User } from './../../models/user.class';
@@ -7,6 +7,9 @@ import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { ChatMessage } from '../chat/chat.component';
 import { getDocs, orderBy, where } from 'firebase/firestore';
+import { Database, ref as dbRef, set, onDisconnect, onValue, getDatabase, object, get } from '@angular/fire/database';
+import { AngularFireDatabase } from '@angular/fire/compat/database';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,8 +17,12 @@ export class FirebaseService {
   private auth = inject(Auth);
   private storage = getStorage();
   firestore: Firestore = inject(Firestore);
+  private realtimeDb = inject(Database);
+  private db: Database;
 
-  constructor() { }
+  constructor() { 
+    this.db = inject(Database);
+  }
   
   async  getImageDownloadURL(imagePath: string): Promise<string> {
     const storage = getStorage();
@@ -35,6 +42,7 @@ export class FirebaseService {
       onAuthStateChanged(this.auth, (user) => {
         if (user) {
           resolve(user.uid);
+          this.setOnlineStatus(user.uid)
         } else {
           resolve(null);
         }
@@ -42,6 +50,26 @@ export class FirebaseService {
         reject(error);
       });
     });
+  }
+
+  setOnlineStatus(uid: string): void {
+    const statusRef = dbRef(this.db, `/status/${uid}`);  // Use dbRef for Realtime Database
+
+    const connectedRef = dbRef(this.db, '.info/connected');
+    onValue(connectedRef, (snapshot) => {
+      if (snapshot.val() === true) {
+        set(statusRef, { state: 'online', lastChanged: new Date().getTime() });
+        onDisconnect(statusRef).set({ state: 'offline', lastChanged: new Date().getTime() });
+      }
+    });
+  }
+
+  getUserStatus(userId: string): Observable<any> {
+    const statusRef = dbRef(this.db, `/status/${userId}`);
+    
+    
+    // Use the 'get()' method to retrieve a snapshot and convert it into an observable
+    return from(get(statusRef).then((snapshot) => snapshot.val()));
   }
 
 async updateMessage(messageId: string, newText: string): Promise<void> {

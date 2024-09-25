@@ -45,8 +45,13 @@ textarea {
         .textarea-add {
             display: flex;
             align-items: center;
-            color: lightgray;
-            font-size: 40px;
+            div{
+                border: solid 1px lightgray;
+                height: 32px;
+                width: 1px;
+                font-size: 40px;
+                margin-left: 3px;
+            }
         }
 
         img {

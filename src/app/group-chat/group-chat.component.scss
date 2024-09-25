@@ -281,25 +281,54 @@
 
     .chat-complete {
         height: calc(100% - 325px);
-        overflow-y: auto;
 
+        overflow-y: auto;
         &::-webkit-scrollbar {
             width: 4px;
         }
 
         &::-webkit-scrollbar-thumb {
-            background-color: #888;
-            /* Farbe des Scrollbalkens */
+            background-color: rgba(136, 136, 136, 0.3);
             border-radius: 2px;
-            /* Ecken abrunden */
         }
 
         &::-webkit-scrollbar-thumb:hover {
-            background-color: #555;
-            /* Farbe des Scrollbalkens beim Hover */
+            background-color: rgba(0, 0, 255, 0.5);
+        }
+
+        button{
+            position: absolute;
+            bottom: 200px;
+            left: 50px;
         }
     }
 }
+
+// .my-custom-snackbar {
+//     margin: 0 !important;
+//     position: absolute;
+//     right: 25px;
+//     top: 60px;
+//   }
+
+//   .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+//     min-width: 205px;
+// }
+
+// .mat-mdc-snack-bar-container {
+//     position: absolute; 
+// }
+//   ::ng-deep .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+//     min-width: 205px;
+// }
+
+//  ::ng-deep .mat-mdc-snack-bar-container {
+//     position: absolute; 
+// }
+
+//  ng:deep .mat-mdc-snack-bar-container {
+//     position: absolute; 
+// }
 
 .display-flex {
     display: flex;

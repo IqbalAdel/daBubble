@@ -10,6 +10,7 @@
                     <h2>Lädt...</h2>
                 </ng-template>
                 <img [src]="imgKeyboard" alt="">
+
             </div>
             <div class="persons-group" *ngIf="filteredChannels$ | async as channels; else loading">
                 <!-- Iteriere über die gefilterten Kanäle -->
@@ -89,8 +90,8 @@
                     </div>
                 </div>
             </div>
-
-            <app-chat></app-chat>
+            <div #scrollAnchor></div>
+            <app-chat (notify)="openSnackBar()"></app-chat>
         </div>
 
     </div>

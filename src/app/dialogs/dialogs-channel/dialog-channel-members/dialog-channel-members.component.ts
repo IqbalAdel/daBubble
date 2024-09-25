@@ -8,6 +8,7 @@ import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateD
 import { DialogChannelAddMembersComponent } from '../dialog-channel-add-members/dialog-channel-add-members.component';
 import { DialogProfileUserCenterComponent } from '../../dialog-profile-user-center/dialog-profile-user-center.component';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../../services/user.service';
 
 
 @Component({
@@ -37,6 +38,7 @@ export class DialogChannelMembersComponent{
     private dialogChannelAddMember: MatDialog,
     private dialogProfile: MatDialog,
     private fire: FirebaseService,
+    public userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: { 
       channelID: string; 
        }
@@ -98,6 +100,7 @@ export class DialogChannelMembersComponent{
         email: user.email,
         image: user.img,
         user: user,
+        status: this.userService.getUserStatus(user.id)
       }
 
     });
