@@ -184,7 +184,6 @@ export class DevspaceComponent implements OnInit{
 
   selectUser(userId: string): void {
     this.selectedUserId = userId;
-    console.log('devspace, user has been selected:', userId)
     this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
     this.router.navigate(['/main/chat', userId]);
     this.selectedChannelId = null;

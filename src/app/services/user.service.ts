@@ -83,18 +83,14 @@ export class UserService {
   }
 
   getLastSelectedUserId(): string | null {
-    console.log('4: get id im service', localStorage.getItem('lastSelectedUserId') )
     return localStorage.getItem('lastSelectedUserId');
   }
 
   setSelectedUserId(userId: string | null): void {
-    console.log('1: set ID im service', userId)
     this.selectedUserIdSubject.next(userId);
-    console.log('2: set ID im service', userId)
 
     if (userId) {
       localStorage.setItem('lastSelectedUserId', userId);
-      console.log('3: stored im service', userId)
 
     } else {
       localStorage.removeItem('lastSelectedUserId');
@@ -132,16 +128,13 @@ export class UserService {
       if (status && status.state && status.state == 'online') {
         // If we have a valid status, store it and stop retrying
         this.userStatus[userId] = status.state === 'online';
-        console.log(status.state, 'current state');
       } else if (this.retryCount[userId] < this.maxRetries) {
         // If the status is null/undefined and retry limit not reached, retry
         this.retryCount[userId]++;
-        console.log(`Retrying to fetch status for user ${userId}... Attempt ${this.retryCount[userId]}`);
         setTimeout(() => this.fetchUserStatusWithRetries(userId), this.retryDelay);
       } else {
         // If max retries reached, assume offline
         this.userStatus[userId] = false;
-        console.log('Max retries reached, assuming offline');
       }
     });
   }
