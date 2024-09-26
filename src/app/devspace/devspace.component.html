@@ -42,7 +42,7 @@
 
         <ng-container *ngIf="openChannels">
             <div *ngFor="let channel of channels$ | async" class="group-chat"
-                [ngClass]="{'selected': selectedChannelId === channel.id}"
+                [ngClass]="selectedChannelId === channel.id ? 'selected' : ''"
                 (click)="selectChannel(channel); navigateRouteChannel(channel.id)">
                 <span>#</span> 
                 {{ channel.name }}

@@ -48,7 +48,7 @@ export class GroupChatComponent implements OnInit {
   userImages: string[] = [];
   dataLoaded = false;
 
-  messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string; image: string | null; }[] = [];
+  messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string; image: string; userImage:string | null; }[] = [];
   groupUsers: User[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];

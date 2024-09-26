@@ -45,7 +45,7 @@ export class DevspaceComponent implements OnInit{
   };
   currentUserChannels: Channel[] = [];
   user: User | null = null;
-  selectedChannelId: string | null = 'pEylXqZMW1zKPIC0VDXL';
+  selectedChannelId: string | null = '';
   loggedInUserName!: string;
   showFiller = false;
   openEmployees = true;
@@ -97,10 +97,10 @@ export class DevspaceComponent implements OnInit{
       map(channels => channels.sort((a, b) => a['name'].localeCompare(b['name'])))
     );
 
-    this.loadChannels();
     this.loadUsers();
     // this.selectUser;
     this.loggedInUser();
+
   }
 
 
@@ -123,16 +123,16 @@ export class DevspaceComponent implements OnInit{
   async ngOnInit(): Promise<void>{
     await this.getActiveUser();
 
-    if(this.currentUser && this.currentUser.channels){
-      this.firebaseService.getChannels().subscribe((channels) => {
-        this.currentUserChannels = channels.filter(channel =>{
-          const channelId = channel['id']
-          return channelId && this.currentUser.channels!.includes(channelId)
-        })
+    // if(this.currentUser && this.currentUser.channels){
+    //   this.firebaseService.getChannels().subscribe((channels) => {
+    //     this.currentUserChannels = channels.filter(channel =>{
+    //       const channelId = channel['id']
+    //       return channelId && this.currentUser.channels!.includes(channelId)
+    //     })
         	  
-      })
+    //   })
       
-    };
+    // };
 
   }
   
@@ -212,24 +212,7 @@ export class DevspaceComponent implements OnInit{
     });
   }
 
-  loadChannels() {
-    this.firebaseService.getChannels().subscribe((channels) => {
-      this.channelsIqbal = channels.map(channelData => {
-
-        // Create a new Channel instance
-        return new Channel(
-          channelData.name || '',
-          channelData.description || '',
-          channelData.creator || '',
-          channelData.messages || [],
-          channelData.users || [],
-          channelData.id || ''
-        );
-      });
-      // Log the mapped Channel instances
-      // console.log('Mapped Channels:', this.channelsIqbal);
-    });
-  }
+ 
 
   navigateRouteChannel(id: string) {
     if(id){

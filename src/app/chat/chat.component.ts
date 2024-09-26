@@ -155,7 +155,8 @@ export class ChatComponent implements OnInit{
       userId: this.user.id,
       receivingUserId: receivingUserId,
       time: new Date().toLocaleTimeString(),
-      isRead: false
+      isRead: false,
+      userImage: this.user.img
     };
     // Nachricht in der Firestore-Collection für diesen Chat speichern
     if (chatId) {
@@ -299,7 +300,8 @@ export class ChatComponent implements OnInit{
       time: new Date().toLocaleTimeString(),
       chats: [],
       image: imageUrl,  // Bild-URL, falls vorhanden
-      isRead: false
+      isRead: false,
+      userImage: this.user.img,
     };
   }
   
