@@ -1,11 +1,23 @@
 <div class="textarea" #autoScrollTextarea>
+
+    <!-- Textarea für die Nachrichteneingabe -->
     <textarea #scrollContainer #messageInput rows="2" cols="50" [placeholder]="placeholderText"
         (keydown)="handleKeyDown($event, messageInput)"></textarea>
+    <!-- Bildvorschau: Zeige das Bild, wenn es ausgewählt wurde -->
+    <div *ngIf="selectedImageUrl" class="image-preview">
+        <img [src]="selectedImageUrl" alt="Bildvorschau" />
+        <!-- Optional: Button zum Entfernen der Bildvorschau -->
+
+        <button class="removeImage" (click)="removeImage()">x</button>
+    </div>
+
     <div class="textarea-send">
         <div class="textarea-add">
-            <img (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)" [src]="imgTextarea[0]" alt=""> 
-            <div></div> 
+            <img (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)" (click)="fileInput.click()"
+                [src]="imgTextarea[0]" alt="">
+            <div></div>
         </div>
+
         <div>
             <img (mouseover)="addSmiley(true)" (mouseout)="addSmiley(false)" [src]="imgTextarea[1]" alt="">
             <img (mouseover)="addEmailContact(true)" (mouseout)="addEmailContact(false)" [src]="imgTextarea[2]" alt="">

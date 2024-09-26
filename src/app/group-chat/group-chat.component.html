@@ -57,6 +57,7 @@
                                         <h2>{{ message.userName }}</h2>
                                         <p>{{ message.time }} Uhr</p>
                                     </div>
+                                    <img *ngIf="message.image" [src]="message.image" alt="Nachricht Bild" class="message-image">
                                     <span *ngIf="!isEditing[message.id]">{{ message.text }}</span>
                                     <input *ngIf="isEditing[message.id]" [(ngModel)]="message.text" (blur)="saveText(message.id)" />
                                 </div>

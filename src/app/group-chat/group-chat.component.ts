@@ -15,7 +15,7 @@ import { map } from 'rxjs/operators';
 import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { group } from '@angular/animations';
-import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.component';
 
 @Component({
@@ -25,7 +25,7 @@ import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.c
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
-export class GroupChatComponent implements OnInit{
+export class GroupChatComponent implements OnInit {
   user: User | null = null;
   @ViewChild('scrollContainer', { static: false }) scrollContainer: ElementRef | undefined;
   channels$: Observable<Channel[]> | undefined;
@@ -48,7 +48,7 @@ export class GroupChatComponent implements OnInit{
   userImages: string[] = [];
   dataLoaded = false;
 
-  messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string }[] = [];
+  messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string; image: string | null; }[] = [];
   groupUsers: User[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
@@ -62,14 +62,14 @@ export class GroupChatComponent implements OnInit{
       duration: 1000,
       panelClass: 'my-custom-snackbar',
     });
-    
+
     snackBarRef.afterDismissed().subscribe(() => {
       console.log('The snackbar was dismissed');
       this.scrollToBottom();
     });
   }
 
-  
+
 
   constructor(
     private route: ActivatedRoute,
@@ -79,7 +79,7 @@ export class GroupChatComponent implements OnInit{
     private firestore: Firestore,
     private router: Router,
     private snackBar: MatSnackBar
-    
+
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
   }
@@ -97,7 +97,6 @@ export class GroupChatComponent implements OnInit{
       this.loadUserChats();
       this.loadChannelData(this.groupId);
       console.log('test')
-
     });
   }
 
@@ -105,19 +104,19 @@ export class GroupChatComponent implements OnInit{
     if (index === 0) {
       return true; // Always show the date for the first message
     }
-  
+
     const previousMessage = this.messages[index - 1];
-    
+
     // Convert the timestamps to a valid Date object or ISO string
-    const currentDate = this.parseGermanDate(currentMessage.timestamp); 
-    const previousDate = this.parseGermanDate(previousMessage.timestamp); 
-  
+    const currentDate = this.parseGermanDate(currentMessage.timestamp);
+    const previousDate = this.parseGermanDate(previousMessage.timestamp);
+
     // Ensure both dates are valid before comparing
     if (isNaN(currentDate.getTime()) || isNaN(previousDate.getTime())) {
       console.error('Invalid date format:', currentMessage.timestamp, previousMessage.timestamp);
       return false;
     }
-  
+
     // Compare the dates without time
     return currentDate.toDateString() !== previousDate.toDateString();
   }
@@ -127,7 +126,7 @@ export class GroupChatComponent implements OnInit{
     // Extract the part after the day of the week
     const datePart = dateString.split(', ')[1]; // Get the '18.09.2024' part
     const [day, month, year] = datePart.split('.');
-  
+
     // Return a Date object in the format 'YYYY-MM-DD'
     return new Date(`${year}-${month}-${day}`);
   }
@@ -150,13 +149,13 @@ export class GroupChatComponent implements OnInit{
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
         (channelData: any[]) => {
           this.messages = this.formatMessages(channelData); // Formatierte Nachrichten setzen
-          
+
         },
         (error: any) => {
           console.error('Fehler beim Abrufen der Nachrichten:', error);
         }
       );
-      
+
     }
 
   }
@@ -171,13 +170,13 @@ export class GroupChatComponent implements OnInit{
   }
   formatMessages(messages: any[]): any[] {
     let previousDate: string = "";
-  
+
     return messages.map((message, index) => {
       const currentDate = this.formatTimestamp(message.timestamp); // Format the date
       const isFirstMessageOfDay = currentDate !== previousDate; // Check if it's the first message of the day
-  
+
       previousDate = currentDate; // Update previousDate for next iteration
-  
+
       return {
         ...message,
         timestamp: isFirstMessageOfDay ? currentDate : null, // Show date only for the first message of the day
@@ -190,7 +189,7 @@ export class GroupChatComponent implements OnInit{
     const date = timestamp.toDate(); // Konvertiere Firestore Timestamp zu JavaScript Date
     const today = new Date();
 
-        // Create a Date object for yesterday
+    // Create a Date object for yesterday
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
 
@@ -201,8 +200,8 @@ export class GroupChatComponent implements OnInit{
     // If the message is from yesterday, display 'Gestern'
     else if (date.toDateString() === yesterday.toDateString()) {
       return 'Gestern';
-    } 
-    
+    }
+
     else {
       return date.toLocaleDateString('de-DE', { // Formatierung für deutsches Datum
         weekday: 'long',  // Wochentag
@@ -356,14 +355,14 @@ export class GroupChatComponent implements OnInit{
   }
 
 
-scrollToBottom(): void {
-  if(this.scrollContainer){
-    try {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch (err) {
+  scrollToBottom(): void {
+    if (this.scrollContainer) {
+      try {
+        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+      } catch (err) {
+      }
     }
   }
-}
 
   getChannelsForusers() {
     this.filteredChannels$ = this.route.paramMap.pipe(
@@ -392,9 +391,9 @@ scrollToBottom(): void {
     const currentChannel = this.groupId;
     this.userImages = [];
     // let i = 0; 
-    for (const userId of userIds){
+    for (const userId of userIds) {
       const userData = await this.firebaseService.getUserById(userId);
-      if(userData && currentChannel == this.groupId){
+      if (userData && currentChannel == this.groupId) {
         this.userImages.push(userData.img)
         // i++;
       }
@@ -413,7 +412,7 @@ scrollToBottom(): void {
   saveText(messageId: string) {
     this.isEditing[messageId] = false;  // Deaktiviert den Bearbeitungsmodus
     const newText = this.messages.find(msg => msg.id === messageId)?.text;  // Hole den neuen Text aus message.text
-  
+
     if (newText) {
       this.firebaseService.updateMessage(messageId, newText)
         .then(() => {
@@ -426,7 +425,7 @@ scrollToBottom(): void {
       console.log('Keine Änderungen im Text, nichts zu speichern.');
     }
   }
-  
+
 }
 
 
