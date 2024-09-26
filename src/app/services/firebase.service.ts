@@ -72,8 +72,8 @@ export class FirebaseService {
     return from(get(statusRef).then((snapshot) => snapshot.val()));
   }
 
-async updateMessage(messageId: string, newText: string): Promise<void> {
-  const messageRef = doc(this.firestore, 'channels','messages', messageId);
+async updateMessage(channelId:string, messageId: string, newText: string): Promise<void> {
+  const messageRef = doc(this.firestore, 'channels',channelId ,'messages', messageId);
   const messageSnapshot = await getDoc(messageRef);
 
   if (messageSnapshot.exists()) {
