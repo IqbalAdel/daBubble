@@ -74,13 +74,20 @@
 
 .online-status{
     border-radius: 100%;
-    background-color: #92C83E;
     border: solid white 2px;
     height: 14px;
     width: 14px;
     position: absolute;
     top: 38px;
     left: 35px;
+}
+
+.online{
+    background-color: #92C83E;
+}
+
+.offline{
+    background-color: #686868;
 }
 
 .search-container {

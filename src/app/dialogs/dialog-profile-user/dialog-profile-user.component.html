@@ -14,9 +14,13 @@
         <span>{{user.name}}</span>
         <span (click)="openDialog()">Bearbeiten</span>
     </div>
-    <div class="active">
+    <div class="status" [ngClass]="!userService.getUserStatus(user.id) ? 'offline' : 'online'">
         <div></div>
-        <span>Aktive</span>
+        @if (!userService.getUserStatus(user.id)) {
+            <span>Abwesend</span>
+        } @else {
+            <span>Aktiv</span>
+        }
     </div>
     <div class="email">
         <img src="assets/img/mail-profile.png" alt="">

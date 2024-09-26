@@ -53,6 +53,8 @@ export class HeaderComponent implements OnInit{
     password: '',
     channels: [],
     chats: [],
+    state: 'offline',
+    lastChanged: Date.now(),
     usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
       throw new Error('Function not implemented.');
     }
@@ -61,6 +63,9 @@ export class HeaderComponent implements OnInit{
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
   users: User[] = [];
   test!: boolean;
+  // userStatus: any;
+  onlineStaus: boolean = false;
+
 
 
   constructor( 
@@ -70,9 +75,10 @@ export class HeaderComponent implements OnInit{
     private firestore: Firestore,
   ) {}
 
+
   async ngOnInit(): Promise<void> {
     await this.getActiveUser();
-
+    
     const uid = await this.firebaseService.getCurrentUserUid();
     if (uid) {
       const userDocRef = doc(this.firebaseService.firestore, 'users', uid);
@@ -179,10 +185,13 @@ export class HeaderComponent implements OnInit{
         // Benutzerdaten anhand der UID laden
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
+        this.firebaseService.setOnlineStatus(uid);
+        console.log('status was set')
         if(user){
           this.user = new User(user);
           this.test = true;
         }
+        
       }
     } catch (error) {
       console.error('Fehler beim Abrufen der Benutzerdaten:', error);

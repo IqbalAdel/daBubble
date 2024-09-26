@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
@@ -6,7 +6,7 @@ import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service'; // Sicherstellen, dass der Import korrekt ist
 import { addDoc, arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { collectionData, Firestore } from '@angular/fire/firestore';
-import { CommonModule } from '@angular/common';
+import { GroupChatComponent } from '../group-chat/group-chat.component';
 
 export interface ChatMessage {
   text: string;
@@ -25,9 +25,9 @@ export interface ChatMessage {
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']  // styleUrl zu styleUrls geändert, wenn das notwendig ist
 })
-export class ChatComponent implements OnInit, AfterViewChecked {
-  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+export class ChatComponent implements OnInit{
   @ViewChild('messageInput') messageInputRef!: ElementRef;
+  @Output() notify: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
   channelId!: string;
   receiverUserId: string | null = "";
@@ -73,6 +73,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     // Beobachten Sie Änderungen in den URL-Parametern
+
     this.routeSubscription = this.route.params.subscribe(params => {
       const id = params['id']; // ID aus der URL (z.B. Kanal- oder Benutzer-ID)
       this.answerId = params['answerId']; // answerId aus der URL
@@ -81,7 +82,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
       // Sicherstellen, dass der Benutzer geladen wird
       this.loadCurrentUser();
-
+      
       if (this.answerId) {
         // Wenn eine answerId in der URL vorhanden ist, setze den Placeholder auf "Antworten"
         this.placeholderText = 'Antworten';
@@ -112,6 +113,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         if (this.user) {
           this.userName = this.user.name;  // Setze den Benutzernamen, falls erforderlich
         }
+
       } else {
       }
     } catch (error) {
@@ -254,64 +256,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.saveMessageToAnswers(this.answerId, message);  // Speichert das gesamte message-Objekt
       console.log('Message saved to answers');
     }
-  
-    // Überprüfen, ob ein Bild hochgeladen wurde
-    if (this.selectedFile) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64Image = reader.result as string; // Bild in Base64 umwandeln
-        message.image = base64Image; // Bild zur Nachricht hinzufügen
-  
-        // Nachricht mit Bild zur Nachrichtenliste hinzufügen
-        this.messages.push(message);
-  
-        // Nachricht mit Bild senden
-        this.sendMessageToUser(message, receivingUserId);
-      };
-      reader.readAsDataURL(this.selectedFile);
-    } else {
-      // Nur Textnachricht zur Nachrichtenliste hinzufügen
-      this.messages.push(message);
-  
-      // Nur Textnachricht senden
-      this.sendMessageToUser(message, receivingUserId);
-    }
-  
-    // Eingabefeld leeren und Bild-Upload zurücksetzen
-    this.clearMessageInputAndScroll(this.messageInputRef.nativeElement);
-    this.selectedFile = null;  // Bild-Upload zurücksetzen
-    this.selectedImageUrl = null;
-  }
-  
-
-  //   sendMessage(messageText: string): void {
-
-  //     if (!this.user) {
-  //       console.log('Kein Benutzer vorhanden');
-  //       return;
-  //     }
-
-  //     if (!this.isMessageValid(messageText)) {
-  //       console.log('Nachricht ist nicht gültig');
-  //       return; // Verhindere das Senden einer leeren Nachricht
-  //     }
-
-  //     const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId;
-  //     if (!receivingUserId) {
-  //       console.log('Empfänger-ID nicht vorhanden');
-  //       return;
-  //     }
-  //     // Nachricht erstellen durch Aufruf der neuen Methode
-  //     const message = this.createMessage(messageText, receivingUserId);
-  //     // Wenn eine answerId vorhanden ist, speichere die Nachricht auch dort
-  //     if (this.answerId) {
-  //       this.saveMessageToAnswers(this.answerId, message);  // Speichert das gesamte message-Objekt
-  //       console.log('Message saved to answers');
-  //     }
-  //     this.sendMessageToUser(message.text, receivingUserId); // Nachricht-Objekt statt nur Text
-  //     this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
-  // }
-
+    this.sendMessageToUser(message.text, receivingUserId); // Nachricht-Objekt statt nur Text
+    this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
+}
   private createMessage(messageText: string, receivingUserId: string): any {
     if (!this.user) {
       console.error('User is not defined');
@@ -386,7 +333,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   // Speichert die Nachricht in der channels-Collection
-  private saveMessageToChannels(message: any, messageInput: HTMLTextAreaElement): void {
+  async saveMessageToChannels(message: any, messageInput: HTMLTextAreaElement): Promise<void> {
     const messagesRef = collection(this.firestore, `channels/${this.channelId}/messages`);
     addDoc(messagesRef, message)
       .then(() => {
@@ -411,16 +358,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     };
   }
 
-
-
-  private scrollToBottom(): void {
-    try {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch (err) {
-      console.error('Scroll error:', err);
-    }
-  }
-
   getReceivingUserId(): string | null {
     const receivingUserId = this.route.snapshot.queryParams['receiverId']; // Oder 'params', je nach URL-Struktur
     if (receivingUserId) {
@@ -438,9 +375,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   // 3. Nachricht an Firestore senden
-  sendMessageToFirestore(message: any): Promise<void> {
+  async sendMessageToFirestore(message: any): Promise<void> {
     // console.log('Attempting to send message to channel:', this.channelId);
-    return this.fireService.addMessageToFirestore(this.channelId, message);
+    return this.fireService.addMessageToFirestore(this.channelId, message).then(() => {
+      console.log('confirmed success')
+    }).catch((error) => {
+      console.log('failed to send message to firestore',error)
+    });
   }
 
   // 4. Überprüfung der Nachrichteneingabe
@@ -470,7 +411,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   private clearMessageInputAndScroll(messageInput: HTMLTextAreaElement): void {
     messageInput.value = '';  // Textarea leeren
     console.log('nachrichht solle gelöscht werden ');
-    // this.scrollToBottom();    // Nach unten scrollen
   }
 
   changeAdd(isHover: boolean) {
@@ -498,7 +438,4 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  ngAfterViewChecked() {
-    this.scrollToBottom();
-  }
 }

@@ -1,5 +1,5 @@
 import { CommonModule, formatDate } from '@angular/common';
-import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
@@ -15,6 +15,8 @@ import { map } from 'rxjs/operators';
 import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { group } from '@angular/animations';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.component';
 
 @Component({
   selector: 'app-group-chat',
@@ -23,9 +25,9 @@ import { group } from '@angular/animations';
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
-export class GroupChatComponent implements OnInit, AfterViewChecked {
+export class GroupChatComponent implements OnInit{
   user: User | null = null;
-  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+  @ViewChild('scrollContainer', { static: false }) scrollContainer: ElementRef | undefined;
   channels$: Observable<Channel[]> | undefined;
   filteredChannels$: Observable<Channel[]> | undefined;
   groupId!: string;
@@ -53,13 +55,31 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
   imgKeyboard: string = 'assets/img/keyboard_arrow_down.svg'
 
+
+  openSnackBar() {
+    console.log('snackbar opened')
+    let snackBarRef = this.snackBar.openFromComponent(SnackbarMessageComponent, {
+      duration: 1000,
+      panelClass: 'my-custom-snackbar',
+    });
+    
+    snackBarRef.afterDismissed().subscribe(() => {
+      console.log('The snackbar was dismissed');
+      this.scrollToBottom();
+    });
+  }
+
+  
+
   constructor(
     private route: ActivatedRoute,
     public userService: UserService, // Richtiger Service Name
     private dialog: MatDialog, // Verwende nur eine Instanz von MatDialog
     private firebaseService: FirebaseService,
     private firestore: Firestore,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
+    
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
   }
@@ -76,12 +96,9 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       this.getChannelsForusers();
       this.loadUserChats();
       this.loadChannelData(this.groupId);
+      console.log('test')
+
     });
-
-  }
-
-  ngAfterViewChecked() {
-    // this.scrollToBottom();
   }
 
   isFirstMessageOfDay(currentMessage: any, index: number): boolean {
@@ -120,6 +137,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     this.firebaseService.getChannelsMessages(channelId).subscribe(
       (messages: ChatMessage[]) => {
         this.chatsNummbers = messages;
+
       },
       (error) => {
         console.error('Fehler beim Abrufen der Nachrichten:', error);
@@ -132,12 +150,15 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
         (channelData: any[]) => {
           this.messages = this.formatMessages(channelData); // Formatierte Nachrichten setzen
+          
         },
         (error: any) => {
           console.error('Fehler beim Abrufen der Nachrichten:', error);
         }
       );
+      
     }
+
   }
 
   formatMessageTime(timestamp: any): string {
@@ -334,13 +355,15 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
     });
   }
 
-  private scrollToBottom(): void {
+
+scrollToBottom(): void {
+  if(this.scrollContainer){
     try {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
     } catch (err) {
-      console.error('Scroll error:', err);
     }
   }
+}
 
   getChannelsForusers() {
     this.filteredChannels$ = this.route.paramMap.pipe(
@@ -362,6 +385,7 @@ export class GroupChatComponent implements OnInit, AfterViewChecked {
         this.dataLoaded = true;
       }
     }
+    this.scrollToBottom();
   }
 
   async loadUserImages(userIds: string[]) {

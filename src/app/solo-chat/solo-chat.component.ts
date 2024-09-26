@@ -61,7 +61,9 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private initializeUserObservable(): void {
     this.user$ = this.userService.selectedUserId$.pipe(
-      switchMap(userId => this.handleUserSelection(userId)),
+      switchMap(userId => 
+        this.handleUserSelection(userId)
+      ),
       catchError(error => {
         // console.error('Error loading user data:', error);
         return of(undefined);

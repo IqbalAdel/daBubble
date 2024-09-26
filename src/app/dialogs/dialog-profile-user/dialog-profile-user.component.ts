@@ -5,13 +5,14 @@ import { DialogProfileUserEditComponent } from '../dialog-profile-user-edit/dial
 import { UserService } from '../../services/user.service';
 import { User } from '../../../models/user.class';
 import { FirebaseService } from '../../services/firebase.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dialog-profile-user',
   standalone: true,
   imports: [
     MatCard,
-
+    CommonModule,
   ],
   templateUrl: './dialog-profile-user.component.html',
   styleUrl: './dialog-profile-user.component.scss'
@@ -28,6 +29,8 @@ export class DialogProfileUserComponent implements OnInit{
     password: '',
     channels: [],
     chats: [],
+    state: 'offline',
+    lastChanged: Date.now(),
     usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
       throw new Error('Function not implemented.');
     }

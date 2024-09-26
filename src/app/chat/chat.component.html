@@ -3,8 +3,8 @@
         (keydown)="handleKeyDown($event, messageInput)"></textarea>
     <div class="textarea-send">
         <div class="textarea-add">
-            <img (click)="triggerFileInput()" (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)"
-                [src]="imgTextarea[0]" alt="">|
+            <img (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)" [src]="imgTextarea[0]" alt=""> 
+            <div></div> 
         </div>
         <div>
             <img (mouseover)="addSmiley(true)" (mouseout)="addSmiley(false)" [src]="imgTextarea[1]" alt="">

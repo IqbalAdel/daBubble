@@ -13,9 +13,13 @@
     <div class="user-txt">
         <span>{{username}}</span>
     </div>
-    <div class="active">
+    <div class="status" [ngClass]="!status ? 'offline' : 'online'">
         <div></div>
-        <span>Aktive</span>
+        @if (!status) {
+            <span>Abwesend</span>
+        } @else {
+            <span>Aktiv</span>
+        }
     </div>
     <div class="email">
         <img src="assets/img/mail-profile.png" alt="">

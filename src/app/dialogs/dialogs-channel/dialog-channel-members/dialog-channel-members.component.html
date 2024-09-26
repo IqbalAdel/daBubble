@@ -12,6 +12,7 @@
                 <div class="image">
                     <img src="{{user.img}}" alt="">
                     <div class="online-status"></div>
+                    <div class="online-status" [ngClass]="!userService.getUserStatus(user.id) ? 'offline' : 'online'"></div>
                 </div>
                 <span>{{user.name}}</span>
             </div>

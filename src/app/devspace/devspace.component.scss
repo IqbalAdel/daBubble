@@ -52,18 +52,18 @@ section{
     transition: all 0.3s ease-in-out;
 
     overflow-y: auto;
-        &::-webkit-scrollbar {
-            width: 4px;
-        }
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
 
-        &::-webkit-scrollbar-thumb {
-            background-color: rgba(136, 136, 136, 0.3);
-            border-radius: 2px;
-        }
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(136, 136, 136, 0.3);
+        border-radius: 2px;
+    }
 
-        &::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(0, 0, 255, 0.5);
-        }
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 255, 0.5);
+    }
 
     .solo-chat {
         flex: 1;
@@ -254,6 +254,7 @@ section{
           height: 60px;
           width: 60px;
           object-fit: cover;
+          border-radius: 100%;
         }
       }
 
@@ -341,6 +342,24 @@ section{
 
 header {
     background-color: white;
+}
+
+.online-status{
+    border-radius: 100%;
+    border: solid white 2px;
+    height: 14px;
+    width: 14px;
+    position: absolute;
+    top: 45px;
+    left: 65px;
+}
+
+.online{
+    background-color: #92C83E;
+}
+
+.offline{
+    background-color: #686868;
 }
 
 

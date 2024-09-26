@@ -1,0 +1,27 @@
+.my-custom-snackbar {
+    margin: 0 !important;
+    position: absolute;
+    right: 25px;
+    top: 60px;
+  }
+
+  .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    min-width: 205px;
+}
+
+.mat-mdc-snack-bar-container {
+    position: absolute; 
+}
+  ::ng-deep .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    min-width: 205px;
+}
+
+ ::ng-deep .mat-mdc-snack-bar-container {
+    position: absolute; 
+    bottom: 200px;
+    left: 50px;
+}
+
+.container{
+    display: flex;
+}

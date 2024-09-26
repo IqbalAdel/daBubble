@@ -57,13 +57,20 @@
 
 .online-status{
     border-radius: 100%;
-    background-color: #92C83E;
     border: solid white 2px;
     height: 10px;
     width: 10px;
     position: absolute;
     top: 20px;
     left: 22px;
+}
+
+.online{
+    background-color: #92C83E;
+}
+
+.offline{
+    background-color: #686868;
 }
 
 .add-member{

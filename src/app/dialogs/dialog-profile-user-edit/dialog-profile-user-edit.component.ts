@@ -29,6 +29,8 @@ export class DialogProfileUserEditComponent implements OnInit{
     password: '',
     channels: [],
     chats: [],
+    state: 'offline',
+    lastChanged: Date.now(),
     usersToJSON: function (): { name: string; email: string; id: string; img: string; password: string; channels: string[]; chats: string[]; } {
       throw new Error('Function not implemented.');
     }
