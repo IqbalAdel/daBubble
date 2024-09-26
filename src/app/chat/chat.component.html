@@ -19,9 +19,14 @@
         </div>
 
         <div>
-            <img (mouseover)="addSmiley(true)" (mouseout)="addSmiley(false)" [src]="imgTextarea[1]" alt="">
-            <img (mouseover)="addEmailContact(true)" (mouseout)="addEmailContact(false)" [src]="imgTextarea[2]" alt="">
+            <img (click)="toggleEmojiPicker()" (mouseover)="addSmiley(true)" (mouseout)="addSmiley(false)" [src]="imgTextarea[1]" alt="Smiley">
+            <img (mouseover)="addEmailContact(true)" (mouseout)="addEmailContact(false)" [src]="imgTextarea[2]" alt="Email Icon">
+        
+            <div *ngIf="showEmojiPicker">
+                <emoji-mart (emojiSelect)="addEmoji($event)" class="emoji" title="Pick your emoji..."></emoji-mart>
+              </div>
         </div>
+        
     </div>
     <div class="send">
         <img (click)="sendMessage(messageInput.value)" (mouseover)="sendNews(true)" (mouseout)="sendNews(false)"

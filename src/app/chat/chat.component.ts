@@ -8,8 +8,9 @@ import { addDoc, arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateD
 import { collectionData, Firestore } from '@angular/fire/firestore';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { CommonModule } from '@angular/common';
-
+import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+
 export interface ChatMessage {
   text: string;
   timestamp: Timestamp;
@@ -23,7 +24,7 @@ export interface ChatMessage {
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PickerComponent],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']  // styleUrl zu styleUrls geändert, wenn das notwendig ist
 })
@@ -48,12 +49,22 @@ export class ChatComponent implements OnInit{
   selectedFile: File | null = null;
   selectedImageUrl: string | null = null;
   @ViewChild('fileInput') fileInput!: ElementRef;
-
+  showEmojiPicker = false;
 
 
   constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore) {
     this.userService = userService; // Initialisiere userService
   }
+
+  toggleEmojiPicker(): void {
+    this.showEmojiPicker = !this.showEmojiPicker; // Zustand umschalten
+    console.log('Emoji Picker Status:', this.showEmojiPicker); // Debugging Log
+}
+
+  addEmoji(event: { native: string }) {
+    // this.messages += event.native; // Emoji zur Nachricht hinzufügen
+    this.showEmojiPicker = false; // Picker schließen
+}
 
   triggerFileInput(): void {
     this.fileInput.nativeElement.click(); // Löst den Klick auf das versteckte File-Input aus
