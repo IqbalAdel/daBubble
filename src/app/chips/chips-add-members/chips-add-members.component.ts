@@ -58,7 +58,7 @@ export class ChipsAddMembersComponent{
       this.updateFilteredUsers();
       
       // console.log('now',this.allUsers)
-      // console.log('received', this.selectUsers)
+      // console.log('received', this.filteredUsers)
     });
   }
   readonly announcer = inject(LiveAnnouncer);
@@ -131,7 +131,9 @@ export class ChipsAddMembersComponent{
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    const selectedUser = this.allUsers.find(user => user.name === event.option.viewValue);
+    const selectedUser = this.allUsers.find(user => user.name.trim().toLowerCase() === event.option.viewValue.trim().toLowerCase());
+    console.log(selectedUser)
+    console.log(event.option.viewValue)
 
     if (selectedUser && !this.users().some(user => user.id === selectedUser.id)) {
       this.users.update(users => [...users, selectedUser]);

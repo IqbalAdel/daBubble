@@ -65,6 +65,8 @@ export class ChatComponent implements OnInit{
  // Methode zum Hinzufügen eines Emojis in das Textarea
  addEmoji(event: any) {
   const emoji = event.emoji.native; // Das ausgewählte Emoji
+  console.log(typeof(emoji))
+  console.log(typeof(String(emoji)) )
 
   // Holen des aktuellen Textarea Elements
   const textarea = this.messageInput.nativeElement;
@@ -211,60 +213,6 @@ export class ChatComponent implements OnInit{
     });
   }
 
-  // sendMessage(messageText: string): void {
-  //   if (!this.user) {
-  //     console.log('Kein Benutzer vorhanden');
-  //     return;
-  //   }
-
-  //   if (!this.isMessageValid(messageText) && !this.selectedFile) {
-  //     console.log('Nachricht oder Bild ist nicht gültig');
-  //     return; // Verhindere das Senden einer leeren Nachricht ohne Bild
-  //   }
-
-  //   const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId;
-  //   if (!receivingUserId) {
-  //     console.log('Empfänger-ID nicht vorhanden');
-  //     return;
-  //   }
-
-  //   const message = this.createMessage(messageText, receivingUserId);
-
-  //   if (this.selectedFile) {
-  //     // Wenn ein Bild hochgeladen wurde, konvertiere es zu Base64 oder lade es hoch und füge den Link zur Nachricht hinzu
-  //     const reader = new FileReader();
-  //     reader.onload = () => {
-  //       const base64Image = reader.result as string; // Konvertierte Bilddatei
-  //       message.image = base64Image; // Füge das Bild zur Nachricht hinzu
-  //       this.sendMessageToUser(message.text, receivingUserId);
-  //     };
-  //     reader.readAsDataURL(this.selectedFile);
-  //   } else {
-  //     // Wenn kein Bild vorhanden ist, sende nur den Text
-  //     this.sendMessageToUser(message.text, receivingUserId);
-  //   }
-
-  //   this.clearMessageInputAndScroll(this.messageInputRef.nativeElement);
-  // }
-
-  // private createMessage(messageText: string, receivingUserId: string): any {
-  //   if (!this.user) {
-  //     console.error('User is not defined');
-  //     return null;
-  //   }
-
-  //   return {
-  //     text: messageText,
-  //     timestamp: Timestamp.now(),
-  //     userName: this.userName || 'Gast',
-  //     userId: this.user.id,
-  //     receivingUserId: receivingUserId,
-  //     time: new Date().toLocaleTimeString(),
-  //     chats: [],
-  //     image: this.selectedImageUrl || null,  // Falls ein Bild vorhanden ist
-  //     isRead: false
-  //   };
-  // }
 
   async sendMessage(messageText: string): Promise<void> {
     console.log('Sende Nachricht:', messageText);
@@ -336,22 +284,6 @@ export class ChatComponent implements OnInit{
     };
   }
   
-  // private createMessage(messageText: string, receivingUserId: string): any {
-  //   if (!this.user) {
-  //     console.error('User is not defined');
-  //     return null; // oder werfe einen Fehler, je nach Anforderung
-  //   }
-  //   return {
-  //     text: messageText,
-  //     timestamp: Timestamp.now(),
-  //     userName: this.userName || 'Gast',
-  //     userId: this.user.id,
-  //     receivingUserId: receivingUserId,
-  //     time: new Date().toLocaleTimeString(),
-  //     chats: [],
-  //     isRead: false
-  //   };
-  // }
 
   private async saveMessageToAnswers(answerId: string, message: any): Promise<void> {
     try {
