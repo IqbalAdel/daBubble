@@ -6,6 +6,7 @@ import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service'; // Sicherstellen, dass der Import korrekt ist
 import { addDoc, arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { collectionData, Firestore } from '@angular/fire/firestore';
+import { CommonModule } from '@angular/common';
 
 export interface ChatMessage {
   text: string;
@@ -20,7 +21,7 @@ export interface ChatMessage {
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']  // styleUrl zu styleUrls geändert, wenn das notwendig ist
 })
@@ -41,20 +42,46 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   userService: UserService; // Sicherstellen, dass userService in der Klasse deklariert ist
   userName!: string;
 
+
+  selectedFile: File | null = null;
+  selectedImageUrl: string | null = null;
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
+
+
   constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore) {
     this.userService = userService; // Initialisiere userService
   }
+
+  triggerFileInput(): void {
+    this.fileInput.nativeElement.click(); // Löst den Klick auf das versteckte File-Input aus
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+
+      // Preview the image in the chat (optional)
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImageUrl = e.target.result; // This will contain the base64 image URL
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   ngOnInit(): void {
     // Beobachten Sie Änderungen in den URL-Parametern
     this.routeSubscription = this.route.params.subscribe(params => {
       const id = params['id']; // ID aus der URL (z.B. Kanal- oder Benutzer-ID)
       this.answerId = params['answerId']; // answerId aus der URL
-      
+
       console.log('URL-Parameter:', params); // Debugging-Ausgabe für URL-Parameter
-  
+
       // Sicherstellen, dass der Benutzer geladen wird
       this.loadCurrentUser();
-      
+
       if (this.answerId) {
         // Wenn eine answerId in der URL vorhanden ist, setze den Placeholder auf "Antworten"
         this.placeholderText = 'Antworten';
@@ -63,7 +90,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         // Wenn keine answerId vorhanden ist, lade die Daten basierend auf der ID (z.B. Kanal oder Benutzer)
         this.channelId = id;
         console.log('meine channelId', this.channelId); // Debugging-Ausgabe
-  
+
         // Überprüfen, ob `channelId` richtig gesetzt ist
         if (this.channelId) {
           this.loadDataBasedOnId(id);
@@ -143,49 +170,183 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     });
   }
 
+  // sendMessage(messageText: string): void {
+  //   if (!this.user) {
+  //     console.log('Kein Benutzer vorhanden');
+  //     return;
+  //   }
+
+  //   if (!this.isMessageValid(messageText) && !this.selectedFile) {
+  //     console.log('Nachricht oder Bild ist nicht gültig');
+  //     return; // Verhindere das Senden einer leeren Nachricht ohne Bild
+  //   }
+
+  //   const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId;
+  //   if (!receivingUserId) {
+  //     console.log('Empfänger-ID nicht vorhanden');
+  //     return;
+  //   }
+
+  //   const message = this.createMessage(messageText, receivingUserId);
+
+  //   if (this.selectedFile) {
+  //     // Wenn ein Bild hochgeladen wurde, konvertiere es zu Base64 oder lade es hoch und füge den Link zur Nachricht hinzu
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       const base64Image = reader.result as string; // Konvertierte Bilddatei
+  //       message.image = base64Image; // Füge das Bild zur Nachricht hinzu
+  //       this.sendMessageToUser(message.text, receivingUserId);
+  //     };
+  //     reader.readAsDataURL(this.selectedFile);
+  //   } else {
+  //     // Wenn kein Bild vorhanden ist, sende nur den Text
+  //     this.sendMessageToUser(message.text, receivingUserId);
+  //   }
+
+  //   this.clearMessageInputAndScroll(this.messageInputRef.nativeElement);
+  // }
+
+  // private createMessage(messageText: string, receivingUserId: string): any {
+  //   if (!this.user) {
+  //     console.error('User is not defined');
+  //     return null;
+  //   }
+
+  //   return {
+  //     text: messageText,
+  //     timestamp: Timestamp.now(),
+  //     userName: this.userName || 'Gast',
+  //     userId: this.user.id,
+  //     receivingUserId: receivingUserId,
+  //     time: new Date().toLocaleTimeString(),
+  //     chats: [],
+  //     image: this.selectedImageUrl || null,  // Falls ein Bild vorhanden ist
+  //     isRead: false
+  //   };
+  // }
+
   sendMessage(messageText: string): void {
-  
+    console.log('Sende Nachricht:', messageText);
+    console.log('Bild URL:', this.selectedImageUrl);
+    
     if (!this.user) {
       console.log('Kein Benutzer vorhanden');
       return;
     }
-
-    if (!this.isMessageValid(messageText)) {
-      console.log('Nachricht ist nicht gültig');
-      return; // Verhindere das Senden einer leeren Nachricht
+  
+    // Nachricht ist nur gültig, wenn entweder Text oder Bild vorhanden ist
+    if (!this.isMessageValid(messageText) && !this.selectedFile) {
+      console.log('Nachricht oder Bild ist nicht gültig');
+      return; // Verhindere das Senden einer leeren Nachricht ohne Bild
     }
-
+  
     const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId;
     if (!receivingUserId) {
       console.log('Empfänger-ID nicht vorhanden');
       return;
     }
-    // Nachricht erstellen durch Aufruf der neuen Methode
+  
+    // Nachricht erstellen (mit Text und ggf. Bild)
     const message = this.createMessage(messageText, receivingUserId);
+  
     // Wenn eine answerId vorhanden ist, speichere die Nachricht auch dort
     if (this.answerId) {
       this.saveMessageToAnswers(this.answerId, message);  // Speichert das gesamte message-Objekt
       console.log('Message saved to answers');
     }
-    this.sendMessageToUser(message.text, receivingUserId); // Nachricht-Objekt statt nur Text
-    this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
-}
+  
+    // Überprüfen, ob ein Bild hochgeladen wurde
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Image = reader.result as string; // Bild in Base64 umwandeln
+        message.image = base64Image; // Bild zur Nachricht hinzufügen
+  
+        // Nachricht mit Bild zur Nachrichtenliste hinzufügen
+        this.messages.push(message);
+  
+        // Nachricht mit Bild senden
+        this.sendMessageToUser(message, receivingUserId);
+      };
+      reader.readAsDataURL(this.selectedFile);
+    } else {
+      // Nur Textnachricht zur Nachrichtenliste hinzufügen
+      this.messages.push(message);
+  
+      // Nur Textnachricht senden
+      this.sendMessageToUser(message, receivingUserId);
+    }
+  
+    // Eingabefeld leeren und Bild-Upload zurücksetzen
+    this.clearMessageInputAndScroll(this.messageInputRef.nativeElement);
+    this.selectedFile = null;  // Bild-Upload zurücksetzen
+    this.selectedImageUrl = null;
+  }
+  
+
+  //   sendMessage(messageText: string): void {
+
+  //     if (!this.user) {
+  //       console.log('Kein Benutzer vorhanden');
+  //       return;
+  //     }
+
+  //     if (!this.isMessageValid(messageText)) {
+  //       console.log('Nachricht ist nicht gültig');
+  //       return; // Verhindere das Senden einer leeren Nachricht
+  //     }
+
+  //     const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId;
+  //     if (!receivingUserId) {
+  //       console.log('Empfänger-ID nicht vorhanden');
+  //       return;
+  //     }
+  //     // Nachricht erstellen durch Aufruf der neuen Methode
+  //     const message = this.createMessage(messageText, receivingUserId);
+  //     // Wenn eine answerId vorhanden ist, speichere die Nachricht auch dort
+  //     if (this.answerId) {
+  //       this.saveMessageToAnswers(this.answerId, message);  // Speichert das gesamte message-Objekt
+  //       console.log('Message saved to answers');
+  //     }
+  //     this.sendMessageToUser(message.text, receivingUserId); // Nachricht-Objekt statt nur Text
+  //     this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
+  // }
+
   private createMessage(messageText: string, receivingUserId: string): any {
     if (!this.user) {
       console.error('User is not defined');
-      return null; // oder werfe einen Fehler, je nach Anforderung
+      return null;
     }
+  
     return {
-      text: messageText,
+      text: messageText || '',  // Nachrichtentext, falls vorhanden
       timestamp: Timestamp.now(),
       userName: this.userName || 'Gast',
       userId: this.user.id,
       receivingUserId: receivingUserId,
       time: new Date().toLocaleTimeString(),
       chats: [],
+      image: null,  // Standardmäßig kein Bild
       isRead: false
     };
   }
+  
+  // private createMessage(messageText: string, receivingUserId: string): any {
+  //   if (!this.user) {
+  //     console.error('User is not defined');
+  //     return null; // oder werfe einen Fehler, je nach Anforderung
+  //   }
+  //   return {
+  //     text: messageText,
+  //     timestamp: Timestamp.now(),
+  //     userName: this.userName || 'Gast',
+  //     userId: this.user.id,
+  //     receivingUserId: receivingUserId,
+  //     time: new Date().toLocaleTimeString(),
+  //     chats: [],
+  //     isRead: false
+  //   };
+  // }
 
   private async saveMessageToAnswers(answerId: string, message: any): Promise<void> {
     try {
@@ -206,11 +367,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       if (!this.channelId) {
         throw new Error('channelId ist nicht definiert');
       }
-  
+
       const userDocRef = doc(this.firestore, 'users', this.channelId);
-  
+
       const userSnapshot = await getDoc(userDocRef);
-  
+
       if (userSnapshot.exists()) {
         // Die channelId ist eine User-ID, speichere die Nachricht in der users-Collection
         // Füge hier den Code zum Speichern der Nachricht hinzu, wenn es sich um eine User-ID handelt

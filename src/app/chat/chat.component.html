@@ -1,14 +1,19 @@
 <div class="textarea" #autoScrollTextarea>
-    <textarea  #scrollContainer #messageInput rows="2" cols="50" [placeholder]="placeholderText" (keydown)="handleKeyDown($event, messageInput)"></textarea>
+    <textarea #scrollContainer #messageInput rows="2" cols="50" [placeholder]="placeholderText"
+        (keydown)="handleKeyDown($event, messageInput)"></textarea>
     <div class="textarea-send">
         <div class="textarea-add">
-            <img (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)" [src]="imgTextarea[0]" alt=""> | </div>
+            <img (click)="triggerFileInput()" (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)"
+                [src]="imgTextarea[0]" alt="">|
+        </div>
         <div>
-            <img (mouseover)="addSmiley(true)" (mouseout)="addSmiley(false)" [src]="imgTextarea[1]"  alt="">
-            <img (mouseover)="addEmailContact(true)" (mouseout)="addEmailContact(false)" [src]="imgTextarea[2]"  alt="">
+            <img (mouseover)="addSmiley(true)" (mouseout)="addSmiley(false)" [src]="imgTextarea[1]" alt="">
+            <img (mouseover)="addEmailContact(true)" (mouseout)="addEmailContact(false)" [src]="imgTextarea[2]" alt="">
         </div>
     </div>
     <div class="send">
-        <img (click)="sendMessage(messageInput.value)" (mouseover)="sendNews(true)" (mouseout)="sendNews(false)" [src]="imgTextarea[3]"  alt="">
+        <img (click)="sendMessage(messageInput.value)" (mouseover)="sendNews(true)" (mouseout)="sendNews(false)"
+            [src]="imgTextarea[3]" alt="">
     </div>
+    <input type="file" #fileInput (change)="onFileSelected($event)" style="display:none">
 </div>
