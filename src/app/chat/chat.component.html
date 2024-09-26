@@ -3,11 +3,11 @@
     <!-- Textarea für die Nachrichteneingabe -->
     <textarea #scrollContainer #messageInput rows="2" cols="50" [placeholder]="placeholderText"
         (keydown)="handleKeyDown($event, messageInput)"></textarea>
+    
     <!-- Bildvorschau: Zeige das Bild, wenn es ausgewählt wurde -->
     <div *ngIf="selectedImageUrl" class="image-preview">
         <img [src]="selectedImageUrl" alt="Bildvorschau" />
         <!-- Optional: Button zum Entfernen der Bildvorschau -->
-
         <button class="removeImage" (click)="removeImage()">x</button>
     </div>
 
@@ -15,22 +15,34 @@
         <div class="textarea-add">
             <img (mouseover)="changeAdd(true)" (mouseout)="changeAdd(false)" (click)="fileInput.click()"
                 [src]="imgTextarea[0]" alt="">
-            <div></div>
         </div>
 
         <div>
-            <img (click)="toggleEmojiPicker()" (mouseover)="addSmiley(true)" (mouseout)="addSmiley(false)" [src]="imgTextarea[1]" alt="Smiley">
-            <img (mouseover)="addEmailContact(true)" (mouseout)="addEmailContact(false)" [src]="imgTextarea[2]" alt="Email Icon">
-        
-            <div *ngIf="showEmojiPicker">
-                <emoji-mart (emojiSelect)="addEmoji($event)" class="emoji" title="Pick your emoji..."></emoji-mart>
-              </div>
+            <img 
+              (click)="toggleEmojiPicker()" 
+              (mouseover)="addSmiley(true)" 
+              (mouseout)="addSmiley(false)" 
+              [src]="imgTextarea[1]" 
+              alt="Smiley">
+            
+            <img 
+              (mouseover)="addEmailContact(true)" 
+              (mouseout)="addEmailContact(false)" 
+              [src]="imgTextarea[2]" 
+              alt="Email Icon">
+            
+            <!-- Emoji Picker, der nur angezeigt wird, wenn showEmojiPicker true ist -->
+            <div *ngIf="showEmojiPicker" class="emoji-picker">
+                <emoji-mart (emojiSelect)="addEmoji($event)" title="Pick your emoji…" emoji="point_up"></emoji-mart>
+            </div>
         </div>
-        
+
     </div>
+    
     <div class="send">
         <img (click)="sendMessage(messageInput.value)" (mouseover)="sendNews(true)" (mouseout)="sendNews(false)"
             [src]="imgTextarea[3]" alt="">
     </div>
+    
     <input type="file" #fileInput (change)="onFileSelected($event)" style="display:none">
 </div>

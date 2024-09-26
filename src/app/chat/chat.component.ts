@@ -29,6 +29,7 @@ export interface ChatMessage {
   styleUrls: ['./chat.component.scss']  // styleUrl zu styleUrls geändert, wenn das notwendig ist
 })
 export class ChatComponent implements OnInit{
+  @ViewChild('messageInput') messageInput: any;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
   @Output() notify: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
@@ -61,9 +62,28 @@ export class ChatComponent implements OnInit{
     console.log('Emoji Picker Status:', this.showEmojiPicker); // Debugging Log
 }
 
-  addEmoji(event: { native: string }) {
-    // this.messages += event.native; // Emoji zur Nachricht hinzufügen
-    this.showEmojiPicker = false; // Picker schließen
+ // Methode zum Hinzufügen eines Emojis in das Textarea
+ addEmoji(event: any) {
+  const emoji = event.emoji.native; // Das ausgewählte Emoji
+
+  // Holen des aktuellen Textarea Elements
+  const textarea = this.messageInput.nativeElement;
+
+  // Einfügen des Emojis an der aktuellen Cursor-Position
+  const startPos = textarea.selectionStart;
+  const endPos = textarea.selectionEnd;
+
+  // Den aktuellen Text nehmen, das Emoji an der richtigen Stelle einfügen
+  this.messages= textarea.value.substring(0, startPos) + emoji + textarea.value.substring(endPos);
+
+  // Aktualisieren des Textarea-Wertes
+  textarea.value = this.messages;
+
+  // Setze den Cursor hinter das eingefügte Emoji
+  textarea.setSelectionRange(startPos + emoji.length, startPos + emoji.length);
+
+  // Schließe den Emoji-Picker
+  this.showEmojiPicker = false;
 }
 
   triggerFileInput(): void {

@@ -1,9 +1,35 @@
 /* You can add global styles to this file, and also import other style files */
-
+@import '@ctrl/ngx-emoji-mart/picker';
 @import url(./fonts.scss);
 @import url(./mixins.scss);
 
 html, body { height: 100%; }
+
+/* Styling für den Emoji-Picker-Div */
+.emoji-picker {
+    position: absolute; /* Damit du die Position anpassen kannst */
+    bottom: 60px; /* Beispiel, um es über der Textarea zu platzieren */
+    left: 20px; /* Platzierung nach Bedarf */
+    border: 1px solid #ccc; /* Rahmen hinzufügen */
+    border-radius: 10px; /* Abgerundete Ecken */
+    background-color: #fff; /* Hintergrundfarbe */
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2); /* Schatteneffekt */
+    z-index: 1000; /* Damit es über anderen Elementen angezeigt wird */
+  }
+  
+  /* Anpassung der Emoji-Größe */
+  .emoji-picker .emoji-mart-emoji {
+    width: 30px; /* Breite der Emojis */
+    height: 30px; /* Höhe der Emojis */
+  }
+  
+  /* Hover-Effekte für Emojis */
+  .emoji-picker .emoji-mart-emoji:hover {
+    transform: scale(1.1); /* Vergrößern beim Hover */
+    transition: transform 0.2s; /* Übergangseffekt */
+  }
+  
+
 
 *{ 
     font-family: nunito, Arial, Helvetica, sans-serif;

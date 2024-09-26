@@ -1,3 +1,4 @@
+
 textarea {
     height: 145px;
     width: calc(100% - 40px);
@@ -31,7 +32,7 @@ textarea {
     display: flex;
     justify-content: center;
     padding-bottom: 30px;
-
+    padding-left: 16px;
 
 
     .textarea-send {
@@ -94,6 +95,8 @@ textarea {
     border-radius: 5px;
 }
 
+
+
 .image-preview button {
     position: relative;
     right: 10px;
@@ -104,6 +107,13 @@ textarea {
     cursor: pointer;
     border-radius: 10px;
 }
+
+.emoji {
+    position: absolute;  /* Optional: Positionierung anpassen */
+    bottom: 40px;        /* Position unter dem Smiley */
+    left: 0;             /* Horizontale Position */
+    z-index: 1000;      /* Sicherstellen, dass der Picker über anderen Elementen liegt */
+  }
 
 .emoji{
     display: none;

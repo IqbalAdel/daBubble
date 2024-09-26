@@ -20,10 +20,10 @@ export class AppComponent {
   title = 'daBubble';
   constructor(private router: Router) { }
 
-  ngOnInit() {
-    setTimeout(() => {
-      this.showSplash = false;
-    }, 5000);  
-  }
+  // ngOnInit() {
+  //   setTimeout(() => {
+  //     this.showSplash = false;
+  //   }, 5000);  
+  // }
 
 }
