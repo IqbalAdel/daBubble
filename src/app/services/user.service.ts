@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { User } from '../../models/user.class';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Firestore, doc, getDoc, onSnapshot } from '@angular/fire/firestore';
@@ -16,6 +16,9 @@ export class UserService {
   retryCount: { [userId: string]: number } = {};
   maxRetries = 5; // Maximum number of retries
   retryDelay = 1000; // 1 second delay between retries
+  private _threadOpenStatus: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  threadOpenStatus$ = this._threadOpenStatus.asObservable();
+
 
 
   public _user: User | null = null;
@@ -33,6 +36,10 @@ export class UserService {
     private firestore: Firestore,
     private firebaseservice: FirebaseService
   ) {}
+
+  setThreadStatus(status: boolean) {
+    this._threadOpenStatus.next(status);
+  }
 
   setUser(user: User | null): void {
     this._user = user;
@@ -52,6 +59,7 @@ export class UserService {
 
   async loadUserById(uid: string): Promise<void> {
     try {
+      console.log(uid)
       const docRef = doc(this.firestore, 'users', uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -66,6 +74,7 @@ export class UserService {
               userData.channels || [],
               userData.chats || []
           );
+          console.log(user)
           this.setUser(user);
           // this.selectedUserIdSubject.next(uid);
         }

@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Firestore, doc, getDoc, onSnapshot } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,8 +32,8 @@ interface Chat {
   styleUrls: ['./solo-chat.component.scss'],
   providers: [DatePipe]
 })
-export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
-  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+export class SoloChatComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('scrollingContainer', { static: false }) scrollContainer!: ElementRef;
   user$: Observable<User | undefined> = of(undefined);
   user: User | null = null;
   loggedInUserName!: string;
@@ -41,6 +41,8 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   userName!: string;
   chats: Chat[] = [];
   isChatBlinking: boolean = false;
+  userImages = [];
+  channelId = 'pEylXqZMW1zKPIC0VDXL'
 
   private chatsSubscription: Subscription | null = null;
   private chatListenerUnsubscribe: (() => void) | null = null;
@@ -50,7 +52,9 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     private userService: UserService,
     private firebaseService: FirebaseService,
     private route: ActivatedRoute
-  ) { }
+  ) { 
+
+  }
 
   async ngOnInit(): Promise<void> {
     this.initializeUserObservable();
@@ -76,6 +80,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       return this.loadUserAndListen(userId);
     } else {
       const lastSelectedUserId = this.userService.getLastSelectedUserId();
+      console.log('solo', lastSelectedUserId)
       if (lastSelectedUserId) {
         return this.loadUserAndListen(lastSelectedUserId);
       } else {
@@ -97,14 +102,17 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   async initializeLoggedInUser(): Promise<void> {
     try {
       const uid = await this.firebaseService.getCurrentUserUid();
+
       if (uid) {
+        this.loggedInUserId = uid;  // Benutzer-ID setzen
         await this.userService.loadUserById(uid);
         this.user = this.userService.getUser();
         if (this.user) {
-          this.loggedInUserId = this.user.id;  // Benutzer-ID setzen
           this.loggedInUserName = this.user.name; // Benutzername setzen (falls verwendet)
         }
+
       }
+
     } catch (error) {
       // console.error('Fehler beim Abrufen der Benutzerdaten:', error);
     }
@@ -113,6 +121,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   // Lade Benutzerdaten aus Firestore
   loadUserData(userId: string | null): Observable<User | undefined> {
     if (!userId) {
+      console.log('failed')
       return of(undefined);
     }
 
@@ -143,8 +152,11 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   // Echtzeit-Listener für die Chats eines Benutzers
 listenToChats(userId: string): void {
   if (!this.loggedInUserId || !userId) {
+    console.log('failed', userId, '+', this.loggedInUserId)
     return;
   }
+  console.log('success', userId,'+', this.loggedInUserId)
+
 
   const chatId = this.createChatId(this.loggedInUserId, userId);
   const messagesCollectionRef = collection(this.firestore, `chats/${chatId}/messages`);
@@ -228,9 +240,12 @@ listenToChats(userId: string): void {
   }
 
   async markMessagesAsRead(chatId: string, userId: string) {
+    this.scrollToBottom();
     const messagesCollectionRef = collection(this.firestore, `chats/${chatId}/messages`);
     
     const snapshot = await getDocs(messagesCollectionRef);
+    this.scrollToBottom();
+
     const batch = writeBatch(this.firestore);
   
     snapshot.docs.forEach((doc) => {
@@ -249,7 +264,7 @@ listenToChats(userId: string): void {
   }
 
 
-  private scrollToBottom(): void {
+  scrollToBottom(): void {
     try {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
     } catch (err) {
@@ -267,7 +282,17 @@ listenToChats(userId: string): void {
     }
   }
 
-  ngAfterViewChecked() {
-    this.scrollToBottom();  // Automatisches Scrollen
+  ngAfterViewInit(): void {
+    this.observeMutations();
   }
+
+  observeMutations(): void {
+    const config = { childList: true, subtree: true };
+    const observer = new MutationObserver(() => {
+      this.scrollToBottom();
+    });
+
+    observer.observe(this.scrollContainer.nativeElement, config);
+  }
+
 }

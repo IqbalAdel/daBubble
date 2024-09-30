@@ -7,11 +7,13 @@
         
         <form class="search-bar" [formGroup]="stateForm">
           <input
+              #searchInput
               placeholder="Code learning durchsuchen"
               type="text"
               matInput
               [formControl]="searchFieldControl"
               [matAutocomplete]="auto"
+              (focus)="onFocus()"
           />
           <mat-icon>search</mat-icon>
 

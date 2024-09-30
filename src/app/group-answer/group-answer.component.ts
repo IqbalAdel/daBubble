@@ -1,6 +1,6 @@
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, inject, OnInit, Output, ViewChild } from '@angular/core';
 import { ChatComponent } from '../chat/chat.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
 import { Firestore } from '@angular/fire/firestore';
 import { from, map, Observable, tap } from 'rxjs';
@@ -16,7 +16,7 @@ import { User } from '../../models/user.class';
   templateUrl: './group-answer.component.html',
   styleUrl: './group-answer.component.scss'
 })
-export class GroupAnswerComponent implements OnInit {
+export class GroupAnswerComponent implements OnInit, AfterViewInit {
   groupId: string | null = null;
   answerId: string | null = null;
   userProfilePicture: string = 'assets/img/default-avatar.png'; // Standardbild
@@ -31,19 +31,26 @@ export class GroupAnswerComponent implements OnInit {
   loggedInUserName!: string;
   imgClose: string = 'assets/img/close_default.svg';
   messages: { id:string; text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
-  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+  @ViewChild('scrollerContainer', { static: false }) scrollContainer: ElementRef | undefined;
+  @Output() threadOpened: EventEmitter<void> = new EventEmitter<void>();
 
 
-  constructor(private route: ActivatedRoute, public userService: UserService,  private firebaseService: FirebaseService,) {
+
+
+  constructor(private route: ActivatedRoute, public userService: UserService,  private firebaseService: FirebaseService, private router: Router) {
     const channelsCollection = collection(this.firestore, 'channels');
 
     // Daten aus der 'channels'-Sammlung holen und in Observable umwandeln
     this.channels$ = from(getDocs(channelsCollection)).pipe(
       map(snapshot => snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })))
     );
+
+
+
   }
 
   async ngOnInit(): Promise<void> {
+    this.userService.setThreadStatus(true);
     // Überwache die URL-Parameteränderungen
     this.route.paramMap.subscribe(async params => {
       // Extrahiere groupId und answerId aus der URL
@@ -61,7 +68,10 @@ export class GroupAnswerComponent implements OnInit {
   
       // Protokolliere den Benutzernamen für Debugging
       console.log('loggedInUserName:', this.loggedInUserName);
+      console.log('start vom answer')
     });
+
+
   }
 
   ngOnDestroy(): void {
@@ -220,19 +230,42 @@ export class GroupAnswerComponent implements OnInit {
     );
   }
 
-  private scrollToBottom(): void {
-    try {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch (err) {
+  scrollToBottom(): void {
+    if(this.scrollContainer){
+      try {
+        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+      } catch (err) {
+        console.error('Scroll error:', err);
+      }
+    }
+    else{
+      console.log('fail')
     }
   }
 
-  ngAfterViewChecked() {
-    this.scrollToBottom();
+  ngAfterViewInit(): void {
+    this.observeMutations();
+  }
+
+  observeMutations(): void {
+    if(this.scrollContainer){
+      const config = { childList: true, subtree: true };
+      const observer = new MutationObserver(() => {
+        this.scrollToBottom();
+      });
+  
+      observer.observe(this.scrollContainer.nativeElement, config);
+    }
+    else{
+      console.log('no container')
+    }
   }
 
   closeAnswer(){
     this.userService.showGroupAnswer = false;
+    this.userService.setThreadStatus(false);
+    this.router.navigate([`/main/group-chat/${this.groupId}`]);
+
   }
   
 }

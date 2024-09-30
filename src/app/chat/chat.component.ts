@@ -34,7 +34,7 @@ export class ChatComponent implements OnInit{
   @Output() notify: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
   channelId!: string;
-  receiverUserId: string | null = "";
+  // receivingUserId: string | null = "";
   messages: any[] = [];
   messageIds: string[] = [];
   @Input() groupId: string | null = null;
@@ -229,7 +229,7 @@ export class ChatComponent implements OnInit{
       return; // Verhindere das Senden einer leeren Nachricht ohne Bild
     }
   
-    const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId;
+    const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId || this.receivingUserId;
     if (!receivingUserId) {
       console.log('Empfänger-ID nicht vorhanden');
       return;
@@ -262,6 +262,7 @@ export class ChatComponent implements OnInit{
     
     this.sendMessageToUser(message.text, receivingUserId); // Nachricht-Objekt statt nur Text
     this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
+    this.notify.emit();
   }
   
   private createMessage(messageText: string, receivingUserId: string, imageUrl: string | null): any {

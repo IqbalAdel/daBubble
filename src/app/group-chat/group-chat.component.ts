@@ -25,7 +25,7 @@ import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.c
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
-export class GroupChatComponent implements OnInit {
+export class GroupChatComponent implements OnInit, AfterViewInit {
   user: User | null = null;
   @ViewChild('scrollContainer', { static: false }) scrollContainer: ElementRef | undefined;
   channels$: Observable<Channel[]> | undefined;
@@ -47,6 +47,9 @@ export class GroupChatComponent implements OnInit {
   chatsNummbers: ChatMessage[] = [];
   userImages: string[] = [];
   dataLoaded = false;
+  observerInitialized = false;
+  groupChatObserver: any;
+  currentThreadStatus: boolean = false;
 
   messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string; image: string; userImage:string | null; }[] = [];
   groupUsers: User[] = [];
@@ -56,18 +59,24 @@ export class GroupChatComponent implements OnInit {
   imgKeyboard: string = 'assets/img/keyboard_arrow_down.svg'
 
 
-  openSnackBar() {
-    console.log('snackbar opened')
-    let snackBarRef = this.snackBar.openFromComponent(SnackbarMessageComponent, {
-      duration: 1000,
-      panelClass: 'my-custom-snackbar',
-    });
+  // openSnackBar() {
+  //   console.log('snackbar opened')
+  //   if(this.userService.threadOpenStatus$){
 
-    snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar was dismissed');
-      this.scrollToBottom();
-    });
-  }
+  //   }
+  //   let snackBarRef = this.snackBar.openFromComponent(SnackbarMessageComponent, {
+  //     // duration: 1000,
+  //     panelClass: 'my-custom-snackbar',
+  //   });
+
+  //   snackBarRef.afterDismissed().subscribe(() => {
+  //     console.log('The snackbar was dismissed');
+  //   });
+  //   snackBarRef.onAction().subscribe(() => {
+  //     this.scrollToBottom();
+  //     ;
+  //   });
+  // }
 
 
 
@@ -82,7 +91,61 @@ export class GroupChatComponent implements OnInit {
 
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
+
+    
   }
+
+  ngAfterViewInit(): void {    
+    this.userService.threadOpenStatus$.subscribe((status: boolean) => {
+      this.currentThreadStatus = status;
+      console.log('cgange to', this.currentThreadStatus)
+      // if(status === true){
+      //   this.disconnectGroupChat()
+      // }
+      switch (status) {
+        case true:
+        this.disconnectGroupChat()
+          break;
+      
+        case false:
+          this.observeGroupChat()
+          break;
+      }
+      
+    });
+  }
+
+
+  observeGroupChat(): void {
+    // Select only the group-chat section
+    const groupChatContainer = this.scrollContainer!.nativeElement;
+    
+    if (!groupChatContainer) return;
+  
+    const config = { childList: true, subtree: false }; // Only observe direct children in group chat
+    const observer = new MutationObserver(() => {
+      this.scrollToBottom();  // Scroll to bottom only for group chat
+      
+    });
+  
+    observer.observe(groupChatContainer, config);
+  
+    // Store observer reference to disconnect later if necessary
+    this.groupChatObserver = observer;
+    console.log(this.groupChatObserver, 'observer on')
+  }
+
+  disconnectGroupChat(){
+    if (this.groupChatObserver) {
+    console.log(this.groupChatObserver, 'observer off')
+      this.groupChatObserver.disconnect(); // Stop observing group-chat
+    }
+    
+  }
+
+  
+
+
 
   ngOnInit(): void {
     this.userImages = [];
@@ -95,9 +158,13 @@ export class GroupChatComponent implements OnInit {
       this.loggedInUser();
       this.getChannelsForusers();
       this.loadUserChats();
-      this.loadChannelData(this.groupId);
       console.log('test')
+      this.loadChannelData(this.groupId);
+
     });
+    // this.userService.emitSignal.subscribe(() => {
+    //   this.disconnectParent();
+    // });
   }
 
   isFirstMessageOfDay(currentMessage: any, index: number): boolean {
@@ -298,6 +365,7 @@ export class GroupChatComponent implements OnInit {
   navigateToAnswers(answerId: string) {
     this.router.navigate([`/main/group-chat/${this.groupId}/group-answer/${answerId}`]);
     this.userService.showGroupAnswer = true;
+    this.userService.setThreadStatus(true);
   }
 
 
@@ -384,7 +452,7 @@ export class GroupChatComponent implements OnInit {
         this.dataLoaded = true;
       }
     }
-    this.scrollToBottom();
+    // this.scrollToBottom();
   }
 
   async loadUserImages(userIds: string[]) {
@@ -398,7 +466,7 @@ export class GroupChatComponent implements OnInit {
         // i++;
       }
     }
-    console.log(this.userImages)
+    // console.log(this.userImages)
   }
 
   editText(messageId: string) {
