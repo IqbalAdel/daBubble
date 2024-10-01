@@ -144,9 +144,6 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   }
 
   
-
-
-
   ngOnInit(): void {
     this.userImages = [];
     this.route.paramMap.subscribe(params => {
@@ -235,6 +232,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       // Sekunden weglassen
     });
   }
+  
   formatMessages(messages: any[]): any[] {
     let previousDate: string = "";
 
@@ -492,6 +490,31 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       console.log('Keine Änderungen im Text, nichts zu speichern.');
     }
   }
+
+  getLastChatTime(message: any): string | null {
+    if (message.chats && message.chats.length > 0) {
+      // Hole die Zeit des letzten Chat-Eintrags
+      const lastChat = message.chats[message.chats.length - 1];
+  
+      let timeString = lastChat.time; // Nimm den Zeitstring
+  
+      // Überprüfe, ob timeString im "HH:mm:ss" Format ist
+      const timePattern = /^\d{2}:\d{2}:\d{2}$/;
+      if (timePattern.test(timeString)) {
+        // Teile den String in Stunden, Minuten und Sekunden
+        const [hours, minutes] = timeString.split(':');
+  
+        // Gib die Zeit nur mit Stunden und Minuten zurück
+        return `${hours}:${minutes}`;
+      } else {
+        console.error('Invalid chat time format:', timeString);
+        return null; // Ungültiges Zeitformat
+      }
+    }
+  
+    return null; // Keine Chats vorhanden
+  }
+  
 
 }
 
