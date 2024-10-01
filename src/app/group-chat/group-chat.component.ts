@@ -480,7 +480,6 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   saveText(messageId: string) {
     this.isEditing[messageId] = false;  // Deaktiviert den Bearbeitungsmodus
     const newText = this.messages.find(msg => msg.id === messageId)?.text;  // Hole den neuen Text aus message.text
-
     if (newText) {
       this.firebaseService.updateMessage(this.groupId, messageId, newText)
         .then(() => {
