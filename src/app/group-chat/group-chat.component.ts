@@ -1,7 +1,7 @@
 import { CommonModule, formatDate } from '@angular/common';
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
@@ -11,12 +11,13 @@ import { Observable, switchMap } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
 import { Channel } from '../../models/channel.class';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { group } from '@angular/animations';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.component';
+import { GroupAnswerComponent } from '../group-answer/group-answer.component';
 
 @Component({
   selector: 'app-group-chat',
@@ -39,6 +40,9 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   selectedUserId: string = '';
   channelSubscription!: () => void;
 
+  groupAnswerComponent!: GroupAnswerComponent;
+  chat: any;
+
   currentDate!: string;
   currentTime!: string;
   displayDate!: string;
@@ -50,6 +54,10 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   observerInitialized = false;
   groupChatObserver: any;
   currentThreadStatus: boolean = false;
+  isMobile: boolean = false;
+  threadOpen: boolean = false;
+  supportsTouch: boolean = false;
+  screenWidth = window.innerWidth;
 
   messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string; image: string; userImage:string | null; }[] = [];
   groupUsers: User[] = [];
@@ -91,28 +99,35 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
 
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
-
+    // this.screenWidth = window.innerWidth;
     
   }
 
-  ngAfterViewInit(): void {    
-    this.userService.threadOpenStatus$.subscribe((status: boolean) => {
-      this.currentThreadStatus = status;
-      console.log('cgange to', this.currentThreadStatus)
-      // if(status === true){
-      //   this.disconnectGroupChat()
-      // }
-      switch (status) {
-        case true:
-        this.disconnectGroupChat()
-          break;
-      
-        case false:
-          this.observeGroupChat()
-          break;
-      }
-      
-    });
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.screenWidth = window.innerWidth;
+    if(this.currentThreadStatus && this.screenWidth < 993){
+      this.threadOpen = true;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if(!this.isMobile){
+      this.userService.threadOpenStatus$.subscribe((status: boolean) => {
+        this.currentThreadStatus = status;
+        switch (status) {
+          case true:
+          this.disconnectGroupChat()
+            break;
+        
+          case false:
+            this.observeGroupChat()
+            break;
+        }
+        
+      });
+    }    
+
   }
 
 
@@ -132,7 +147,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   
     // Store observer reference to disconnect later if necessary
     this.groupChatObserver = observer;
-    console.log(this.groupChatObserver, 'observer on')
+    // console.log(this.groupChatObserver, 'observer on')
   }
 
   disconnectGroupChat(){
@@ -155,14 +170,40 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       this.loggedInUser();
       this.getChannelsForusers();
       this.loadUserChats();
-      console.log('test')
       this.loadChannelData(this.groupId);
 
     });
-    // this.userService.emitSignal.subscribe(() => {
-    //   this.disconnectParent();
-    // });
+    this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if(this.supportsTouch && window.innerWidth < 992){
+      this.isMobile = true;
+    }
+
+    this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe(() => {
+      console.log('thread closed?')
+      if(this.checkIfBackToMainGroupChat()){
+        this.threadOpen = false;
+      }
+      else{
+        console.log('something went wrong')
+      }
+      // this.checkForGroupAnswerComponent(this.route);
+    })
   }
+
+  checkIfBackToMainGroupChat() {
+    const currentUrl = this.router.url;
+
+    // Check if URL contains a thread segment (adjust the regex if needed)
+    const isThreadOpen = currentUrl.includes('/group-answer/'); // Example thread segment
+
+    if (!isThreadOpen) {
+      return true
+  } else{
+    return false
+  }
+}
 
   isFirstMessageOfDay(currentMessage: any, index: number): boolean {
     if (index === 0) {
@@ -391,7 +432,9 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
         channelID: this.groupId,
         channelName: this.groupName,
         channelDescription: this.groupDescription,
-      }
+      },
+      autoFocus: false,
+
     });
   }
 
@@ -427,6 +470,9 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
         this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
       } catch (err) {
       }
+    } else{
+      // console.log('mist')
+      // this.observeGroupChat()
     }
   }
 
@@ -515,6 +561,14 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
     return null; // Keine Chats vorhanden
   }
   
+
+  onActivate(componentRef: any) {
+    if (componentRef instanceof GroupAnswerComponent) {
+      this.groupAnswerComponent = componentRef;
+      this.chat = componentRef;
+      console.log('group has answered the call')
+    }
+  }
 
 }
 

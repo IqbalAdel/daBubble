@@ -1,6 +1,11 @@
 .solo-group {
     background-color: white;
-    height: 85vh;
+    height: calc(100vh - 131px);
+    @media(width < 992px){
+        height: calc(100vh - 63px);
+        border-radius: 0;
+        margin: 0;
+    }
     width: 100%;
     border-radius: 30px;
     margin: 20px 30px;
@@ -37,6 +42,7 @@
 
             h2 {
                 margin: 0;
+                font-weight: 700;
             }
 
             img {
@@ -82,8 +88,8 @@
         gap: 8px;
 
         img {
-            height: 65px;
-            width: 65px;
+            height: 90px;
+            width: 90px;
             border-radius: 50px;
             object-fit: cover;
         }

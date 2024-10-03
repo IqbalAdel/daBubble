@@ -59,7 +59,7 @@ export class UserService {
 
   async loadUserById(uid: string): Promise<void> {
     try {
-      console.log(uid)
+      // console.log(uid)
       const docRef = doc(this.firestore, 'users', uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -74,7 +74,6 @@ export class UserService {
               userData.channels || [],
               userData.chats || []
           );
-          console.log(user)
           this.setUser(user);
           // this.selectedUserIdSubject.next(uid);
         }

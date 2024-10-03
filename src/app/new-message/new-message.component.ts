@@ -34,6 +34,9 @@ export interface FilterGroup {
   styleUrl: './new-message.component.scss',
 })
 export class NewMessageComponent implements OnInit {
+  isMobile: boolean = false;
+  supportsTouch: boolean = false;
+
   private _formBuilder = inject(FormBuilder);
   private firebaseService = inject(FirebaseService); // Inject Firebase service
 
@@ -70,6 +73,11 @@ export class NewMessageComponent implements OnInit {
         // Handle the selected ID as needed
       }
     });
+
+    this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if(this.supportsTouch && window.innerWidth < 992){
+      this.isMobile = true;
+    }
   }
 
   // Filter function to handle both Users and Channels

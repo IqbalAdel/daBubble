@@ -43,6 +43,8 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewInit {
   isChatBlinking: boolean = false;
   userImages = [];
   channelId = 'pEylXqZMW1zKPIC0VDXL'
+  supportsTouch: boolean = false;
+  isMobile: boolean = false;
 
   private chatsSubscription: Subscription | null = null;
   private chatListenerUnsubscribe: (() => void) | null = null;
@@ -58,7 +60,11 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     this.initializeUserObservable();
-    await this.initializeLoggedInUser();  // Warten, bis der eingeloggte User geladen ist
+    await this.initializeLoggedInUser(); 
+    this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if(this.supportsTouch && window.innerWidth < 992){
+      this.isMobile = true;
+    } 
   }
 
   // Funktionen aus ngOnInit ausgelagert
@@ -73,6 +79,7 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewInit {
         return of(undefined);
       })
     );
+
   }
 
   private handleUserSelection(userId: string | null): Observable<User | undefined> {

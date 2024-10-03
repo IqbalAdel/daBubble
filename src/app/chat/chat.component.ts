@@ -118,7 +118,6 @@ export class ChatComponent implements OnInit{
       const id = params['id']; // ID aus der URL (z.B. Kanal- oder Benutzer-ID)
       this.answerId = params['answerId']; // answerId aus der URL
 
-      console.log('URL-Parameter:', params); // Debugging-Ausgabe für URL-Parameter
 
       // Sicherstellen, dass der Benutzer geladen wird
       this.loadCurrentUser();
@@ -126,11 +125,9 @@ export class ChatComponent implements OnInit{
       if (this.answerId) {
         // Wenn eine answerId in der URL vorhanden ist, setze den Placeholder auf "Antworten"
         this.placeholderText = 'Antworten';
-        console.log('meine answer Id', this.answerId);
       } else if (id) {
         // Wenn keine answerId vorhanden ist, lade die Daten basierend auf der ID (z.B. Kanal oder Benutzer)
         this.channelId = id;
-        console.log('meine channelId', this.channelId); // Debugging-Ausgabe
 
         // Überprüfen, ob `channelId` richtig gesetzt ist
         if (this.channelId) {
