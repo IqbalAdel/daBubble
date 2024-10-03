@@ -64,8 +64,21 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
-  imgKeyboard: string = 'assets/img/keyboard_arrow_down.svg'
+  imgKeyboard: string = 'assets/img/keyboard_arrow_down.svg';
+  
+  isImageModalOpen: boolean = false;
+  selectedImageForModal: string | null = null;
+ // Funktion zum Öffnen des Modals
+ openImageModal(imageUrl: string): void {
+  this.isImageModalOpen = true;
+  this.selectedImageForModal = imageUrl;
+}
 
+// Funktion zum Schließen des Modals
+closeImageModal(): void {
+  this.isImageModalOpen = false;
+  this.selectedImageForModal = null;
+}
 
   // openSnackBar() {
   //   console.log('snackbar opened')

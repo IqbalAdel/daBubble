@@ -51,7 +51,7 @@ export class ChatComponent implements OnInit{
   selectedImageUrl: string | null = null;
   @ViewChild('fileInput') fileInput!: ElementRef;
   showEmojiPicker = false;
-
+  isImageSelected: boolean = false; 
 
   constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore) {
     this.userService = userService; // Initialisiere userService
@@ -91,24 +91,25 @@ export class ChatComponent implements OnInit{
   triggerFileInput(): void {
     this.fileInput.nativeElement.click(); // Löst den Klick auf das versteckte File-Input aus
   }
-
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0]; // Die Datei für den Upload speichern
   
-      // Bild in der Vorschau anzeigen
       const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.selectedImageUrl = e.target.result; // Speichern der Base64-Bild-URL
+      reader.onload = (e) => {
+        this.selectedImageUrl = e.target?.result as string; // Base64 für die Anzeige speichern
+        this.isImageSelected = true; // Bild wurde ausgewählt
       };
-      reader.readAsDataURL(file);
+  
+      reader.readAsDataURL(this.selectedFile); // Bild als Data URL lesen (nur für die Anzeige)
     }
   }
 
   removeImage(): void {
     this.selectedFile = null;
     this.selectedImageUrl = null;
+    this.isImageSelected = false;
   }
 
   ngOnInit(): void {
@@ -231,9 +232,10 @@ export class ChatComponent implements OnInit{
       console.log('Empfänger-ID nicht vorhanden');
       return;
     }
-  
+   
     // Bild hochladen, falls ausgewählt
     let imageUrl = null;
+    console.log('Ausgewählte Datei:', this.selectedFile);
     if (this.selectedFile) {
       const filePath = `avatars/${this.user.id}/${this.selectedFile.name}`; // Benutze die User-ID für den Pfad
       const fileRef = ref(this.storage, filePath);

@@ -65,20 +65,21 @@
                                         <h2>{{ message.userName }}</h2>
                                         <p>{{ message.time }} Uhr</p>
                                     </div>
+                                    <!-- Bild in der Nachricht -->
                                     <img *ngIf="message.image" [src]="message.image" alt="Nachricht Bild"
-                                        class="message-image">
+                                        class="message-image" (click)="openImageModal(message.image)">
+
+                                    <!-- Modal zum Vergrößern des Bildes -->
+                                    <div class="modal" *ngIf="isImageModalOpen" (click)="closeImageModal()">
+                                        <div class="modal-content">
+                                            <img [src]="selectedImageForModal" alt="Vergrößertes Bild"
+                                                class="modal-image">
+                                        </div>
+                                    </div>
+
                                     <span *ngIf="!isEditing[message.id]">{{ message.text }}</span>
                                     <input *ngIf="isEditing[message.id]" [(ngModel)]="message.text"
                                         (blur)="saveText(message.id)" />
-                                </div>
-                                <div class="smiles">
-                                    <img src="assets/img/smiley/check-mark-green.svg" alt="">
-                                    <p>1</p>
-                                    <div class="hover-smiles">
-                                        <img src="assets/img/smiley/check-mark-green.svg" alt="">
-                                        <p>Sofia Müller hast reagiert</p>
-                                    </div>
-
                                 </div>
                                 <div class="answer">
                                     <div class="answers" (click)="navigateToAnswers(message.id)">

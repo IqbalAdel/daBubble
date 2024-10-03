@@ -1,7 +1,9 @@
-<div class="textarea" #autoScrollTextarea>
 
+
+<div class="textarea"   #autoScrollTextarea>
+   
     <!-- Textarea für die Nachrichteneingabe -->
-    <textarea #scrollContainer #messageInput rows="2" cols="50" [placeholder]="placeholderText"
+    <textarea #scrollContainer [class.expanded]="isImageSelected" #messageInput rows="2" cols="50" [placeholder]="placeholderText"
         (keydown)="handleKeyDown($event, messageInput)"></textarea>
     
     <!-- Bildvorschau: Zeige das Bild, wenn es ausgewählt wurde -->
