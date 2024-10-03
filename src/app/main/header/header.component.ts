@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -21,6 +21,7 @@ import { FilterGroup } from '../../new-message/new-message.component';
 import { map, Observable, of, startWith, switchMap } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AsyncPipe, CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -45,6 +46,7 @@ import { AsyncPipe, CommonModule } from '@angular/common';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit{
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
   user: User = {
     name: '',
     email: 'Test@gmx.de',
@@ -65,6 +67,7 @@ export class HeaderComponent implements OnInit{
   test!: boolean;
   // userStatus: any;
   onlineStaus: boolean = false;
+ 
 
 
 
@@ -73,6 +76,7 @@ export class HeaderComponent implements OnInit{
     private firebaseService: FirebaseService,
     public userService: UserService,
     private firestore: Firestore,
+    private router: Router,
   ) {}
 
 
@@ -130,29 +134,39 @@ export class HeaderComponent implements OnInit{
   }
 
   // Filter function to handle both Users and Channels
-  private _filterData(value: string): Observable<FilterGroup[]> {
-    const filterValue = value // Convert input to lowercase for case-insensitive search
+  private _filterData(value: any): Observable<FilterGroup[]> {
+    const filterValue = typeof value.name === 'string' ? value.name.trim().toLowerCase() : '';
   
     return this.users$.pipe(
       switchMap(users =>
         this.channels$.pipe(
           map(channels => {
             const filteredUsers = users
-              .filter(user => user.name.toLowerCase().includes(filterValue)) // Filter users by name
-              .filter(user => !!user.id); // Ensure only users with an ID are included
+              .filter(user => user.name.toLowerCase().includes(filterValue))  // Compare in lowercase
+              .filter(user => !!user.id);  // Ensure only users with an ID are included
   
             const filteredChannels = channels
-              .filter(channel => channel.name.toLowerCase().includes(filterValue)) // Filter channels by name
-              .filter(channel => !!channel.id); // Ensure only channels with an ID are included
+              .filter(channel => channel.name.toLowerCase().includes(filterValue))  // Compare in lowercase
+              .filter(channel => !!channel.id);  // Ensure only channels with an ID are included
   
             return [
               {
                 type: 'Users',
-                items: filteredUsers.map(user => ({ name: user.name, id: user.id!, img: user.img })) // Map user with name and id
+                items: filteredUsers.map(user => ({
+                  name: user.name,
+                  id: user.id!,
+                  img: user.img,
+                  type: 'Users'
+                }))
               },
               {
                 type: 'Channels',
-                items: filteredChannels.map(channel => ({ name: channel.name, id: channel.id!, img: "" })) // Map channel with name and id
+                items: filteredChannels.map(channel => ({
+                  name: channel.name,
+                  id: channel.id!,
+                  img: "",
+                  type: 'Channels'
+                }))
               }
             ];
           })
@@ -164,14 +178,48 @@ export class HeaderComponent implements OnInit{
 
   onOptionSelected(event: any) {
     const selectedItem = event.option.value;  // Get the selected item object
+    	
     const selectedName = selectedItem.name;   // Extract the name
     const selectedId = selectedItem.id;       // Extract the ID
 
     this.searchFieldControl.setValue(selectedName, { emitEvent: false });
-
-    // Update form control or handle selectedId as needed
-    console.log('Selected ID:', selectedItem.img);
+    this.routeToSelectedItem(selectedItem)
+    this.clearInputField();
   }
+
+  routeToSelectedItem(selectedItem: any){
+    if(selectedItem){
+      switch (selectedItem.type) {
+        case 'Users':
+        this.userService.setSelectedUserId(selectedItem.id);
+        this.router.navigate(['/main/chat', selectedItem.id]);  
+          break;
+      
+        case 'Channels':
+        this.router.navigate(['/main/group-chat', selectedItem.id]);  
+          break;
+      }
+    }
+  }
+
+  clearInputField() {
+    // Clear the input field by setting it to an empty string
+    this.searchFieldControl.setValue('', { emitEvent: false });
+  
+    // Blur (remove focus) from the input field
+    if (this.searchInput) {
+      this.searchInput.nativeElement.blur();
+    }
+  }
+
+  onFocus(): void {
+    // Check if there's a value in the search field
+    const currentValue = this.searchFieldControl.value;
+    
+    // If the input is focused, trigger the valueChanges to show the autocomplete options
+    this.searchFieldControl.setValue(currentValue || '', { emitEvent: true });
+  }
+
 
 
   // ------------

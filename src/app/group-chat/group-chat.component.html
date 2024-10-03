@@ -49,7 +49,7 @@
                 <div *ngIf="messages.length > 0;">
                     <div class="center">
                         <div class="group-news">
-                            <img src="{{message.userImage}}" alt="">
+                            <img class="profile-img" src="{{message.userImage}}" alt="">
                             <div class="group-chat">
                                 <div class="chat">
                                     <div class="current-time">
@@ -81,7 +81,8 @@
                                             {{ message.chats.length }} Antworten
                                         </ng-container>
                                     </div>
-                                    <div>Letzte Antwort {{ currentTime }}</div>
+                                    <div class="last-answers-time">Letzte Antwort {{ getLastChatTime(message) }}</div>
+
                                 </div>
                             </div>
                             <div class="add-smiley">
@@ -93,20 +94,24 @@
                                 <div class="smiley-div"><img (mouseover)="changeImageComment(true)"
                                         (mouseout)="changeImageComment(false)" [src]="imgSrc[1]" alt=""
                                         (click)="navigateToAnswers(message.id)"></div>
-                                <div class="smiley-div"><img *ngIf="message.userName === loggedInUserName"
+                                <div class="smiley-div edit"><img *ngIf="message.userName === loggedInUserName"
                                         (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)"
-                                        [src]="imgSrc[3]" (click)="editText(message.id)" alt=""></div>
-
-
-
+                                        [src]="imgSrc[3]" (click)="editText(message.id)" alt="">
+                                    <div class="edit-text" (click)="editText(message.id)">
+                                        Nachricht bearbeiten
+                                    </div>
+                                </div>
 
                             </div>
+
+
                         </div>
+
                     </div>
                 </div>
             </div>
             <div #scrollAnchor></div>
-            <app-chat (notify)="openSnackBar()"></app-chat>
+            <app-chat></app-chat>
         </div>
 
     </div>

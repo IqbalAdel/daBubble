@@ -1,7 +1,7 @@
-.smiley-div{
+.smiley-div {
     padding: 7px;
 
-    &:hover{
+    &:hover {
         border-radius: 50%;
         background-color: rgb(236, 238, 254);
     }
@@ -84,7 +84,7 @@
                 border-bottom-right-radius: 30px;
                 border-bottom-left-radius: 30px;
                 background-color: rgba(121, 126, 243, 1);
-                
+
             }
 
             &:hover {
@@ -104,15 +104,16 @@
                     margin-top: -40px;
                     border: 1px solid rgba(51, 38, 235, 0.2);
                 }
-                span{
+
+                span {
                     background-color: white;
                 }
             }
         }
     }
 
-    .hands-up{
-        width: 40px !important; 
+    .hands-up {
+        width: 40px !important;
         height: 40px !important;
     }
 
@@ -121,6 +122,11 @@
         gap: 10px;
         font-size: 18px;
         margin-top: 20px;
+
+        .last-answers-time {
+            font-size: 14px;
+            font-weight: 400;
+        }
 
         .answers {
             color: blue;
@@ -152,9 +158,9 @@
                 border-radius: 50%;
                 cursor: pointer;
 
-                img{
+                img {
                     width: 40px;
-                    height: auto;   
+                    height: auto;
                 }
             }
 
@@ -191,12 +197,13 @@
 
         display: flex;
         align-items: center;
-        
+
         &:hover {
             background-color: rgba(236, 238, 254, 1);
             border-radius: 30px;
             color: blue;
         }
+
         h2 {
             padding: 4px 10px;
             box-sizing: border-box;
@@ -283,7 +290,8 @@
         .chat {
             display: flex;
             flex-direction: column;
-            input{
+
+            input {
                 height: 40px;
                 padding: 12px;
                 font-size: 20px;
@@ -304,9 +312,11 @@
             gap: 30px;
         }
 
-        img {
+        .profile-img {
             height: 70px;
             width: 70px;
+            object-fit: cover;
+            border-radius: 100%;
         }
 
         .add-smiley {
@@ -329,6 +339,7 @@
         height: calc(100% - 325px);
 
         overflow-y: auto;
+
         &::-webkit-scrollbar {
             width: 4px;
         }
@@ -342,7 +353,7 @@
             background-color: rgba(0, 0, 255, 0.5);
         }
 
-        button{
+        button {
             position: absolute;
             bottom: 200px;
             left: 50px;
@@ -423,9 +434,36 @@
     }
 }
 
+.edit {
+    &:hover {
+        .edit-text {
+            display: block;
+        }
+    }
+}
+
+.edit-text {
+    border: 1px solid rgba(51, 38, 235, 0.2);
+    padding: 15px;
+    border-top-right-radius: 30px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    background-color: white;
+    width: auto;
+    position: absolute;
+    right: -175px;
+    top: 10px;
+    display: none;
+
+    &:hover {
+        color: blue;
+    }
+}
 
 
-.member-images{
+
+.member-images {
     display: flex;
     overflow-x: auto;
     width: 100%;
@@ -434,7 +472,7 @@
 
 .member-images::-webkit-scrollbar {
     display: none;
-  }
+}
 
 ::ng-deep .border-30 .mat-mdc-dialog-container {
     --mdc-dialog-container-shape: 0px 30px 30px 30px;
@@ -449,6 +487,53 @@ h2 {
     font-weight: 900;
 }
 
-.all{
+.all {
     display: flex;
+}
+
+.smiles {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    margin: 10px;
+    padding: 5px 10px;
+    gap: 8px;
+    border: 1px solid rgba(173, 176, 217, 1);
+    border-radius: 20px;
+    width: 63px;
+    height: 34px;
+    position: relative;
+    &:hover{
+        .hover-smiles{
+            display: block;
+        }
+    }
+
+    img {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    .hover-smiles {
+        height: auto;
+        min-width: 200px;
+        background-color: rgb(43, 43, 209);
+        padding: 20px 10px;
+        color: white;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        border-bottom-right-radius: 30px;
+        position: absolute;
+        top: -70px;
+        left: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        display: none;
+    }
 }

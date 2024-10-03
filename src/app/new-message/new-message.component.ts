@@ -117,9 +117,9 @@ export class NewMessageComponent implements OnInit {
     // Update form control or handle selectedId as needed
     console.log('Selected ID:', selectedId);
     this.chatComponent.channelId = selectedId;
-    this.chatComponent.receiverUserId = selectedId;
-    console.log(this.chatComponent.receiverUserId)
-    console.log(this.chatComponent.channelId)
+    this.chatComponent.receivingUserId = selectedId;
+    console.log('send to receiver:',this.chatComponent.receivingUserId)
+    console.log('send to channel:',this.chatComponent.channelId)
   }
 
 }

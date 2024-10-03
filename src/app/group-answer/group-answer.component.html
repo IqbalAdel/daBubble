@@ -1,5 +1,5 @@
 <!-- group-answer.component.html -->
-<div class="main" *ngIf="userService.showGroupAnswer">
+<div class="main" *ngIf="userService.threadOpenStatus$">
   <div class="header">
     <h1>Thread</h1>
     <span># {{ groupName }}</span>
@@ -10,7 +10,7 @@
      alt="" >
   </div>
   <div class="line"></div>
-  <div class="commplet-chat" #scrollContainer>
+  <div class="commplet-chat" #scrollerContainer>
     <div [ngClass]="{'my-message': userName === loggedInUserName, 'complete-container': userName !== loggedInUserName}">
       <img src="assets/img/avatar-1.png" alt="">
       <div class="messages">

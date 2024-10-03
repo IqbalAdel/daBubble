@@ -25,7 +25,7 @@ import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.c
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
-export class GroupChatComponent implements OnInit {
+export class GroupChatComponent implements OnInit, AfterViewInit {
   user: User | null = null;
   @ViewChild('scrollContainer', { static: false }) scrollContainer: ElementRef | undefined;
   channels$: Observable<Channel[]> | undefined;
@@ -47,6 +47,9 @@ export class GroupChatComponent implements OnInit {
   chatsNummbers: ChatMessage[] = [];
   userImages: string[] = [];
   dataLoaded = false;
+  observerInitialized = false;
+  groupChatObserver: any;
+  currentThreadStatus: boolean = false;
 
   messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string; image: string; userImage:string | null; }[] = [];
   groupUsers: User[] = [];
@@ -69,18 +72,24 @@ closeImageModal(): void {
   this.selectedImageForModal = null;
 }
 
-  openSnackBar() {
-    console.log('snackbar opened')
-    let snackBarRef = this.snackBar.openFromComponent(SnackbarMessageComponent, {
-      duration: 1000,
-      panelClass: 'my-custom-snackbar',
-    });
+  // openSnackBar() {
+  //   console.log('snackbar opened')
+  //   if(this.userService.threadOpenStatus$){
 
-    snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar was dismissed');
-      this.scrollToBottom();
-    });
-  }
+  //   }
+  //   let snackBarRef = this.snackBar.openFromComponent(SnackbarMessageComponent, {
+  //     // duration: 1000,
+  //     panelClass: 'my-custom-snackbar',
+  //   });
+
+  //   snackBarRef.afterDismissed().subscribe(() => {
+  //     console.log('The snackbar was dismissed');
+  //   });
+  //   snackBarRef.onAction().subscribe(() => {
+  //     this.scrollToBottom();
+  //     ;
+  //   });
+  // }
 
 
 
@@ -95,8 +104,59 @@ closeImageModal(): void {
 
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
+
+    
   }
 
+  ngAfterViewInit(): void {    
+    this.userService.threadOpenStatus$.subscribe((status: boolean) => {
+      this.currentThreadStatus = status;
+      console.log('cgange to', this.currentThreadStatus)
+      // if(status === true){
+      //   this.disconnectGroupChat()
+      // }
+      switch (status) {
+        case true:
+        this.disconnectGroupChat()
+          break;
+      
+        case false:
+          this.observeGroupChat()
+          break;
+      }
+      
+    });
+  }
+
+
+  observeGroupChat(): void {
+    // Select only the group-chat section
+    const groupChatContainer = this.scrollContainer!.nativeElement;
+    
+    if (!groupChatContainer) return;
+  
+    const config = { childList: true, subtree: false }; // Only observe direct children in group chat
+    const observer = new MutationObserver(() => {
+      this.scrollToBottom();  // Scroll to bottom only for group chat
+      
+    });
+  
+    observer.observe(groupChatContainer, config);
+  
+    // Store observer reference to disconnect later if necessary
+    this.groupChatObserver = observer;
+    console.log(this.groupChatObserver, 'observer on')
+  }
+
+  disconnectGroupChat(){
+    if (this.groupChatObserver) {
+    console.log(this.groupChatObserver, 'observer off')
+      this.groupChatObserver.disconnect(); // Stop observing group-chat
+    }
+    
+  }
+
+  
   ngOnInit(): void {
     this.userImages = [];
     this.route.paramMap.subscribe(params => {
@@ -108,9 +168,13 @@ closeImageModal(): void {
       this.loggedInUser();
       this.getChannelsForusers();
       this.loadUserChats();
-      this.loadChannelData(this.groupId);
       console.log('test')
+      this.loadChannelData(this.groupId);
+
     });
+    // this.userService.emitSignal.subscribe(() => {
+    //   this.disconnectParent();
+    // });
   }
 
   isFirstMessageOfDay(currentMessage: any, index: number): boolean {
@@ -181,6 +245,7 @@ closeImageModal(): void {
       // Sekunden weglassen
     });
   }
+  
   formatMessages(messages: any[]): any[] {
     let previousDate: string = "";
 
@@ -311,6 +376,7 @@ closeImageModal(): void {
   navigateToAnswers(answerId: string) {
     this.router.navigate([`/main/group-chat/${this.groupId}/group-answer/${answerId}`]);
     this.userService.showGroupAnswer = true;
+    this.userService.setThreadStatus(true);
   }
 
 
@@ -397,7 +463,7 @@ closeImageModal(): void {
         this.dataLoaded = true;
       }
     }
-    this.scrollToBottom();
+    // this.scrollToBottom();
   }
 
   async loadUserImages(userIds: string[]) {
@@ -411,7 +477,7 @@ closeImageModal(): void {
         // i++;
       }
     }
-    console.log(this.userImages)
+    // console.log(this.userImages)
   }
 
   editText(messageId: string) {
@@ -427,7 +493,7 @@ closeImageModal(): void {
     const newText = this.messages.find(msg => msg.id === messageId)?.text;  // Hole den neuen Text aus message.text
 
     if (newText) {
-      this.firebaseService.updateMessage(messageId, newText)
+      this.firebaseService.updateMessage(this.groupId, messageId, newText)
         .then(() => {
           console.log('Nachricht erfolgreich gespeichert:', newText);
         })
@@ -438,6 +504,31 @@ closeImageModal(): void {
       console.log('Keine Änderungen im Text, nichts zu speichern.');
     }
   }
+
+  getLastChatTime(message: any): string | null {
+    if (message.chats && message.chats.length > 0) {
+      // Hole die Zeit des letzten Chat-Eintrags
+      const lastChat = message.chats[message.chats.length - 1];
+  
+      let timeString = lastChat.time; // Nimm den Zeitstring
+  
+      // Überprüfe, ob timeString im "HH:mm:ss" Format ist
+      const timePattern = /^\d{2}:\d{2}:\d{2}$/;
+      if (timePattern.test(timeString)) {
+        // Teile den String in Stunden, Minuten und Sekunden
+        const [hours, minutes] = timeString.split(':');
+  
+        // Gib die Zeit nur mit Stunden und Minuten zurück
+        return `${hours}:${minutes}`;
+      } else {
+        console.error('Invalid chat time format:', timeString);
+        return null; // Ungültiges Zeitformat
+      }
+    }
+  
+    return null; // Keine Chats vorhanden
+  }
+  
 
 }
 

@@ -34,7 +34,7 @@ export class ChatComponent implements OnInit{
   @Output() notify: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
   channelId!: string;
-  receiverUserId: string | null = "";
+  // receivingUserId: string | null = "";
   messages: any[] = [];
   messageIds: string[] = [];
   @Input() groupId: string | null = null;
@@ -65,6 +65,8 @@ export class ChatComponent implements OnInit{
  // Methode zum Hinzufügen eines Emojis in das Textarea
  addEmoji(event: any) {
   const emoji = event.emoji.native; // Das ausgewählte Emoji
+  console.log(typeof(emoji))
+  console.log(typeof(String(emoji)) )
 
   // Holen des aktuellen Textarea Elements
   const textarea = this.messageInput.nativeElement;
@@ -284,7 +286,7 @@ export class ChatComponent implements OnInit{
       userImage: this.user.img,
     };
   }
-
+  
 
   private async saveMessageToAnswers(answerId: string, message: any): Promise<void> {
     try {
