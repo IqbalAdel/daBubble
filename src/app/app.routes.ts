@@ -13,6 +13,8 @@ import { TestComponent } from './main/test/test.component';
 import { ChatComponent } from './chat/chat.component';
 import { GroupAnswerComponent } from './group-answer/group-answer.component';
 import { NewMessageComponent } from './new-message/new-message.component';
+import { InprintComponent } from './inprint/inprint.component';
+import { DataProtectionComponent } from './data-protection/data-protection.component';
 
 
 export const routes: Routes = [
@@ -24,7 +26,10 @@ export const routes: Routes = [
       { path: 'sign-up', component: SignUpComponent },
       { path: 'create-avatar', component: CreateAvatarComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
-      { path: 'new-password', component: NewPasswordComponent }
+      { path: 'new-password', component: NewPasswordComponent },
+      { path: 'inprint', component: InprintComponent },
+      { path: 'data-protection', component: DataProtectionComponent }
+
     ]
   },
  
