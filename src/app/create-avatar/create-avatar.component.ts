@@ -95,7 +95,7 @@ export class CreateAvatarComponent implements OnInit {
   async saveUser() {
     const cleanedUserData = this.cleanUserData(this.user);
 
-    const channelId = '1S28fQQEdf7LfxdJASzJ'; // Die ID des Channels, zu dem der User hinzugefügt werden soll
+    const channelId = 'pEylXqZMW1zKPIC0VDXL'; // Die ID des Channels, zu dem der User hinzugefügt werden soll
     cleanedUserData.channels.push(channelId);
 
     try {
