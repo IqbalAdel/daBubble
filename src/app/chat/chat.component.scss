@@ -28,6 +28,13 @@ textarea {
         /* Farbe des Scrollbalkens beim Hover */
     }
 }
+
+textarea.expanded {
+    height: 300px!important; /* Höhe, wenn ein Bild vorhanden ist */
+    margin-top: 50px;
+}
+
+
 .textarea {
     display: flex;
     justify-content: center;
@@ -89,9 +96,9 @@ textarea {
 
 
 .image-preview img {
-    height: 50px;
-    width: 50px;
-    height: auto;
+    height: 150px;
+    width: 150px;
+   
     border-radius: 5px;
 }
 
@@ -100,14 +107,15 @@ textarea {
 .image-preview button {
     position: relative;
     right: 10px;
-    top: -25px;
+    top: -145px;
+    /* bottom: -16px; */
     background-color: lightgray;
     color: black;
     border: none;
     cursor: pointer;
     border-radius: 10px;
+    font-size: 16px;
 }
-
 .emoji {
     position: absolute;  /* Optional: Positionierung anpassen */
     bottom: 40px;        /* Position unter dem Smiley */

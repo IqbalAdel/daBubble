@@ -51,7 +51,7 @@ export class ChatComponent implements OnInit{
   selectedImageUrl: string | null = null;
   @ViewChild('fileInput') fileInput!: ElementRef;
   showEmojiPicker = false;
-
+  isImageSelected: boolean = false; 
 
   constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore) {
     this.userService = userService; // Initialisiere userService
@@ -89,24 +89,25 @@ export class ChatComponent implements OnInit{
   triggerFileInput(): void {
     this.fileInput.nativeElement.click(); // Löst den Klick auf das versteckte File-Input aus
   }
-
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0]; // Die Datei für den Upload speichern
   
-      // Bild in der Vorschau anzeigen
       const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.selectedImageUrl = e.target.result; // Speichern der Base64-Bild-URL
+      reader.onload = (e) => {
+        this.selectedImageUrl = e.target?.result as string; // Base64 für die Anzeige speichern
+        this.isImageSelected = true; // Bild wurde ausgewählt
       };
-      reader.readAsDataURL(file);
+  
+      reader.readAsDataURL(this.selectedFile); // Bild als Data URL lesen (nur für die Anzeige)
     }
   }
 
   removeImage(): void {
     this.selectedFile = null;
     this.selectedImageUrl = null;
+    this.isImageSelected = false;
   }
 
   ngOnInit(): void {
@@ -211,60 +212,6 @@ export class ChatComponent implements OnInit{
     });
   }
 
-  // sendMessage(messageText: string): void {
-  //   if (!this.user) {
-  //     console.log('Kein Benutzer vorhanden');
-  //     return;
-  //   }
-
-  //   if (!this.isMessageValid(messageText) && !this.selectedFile) {
-  //     console.log('Nachricht oder Bild ist nicht gültig');
-  //     return; // Verhindere das Senden einer leeren Nachricht ohne Bild
-  //   }
-
-  //   const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId;
-  //   if (!receivingUserId) {
-  //     console.log('Empfänger-ID nicht vorhanden');
-  //     return;
-  //   }
-
-  //   const message = this.createMessage(messageText, receivingUserId);
-
-  //   if (this.selectedFile) {
-  //     // Wenn ein Bild hochgeladen wurde, konvertiere es zu Base64 oder lade es hoch und füge den Link zur Nachricht hinzu
-  //     const reader = new FileReader();
-  //     reader.onload = () => {
-  //       const base64Image = reader.result as string; // Konvertierte Bilddatei
-  //       message.image = base64Image; // Füge das Bild zur Nachricht hinzu
-  //       this.sendMessageToUser(message.text, receivingUserId);
-  //     };
-  //     reader.readAsDataURL(this.selectedFile);
-  //   } else {
-  //     // Wenn kein Bild vorhanden ist, sende nur den Text
-  //     this.sendMessageToUser(message.text, receivingUserId);
-  //   }
-
-  //   this.clearMessageInputAndScroll(this.messageInputRef.nativeElement);
-  // }
-
-  // private createMessage(messageText: string, receivingUserId: string): any {
-  //   if (!this.user) {
-  //     console.error('User is not defined');
-  //     return null;
-  //   }
-
-  //   return {
-  //     text: messageText,
-  //     timestamp: Timestamp.now(),
-  //     userName: this.userName || 'Gast',
-  //     userId: this.user.id,
-  //     receivingUserId: receivingUserId,
-  //     time: new Date().toLocaleTimeString(),
-  //     chats: [],
-  //     image: this.selectedImageUrl || null,  // Falls ein Bild vorhanden ist
-  //     isRead: false
-  //   };
-  // }
 
   async sendMessage(messageText: string): Promise<void> {
     console.log('Sende Nachricht:', messageText);
@@ -281,14 +228,15 @@ export class ChatComponent implements OnInit{
       return; // Verhindere das Senden einer leeren Nachricht ohne Bild
     }
   
-    const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId;
+    const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId || this.receivingUserId;
     if (!receivingUserId) {
       console.log('Empfänger-ID nicht vorhanden');
       return;
     }
-  
+   
     // Bild hochladen, falls ausgewählt
     let imageUrl = null;
+    console.log('Ausgewählte Datei:', this.selectedFile);
     if (this.selectedFile) {
       const filePath = `avatars/${this.user.id}/${this.selectedFile.name}`; // Benutze die User-ID für den Pfad
       const fileRef = ref(this.storage, filePath);
@@ -314,6 +262,7 @@ export class ChatComponent implements OnInit{
     
     this.sendMessageToUser(message.text, receivingUserId); // Nachricht-Objekt statt nur Text
     this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
+    this.notify.emit();
   }
   
   private createMessage(messageText: string, receivingUserId: string, imageUrl: string | null): any {
@@ -335,23 +284,7 @@ export class ChatComponent implements OnInit{
       userImage: this.user.img,
     };
   }
-  
-  // private createMessage(messageText: string, receivingUserId: string): any {
-  //   if (!this.user) {
-  //     console.error('User is not defined');
-  //     return null; // oder werfe einen Fehler, je nach Anforderung
-  //   }
-  //   return {
-  //     text: messageText,
-  //     timestamp: Timestamp.now(),
-  //     userName: this.userName || 'Gast',
-  //     userId: this.user.id,
-  //     receivingUserId: receivingUserId,
-  //     time: new Date().toLocaleTimeString(),
-  //     chats: [],
-  //     isRead: false
-  //   };
-  // }
+
 
   private async saveMessageToAnswers(answerId: string, message: any): Promise<void> {
     try {
