@@ -16,6 +16,8 @@ export class ResetPasswordComponent {
   email: string = '';
   message: string = '';
   user: User | null = null;
+  isEmailFocused: boolean = false;
+
   constructor(private router: Router, private authService: AuthService) { 
     const auth = getAuth();
     this.user = auth.currentUser;
@@ -32,15 +34,9 @@ export class ResetPasswordComponent {
   }
 
 
-  // resetPassword() {
-  //   console.log('Reset password initiated for:', this.email); // Debugging
-  //   this.authService.resetPassword(this.email)
-  //     .then(() => {
-  //       this.message = 'Password reset email sent. Check your inbox.';
-  //     })
-  //     .catch((error) => {
-  //       this.message = `Error: ${error.message}`;
-  //     });
-  // }
+  // Methode zur Validierung des Formulars
+  isFormValid(): boolean {
+    return this.email.trim() !== '';
+  }
 
 }

@@ -3,9 +3,13 @@
 }
 
 .error-message {
+    margin: 0 auto;
+    display: flex;
+    width: 80%;
     color: red;
-    font-size: 16px;
+    font-size: 12px;
     padding-bottom: 8px;
+    padding-top: 8px;
   }
 
 .login-container {
@@ -25,6 +29,10 @@
     }
 }
 
+.d-none{
+    display: none;
+}
+
 .headline{
     display: flex;
     flex-direction: column;
@@ -37,7 +45,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 24px;
+   
 }
 
 .google-container {
@@ -88,13 +96,30 @@
 
 }
 
+.hidden {
+    display: none;
+  }
 
+  .icon,
+  .icon-focus {
+    position: absolute;
+    left: 15%;  /* Beispielhafte Positionierung, kannst du anpassen */
+    transition: opacity 0.3s ease;  /* Sanfter Übergang für das Umschalten */
+  }
 
 .icon {
     position: absolute;
     left: 15%;
     background-color: #ECEEFE;
+    transition: filter 0.3s ease;
 }
+
+.icon-focus {
+    position: absolute;
+    left: 15.7%;
+    background-color: #ECEEFE;
+    transition: filter 0.3s ease;
+  }
 
 
 
@@ -117,7 +142,7 @@ input {
 }
 
 .passwort {
-    padding-top: 24px;
+   
     a {
         padding: 8px;
         font-size: 18px;
@@ -135,7 +160,7 @@ input {
     padding-top: 24px;
     display: flex;
     justify-content: center;
-    padding-bottom: 24px;
+    padding-bottom: 36px;
     span {
         font-size: 20px;
     }
@@ -157,6 +182,8 @@ input {
     display: flex;
     justify-content: center;
     gap: 40px;
+    padding-top: 24px;
+    padding-bottom: 24px;
 }
 
 .login {

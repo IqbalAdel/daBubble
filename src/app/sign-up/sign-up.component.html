@@ -8,54 +8,59 @@
     <h2>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</h2>
     <form #signUpForm="ngForm" (ngSubmit)="onSubmit()">
         <div class="input-container">
-          <img class="icon" src="assets/img/person_filled.svg" alt="">
+          <img class="icon" src="assets/img/person_filled.svg" alt="" [class.hidden]="isNameFocused">
+          <img class="icon-focus" src="assets/img/person_filled_dark.png" alt="" [class.hidden]="!isNameFocused">
           <input
             [(ngModel)]="user.name"
             name="name"
             #nameInput="ngModel"
             type="text"
-            placeholder="Name und Nachname"
+            [placeholder]="isNameFocused ? '' : 'Name und Nachname'"
             minlength="6"
             required
+            (focus)="isNameFocused = true"
           />
-         
         </div>
-        <div *ngIf="nameInput.invalid &&  nameInput.touched" class="error-message">
-            Name muss mindestens 6 Zeichen lang sein.
+        <div [ngStyle]="{'opacity': nameInput.invalid &&  nameInput.touched ? '1' : '0'}" class="error-message">
+            Bitte schreiben Sie einen Namen. (6 Zeichen)
           </div>
         <div class="input-container">
-          <img class="icon" src="assets/img/mail.svg" alt="">
+          <img class="icon" src="assets/img/mail.svg" alt="" [class.hidden]="isEmailFocused">
+          <img class="icon-focus" src="assets/img/mail-dark.png" alt="" [class.hidden]="!isEmailFocused">
           <input
             [(ngModel)]="user.email"
             name="email"               
             type="email"
             pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-            placeholder="beispielname@email.com"
+            [placeholder]="isEmailFocused ? '' : 'beispielname@email.com'"
             required
+            (focus)="isEmailFocused = true"
             #emailInput="ngModel"
           />
         </div>
-        <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
-            Bitte eine gültige E-Mail-Adresse eingeben.
+        <div [ngStyle]="{'opacity': emailInput.invalid && emailInput.touched ? '1' : '0'}" class="error-message">
+            *Diese E-Mail-Adresse ist leider ungültig.
           </div>
           <div *ngIf="emailExistsError" class="error-message">
             Diese E-Mail-Adresse wird bereits verwendet.
           </div>
         <div class="input-container">
-          <img class="icon" src="assets/img/lock.svg" alt="">
+          <img class="icon" src="assets/img/lock.svg" alt="" [class.hidden]="isPasswordFocused" >
+            <img class="icon-focus" src="assets/img/lock-dark.png" alt="" [class.hidden]="!isPasswordFocused" >
           <input
             [(ngModel)]="user.password"
             name="password"            
             type="password"
             minlength="8"
-            placeholder="Passwort"
+            [placeholder]= " isPasswordFocused ? '' : 'Passwort'"
             required
+            (focus)="isPasswordFocused = true"
             #passwordInput="ngModel"
           />
          
         </div>
-        <div *ngIf="passwordInput.invalid &&  passwordInput.touched" class="error-message">
-            Passwort muss mindestens 8 Zeichen lang sein.
+        <div [ngStyle]="{'opacity': passwordInput.invalid &&  passwordInput.touched ? '1' : '0'}" class="error-message">
+            Bitte geben Sie ein Passwort ein. (8 Zeichen)
           </div>
         <div class="checkbox-container">
           <input
@@ -67,11 +72,11 @@
             #privacyInput="ngModel"
           />
           <label for="checkbox">Ich stimme der <span [routerLink]="['/data-protection']" class="apolicy">Datenschutzerklärung</span> zu.</label>
-          <div *ngIf="privacyInput.invalid && (privacyInput.dirty || privacyInput.touched)" class="error-message">
-            Sie müssen der Datenschutzerklärung zustimmen.
-          </div>
+          
         </div>
-      
+        <div [ngStyle]="{'opacity': privacyInput.invalid && (privacyInput.dirty || privacyInput.touched) ? '1' : '0'}" class="error-message">
+          Sie müssen der Datenschutzerklärung zustimmen.
+        </div>
         <button
           type="submit"
           [disabled]="!isFormValid()"

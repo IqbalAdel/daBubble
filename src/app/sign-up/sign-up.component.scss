@@ -25,14 +25,19 @@
 }
 
 .error-message {
+    margin: 0 auto;
+    display: flex;
+    width: 80%;
     color: red;
-    font-size: 16px;
+    font-size: 12px;
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 
   form{
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    
 }
 
 .go-back-container {
@@ -84,10 +89,30 @@ input:not([type="checkbox"]) {
     }
 }
 
+.hidden {
+    display: none;
+  }
+
+  .icon,
+  .icon-focus {
+    position: absolute;
+    left: 15%;  /* Beispielhafte Positionierung, kannst du anpassen */
+    transition: opacity 0.3s ease;  /* Sanfter Übergang für das Umschalten */
+  }
+
 .icon {
     position: absolute;
     left: 15%;
+    background-color: #ECEEFE;
+    transition: filter 0.3s ease;
 }
+
+.icon-focus {
+    position: absolute;
+    left: 15.7%;
+    background-color: #ECEEFE;
+    transition: filter 0.3s ease;
+  }
 
 input::placeholder {
     font-size: 16px;
@@ -123,6 +148,12 @@ button:disabled {
     border-color: #999999; /* Bleibt wie eingestellt */
 }
 
+
+  
+  .icon-focused {
+    filter: brightness(0.5);
+  }
+
 .checkbox-container {
     display: flex;
     align-items: center;
@@ -132,7 +163,7 @@ button:disabled {
     width: 80%;
     margin: 0 auto;
     position: relative;
-    padding-bottom: 50px;
+  
 }
 
 /* Versteckt die eigentliche Checkbox */

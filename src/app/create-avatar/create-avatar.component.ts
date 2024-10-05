@@ -109,7 +109,6 @@ export class CreateAvatarComponent implements OnInit {
                 const filePath = `avatars/${uid}/${this.selectedFile.name}`;
                 const fileRef = ref(this.storage, filePath);
                 await uploadBytes(fileRef, this.selectedFile);
-                
                 const downloadURL = await getDownloadURL(fileRef);
                 cleanedUserData.img = downloadURL;
             }
