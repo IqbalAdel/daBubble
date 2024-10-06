@@ -1,7 +1,14 @@
 <nav class="navbar">
     <div class="logo">
-      <img src="assets/img/Logo.png" alt="">
-      <span>DABubble</span>
+      <img class="arrow" (click)="returnToDevSpace()" *ngIf="hasEnteredChannel" src="assets/img/arrow_back_mobile.svg" alt="">
+      <div class="logo-container">
+      </div>
+      <img class="logo-img" [ngStyle]="!hasEnteredChannel ? {'margin-left': '15px'} : {}" [src]="isMobile()" alt="">
+      @if(hasEnteredChannel){
+        <span>DevSpace</span>
+      } @else {
+        <span>DABubble</span>
+      }
     </div>
     <div class="search-container">
         
@@ -35,7 +42,7 @@
         </form> 
       </div>
     <div (mouseover)="imgSrc = 'assets/img/keyboard_arrow_down_v3.png'"
-    (mouseout)="imgSrc = 'assets/img/keyboard_arrow_down_v2.png'" (click)="openDialog()" class="profile">
+    (mouseout)="imgSrc = 'assets/img/keyboard_arrow_down_v2.png'" (click)="openProfileMenu()" class="profile">
         <span>{{user.name}}</span>
         @if (user.img){
           <div class="image">

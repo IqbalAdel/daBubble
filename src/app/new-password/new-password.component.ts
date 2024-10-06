@@ -21,6 +21,8 @@ export class NewPasswordComponent implements OnInit {
     confirmPassword: string = '';
     message: string = '';
     oobCode: string | null = null;
+    isPasswordFocused: boolean = false;
+    isNewPasswordFocused: boolean = false;
 
     ngOnInit() {
       // Der oobCode wird aus der URL abgerufen

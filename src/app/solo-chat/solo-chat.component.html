@@ -1,4 +1,4 @@
-<div class="solo-group">
+<div *ngIf="!isMobile" class="solo-group">
   <div class="chat-header-group">
     <!-- Einmalige asynchrone Abfrage für den Benutzer -->
     <ng-container *ngIf="user$ | async as user">

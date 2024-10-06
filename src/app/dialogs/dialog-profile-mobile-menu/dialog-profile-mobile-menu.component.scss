@@ -1,0 +1,40 @@
+.hide-down {
+    transform: translateY(100%);
+    transition: transform 0.5s ease;
+  }
+  
+  .show-up {
+    transform: translateY(0);
+  }
+
+//   .mat-mdc-dialog-container {
+//     transform: translateY(100%);
+//     transition: transform 0.5s ease;
+//   }
+  
+//   .mat-mdc-dialog-container.show-dialog {
+//     transform: translateY(0);
+//   }
+
+//   mat-mdc-container {
+//     transform: translateY(100%);
+//     transition: transform 0.5s ease;
+//   }
+  
+//   mat-mdc-container.show-dialog {
+//     transform: translateY(0);
+//   }
+
+
+  // ::ng-deep .mat-mdc-dialog-container {
+  //   transform: translateY(100%);
+  //   transition: transform 0.5s ease;
+  // }
+  
+  // ::ng-deep .mat-mdc-dialog-container.show-dialog {
+  //   transform: translateY(0);
+  // }
+
+  .menu{
+  height: 100px;
+  }

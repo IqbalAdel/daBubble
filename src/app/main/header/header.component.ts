@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -6,7 +6,7 @@ import {MatFormFieldModule, MatLabel} from '@angular/material/form-field';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
-import {MatDialogModule, MatDialogRef, MatDialog} from '@angular/material/dialog';
+import {MatDialogModule, MatDialogRef, MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { DialogProfileMenuComponent } from '../../dialogs/dialog-profile-menu/dialog-profile-menu.component';
 import { MatCardModule } from '@angular/material/card';
 import { FirebaseService } from '../../services/firebase.service';
@@ -22,6 +22,8 @@ import { map, Observable, of, startWith, switchMap } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { DialogProfileMobileMenuComponent } from '../../dialogs/dialog-profile-mobile-menu/dialog-profile-mobile-menu.component';
+import { E } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-header',
@@ -61,13 +63,19 @@ export class HeaderComponent implements OnInit{
       throw new Error('Function not implemented.');
     }
   };
+  logo = ''
+  supportsTouch!: boolean;
+  @Output() openMobMenu: EventEmitter<void> = new EventEmitter<void>();
+  @Output() userLeftChannel: EventEmitter<void> = new EventEmitter<void>();
+ 
 
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
   users: User[] = [];
   test!: boolean;
   // userStatus: any;
   onlineStaus: boolean = false;
- 
+  hasEnteredChannel: boolean = false;
+
 
 
 
@@ -77,7 +85,10 @@ export class HeaderComponent implements OnInit{
     public userService: UserService,
     private firestore: Firestore,
     private router: Router,
-  ) {}
+    
+  ) {
+
+  }
 
 
   async ngOnInit(): Promise<void> {
@@ -111,6 +122,12 @@ export class HeaderComponent implements OnInit{
           // Handle the selected ID as needed
         }
       });
+
+    this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+      
+    
+
   }
 
 
@@ -234,7 +251,7 @@ export class HeaderComponent implements OnInit{
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         this.firebaseService.setOnlineStatus(uid);
-        console.log('status was set')
+        // console.log('status was set')
         if(user){
           this.user = new User(user);
           this.test = true;
@@ -243,6 +260,15 @@ export class HeaderComponent implements OnInit{
       }
     } catch (error) {
       console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+    }
+  }
+
+  openProfileMenu(){
+    if(this.supportsTouch && navigator.maxTouchPoints > 0 && window.innerWidth < 992){
+      console.log('mobile')
+      this.openDialogMobile();
+    } else{
+      this.openDialog();
     }
   }
 
@@ -255,5 +281,24 @@ export class HeaderComponent implements OnInit{
     });
   }
 
+  openDialogMobile(){
+    this.openMobMenu.emit();
+  }
+
+
+  isMobile(){
+    if(this.supportsTouch && this.hasEnteredChannel){
+      return 'assets/Workspace.svg'
+    } else{
+      return 'assets/img/Logo.png'
+    }
+
+    
+  }
+
+  returnToDevSpace(){
+    this.router.navigate(['/main/group-chat/pEylXqZMW1zKPIC0VDXL']);
+    this.userLeftChannel.emit()
+  }
   
 }

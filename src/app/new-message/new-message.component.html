@@ -1,4 +1,4 @@
-<div class="container">
+<div *ngIf="!isMobile" class="container">
     <h2>Neue Nachricht</h2>
     <form class="example-form" [formGroup]="stateForm">
         <input

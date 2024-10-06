@@ -3,6 +3,7 @@
 .logo {
     display: flex;
     align-items: center;
+    
     span {
         padding-left: 16px;
         font-size: 24px;
@@ -11,12 +12,24 @@
         @media (width < 400px) {
             font-size: 20px;;
         }
+        @media (width < 350px) {
+            display: none;
+        }
+    }
+
+    .logo-img{
+        @include widthHeight($w: 70px, $h: 70px);
+        @media(width < 992px){
+            @include widthHeight($w: 65px, $h: 65px);
+        }
     }
     img{
-        @include widthHeight($w: 70px, $h: 70px);
 
-        @media (width < 400px) {
-            @include widthHeight($w: 50px, $h: 50px);
+        @media (width < 992px) {
+            .arrow{
+                @include widthHeight($w: 40px, $h: 40px);
+            }
+            
         }
     }
 }
@@ -27,6 +40,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 30px 0 30px;
+    @media(width < 992px){
+        padding: 10px 30px 10px 30px;
+    }
+    @media(width < 500px){
+        padding: 10px 15px 10px 0px;
+    }
+    
     background-color: #ECEEFE;
   }
 
@@ -52,8 +72,12 @@
 
     img:first-child{
         border-radius: 100%;
-        height: 50px;
-        width: 50px;
+        @include widthHeight($w: 50px, $h: 50px);
+
+
+        @media(width < 992px){
+            @include widthHeight($w: 65px, $h: 65px)
+        };
     }
 
     span{
@@ -80,6 +104,10 @@
     position: absolute;
     top: 38px;
     left: 35px;
+
+    @media(width < 992px){
+        display: none;
+    }
 }
 
 .online{
@@ -93,15 +121,13 @@
 .search-container {
     flex: 1;
     margin: 0 1rem;
+
+    @media (width < 992px){
+        display: none;
+    }
   }
   
-  
-//   .search-bar input {
-//     padding: 0.5rem;
-//     border: 1px solid #ccc;
-//     border-radius: 4px 0 0 4px;
-//     outline: none;
-//   }
+
 
 .search-bar{
     position: relative;

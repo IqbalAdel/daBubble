@@ -32,7 +32,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   imgClose: string = 'assets/img/close_default.svg';
   messages: { id:string; text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
   @ViewChild('scrollerContainer', { static: false }) scrollContainer: ElementRef | undefined;
-  @Output() threadOpened: EventEmitter<void> = new EventEmitter<void>();
+  @Output() threadClosed: EventEmitter<void> = new EventEmitter<void>();
 
 
 
@@ -265,6 +265,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
     this.userService.showGroupAnswer = false;
     this.userService.setThreadStatus(false);
     this.router.navigate([`/main/group-chat/${this.groupId}`]);
+    this.threadClosed.emit()
 
   }
   

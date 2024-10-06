@@ -1,11 +1,11 @@
-<section>
+<section [ngStyle]="isDavspaceVisible ? {'background-color': 'white'} : {}">
     <div *ngIf="isDavspaceVisible" class="davspace">
-        <div class="davspace-menu">
+        <div *ngIf="screenWidth >= 992" class="davspace-menu">
             <div class="davspace-picture">
                 <img src="assets/Workspace.svg" alt="">
                 <h1>Devspace</h1>
             </div>
-            <div class="icon" [routerLink]="['new-message']"
+            <div class="icon" (click)="navigateRouteToNewMessage()"
                 (mouseover)="imgEdit = 'assets/edit_square-blue.svg'"
                 (mouseleave)="imgEdit = 'assets/edit_square.svg'"
                 (mousedown)="imgEdit = 'assets/edit_square-click.svg' "

@@ -1,5 +1,6 @@
-<div class="all">
-    <div class="chat-group">
+<div *ngIf="!isMobile" class="all">
+    <!-- <span>{{screenWidth}}</span> -->
+    <div class="chat-group" [ngStyle]="threadOpen ? {'display': 'none'} : {}">
         <div class="chat-header-group">
             <div (click)="openDialog()" class="name"
                 (mouseover)="imgKeyboard = 'assets/img/keyboard_arrow_down-blue.svg'"
@@ -13,7 +14,15 @@
             </div>
             <div class="persons-group" *ngIf="filteredChannels$ | async as channels; else loading">
                 <!-- Iteriere über die gefilterten Kanäle -->
-                <div *ngFor="let channel of channels" (click)="openDialogMemberList()"
+                <div 
+                [ngStyle]="
+                screenWidth < 1220 && currentThreadStatus ? {'display': 'none'} :
+                screenWidth < 1270 && currentThreadStatus ? {'max-width': '150px'} : 
+                screenWidth < 1370 && currentThreadStatus ? {'max-width': '200px'} : 
+                screenWidth < 1470 && currentThreadStatus ? {'max-width': '300px'} :
+                screenWidth < 1470 && currentThreadStatus ? {'max-width': '400px'} : 
+                {}"
+                *ngFor="let channel of channels" (click)="openDialogMemberList()"
                     class="display-flex header-group-img">
                     <div *ngIf="dataLoaded" class="member-images">
                         @for(userImage of userImages; track userImage){
@@ -54,8 +63,18 @@
                                         <h2>{{ message.userName }}</h2>
                                         <p>{{ message.time }} Uhr</p>
                                     </div>
+                                    <!-- Bild in der Nachricht -->
                                     <img *ngIf="message.image" [src]="message.image" alt="Nachricht Bild"
-                                        class="message-image">
+                                        class="message-image" (click)="openImageModal(message.image)">
+
+                                    <!-- Modal zum Vergrößern des Bildes -->
+                                    <div class="modal" *ngIf="isImageModalOpen" (click)="closeImageModal()">
+                                        <div class="modal-content">
+                                            <img [src]="selectedImageForModal" alt="Vergrößertes Bild"
+                                                class="modal-image">
+                                        </div>
+                                    </div>
+
                                     <span *ngIf="!isEditing[message.id]">{{ message.text }}</span>
                                     <input *ngIf="isEditing[message.id]" [(ngModel)]="message.text"
                                         (blur)="saveText(message.id)" />
@@ -122,9 +141,9 @@
         </div>
 
     </div>
-    <div>
+    
+    <div [ngClass]="threadOpen ? 'group-answer': ''">
         <!-- Hier dein Chat-Layout -->
-        <router-outlet></router-outlet> <!-- Dieser wird die Child-Komponente laden -->
+        <router-outlet (activate)="onActivate($event)"></router-outlet> <!-- Dieser wird die Child-Komponente laden -->
     </div>
-
 </div>

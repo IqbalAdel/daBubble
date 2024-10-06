@@ -1,7 +1,7 @@
 import { CommonModule, formatDate } from '@angular/common';
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
 import { DialogChannelMembersComponent } from '../dialogs/dialogs-channel/dialog-channel-members/dialog-channel-members.component';
@@ -11,15 +11,24 @@ import { Observable, switchMap } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
 import { Channel } from '../../models/channel.class';
+<<<<<<< HEAD
 import { map } from 'rxjs/operators';
 import { Firestore, doc, collection, addDoc } from '@angular/fire/firestore'; // Importiere die modularen Funktionen
+=======
+import { filter, map } from 'rxjs/operators';
+import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
+>>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
 import { FormsModule } from '@angular/forms';
 import { group } from '@angular/animations';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.component';
+<<<<<<< HEAD
 import { arrayUnion, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
+=======
+import { GroupAnswerComponent } from '../group-answer/group-answer.component';
+>>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
 
 @Component({
   selector: 'app-group-chat',
@@ -46,6 +55,9 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   emojiPickerVisibility: { [key: string]: boolean } = {};
   emojiPickerVisible: boolean = false;
 
+  groupAnswerComponent!: GroupAnswerComponent;
+  chat: any;
+
   currentDate!: string;
   currentTime!: string;
   displayDate!: string;
@@ -58,6 +70,10 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   observerInitialized = false;
   groupChatObserver: any;
   currentThreadStatus: boolean = false;
+  isMobile: boolean = false;
+  threadOpen: boolean = false;
+  supportsTouch: boolean = false;
+  screenWidth = window.innerWidth;
 
   messages: {
     id: string;
@@ -73,8 +89,21 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
-  imgKeyboard: string = 'assets/img/keyboard_arrow_down.svg'
+  imgKeyboard: string = 'assets/img/keyboard_arrow_down.svg';
+  
+  isImageModalOpen: boolean = false;
+  selectedImageForModal: string | null = null;
+ // Funktion zum Öffnen des Modals
+ openImageModal(imageUrl: string): void {
+  this.isImageModalOpen = true;
+  this.selectedImageForModal = imageUrl;
+}
 
+// Funktion zum Schließen des Modals
+closeImageModal(): void {
+  this.isImageModalOpen = false;
+  this.selectedImageForModal = null;
+}
 
   // openSnackBar() {
   //   console.log('snackbar opened')
@@ -108,6 +137,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
 
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
+<<<<<<< HEAD
 
 
   }
@@ -130,6 +160,37 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       }
 
     });
+=======
+    // this.screenWidth = window.innerWidth;
+    
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.screenWidth = window.innerWidth;
+    if(this.currentThreadStatus && this.screenWidth < 993){
+      this.threadOpen = true;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if(!this.isMobile){
+      this.userService.threadOpenStatus$.subscribe((status: boolean) => {
+        this.currentThreadStatus = status;
+        switch (status) {
+          case true:
+          this.disconnectGroupChat()
+            break;
+        
+          case false:
+            this.observeGroupChat()
+            break;
+        }
+        
+      });
+    }    
+
+>>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
   }
 
 
@@ -149,7 +210,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
 
     // Store observer reference to disconnect later if necessary
     this.groupChatObserver = observer;
-    console.log(this.groupChatObserver, 'observer on')
+    // console.log(this.groupChatObserver, 'observer on')
   }
 
   disconnectGroupChat() {
@@ -172,14 +233,40 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       this.loggedInUser();
       this.getChannelsForusers();
       this.loadUserChats();
-      console.log('test')
       this.loadChannelData(this.groupId);
       this.loadSmileysForMessage(this.messageId);
     });
-    // this.userService.emitSignal.subscribe(() => {
-    //   this.disconnectParent();
-    // });
+    this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if(this.supportsTouch && window.innerWidth < 992){
+      this.isMobile = true;
+    }
+
+    this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe(() => {
+      console.log('thread closed?')
+      if(this.checkIfBackToMainGroupChat()){
+        this.threadOpen = false;
+      }
+      else{
+        console.log('something went wrong')
+      }
+      // this.checkForGroupAnswerComponent(this.route);
+    })
   }
+
+  checkIfBackToMainGroupChat() {
+    const currentUrl = this.router.url;
+
+    // Check if URL contains a thread segment (adjust the regex if needed)
+    const isThreadOpen = currentUrl.includes('/group-answer/'); // Example thread segment
+
+    if (!isThreadOpen) {
+      return true
+  } else{
+    return false
+  }
+}
 
   isFirstMessageOfDay(currentMessage: any, index: number): boolean {
     if (index === 0) {
@@ -406,7 +493,9 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
         channelID: this.groupId,
         channelName: this.groupName,
         channelDescription: this.groupDescription,
-      }
+      },
+      autoFocus: false,
+
     });
   }
 
@@ -442,6 +531,9 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
         this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
       } catch (err) {
       }
+    } else{
+      // console.log('mist')
+      // this.observeGroupChat()
     }
   }
 
@@ -494,7 +586,6 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   saveText(messageId: string) {
     this.isEditing[messageId] = false;  // Deaktiviert den Bearbeitungsmodus
     const newText = this.messages.find(msg => msg.id === messageId)?.text;  // Hole den neuen Text aus message.text
-
     if (newText) {
       this.firebaseService.updateMessage(this.groupId, messageId, newText)
         .then(() => {
@@ -537,6 +628,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
         return;
     }
 
+<<<<<<< HEAD
     const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
     const messageDocSnapshot = await getDoc(messageDocRef);
 
@@ -691,6 +783,16 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   isUserEqualToChatUser(chatUserName: string): boolean {
     return this.loggedInUserName === chatUserName;
 }
+=======
+  onActivate(componentRef: any) {
+    if (componentRef instanceof GroupAnswerComponent) {
+      this.groupAnswerComponent = componentRef;
+      this.chat = componentRef;
+      console.log('group has answered the call')
+    }
+  }
+
+>>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
 }
 
 

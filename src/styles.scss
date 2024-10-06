@@ -54,18 +54,24 @@ html, body { height: 100%; background-color: #ECEEFE;  }
   }
 
   app-group-chat{
-    width: 100%;
-}
+    flex: 1;
+  }
 
 app-new-message{
-    width: 100%;
+    flex: 1;
     margin-right: 60px;
+    @media(width < 992px){
+      margin-right: 0;
+    }
 
 }
 
 app-solo-chat{
-    width: 100%;
+    flex: 1;
     margin-right: 60px;
+    @media(width < 992px){
+      margin-right: 0;
+    }
 }
 
 .line-date {

@@ -18,7 +18,8 @@ export class LoginSectionComponent {
   email: string = '';
   password: string = '';
   errorMessage: string = '';
-
+  isPasswordFocused: boolean = false;
+  isEmailFocused: boolean = false;
   constructor(private authService: AuthService, private router: Router, private userService: UserService) {}
 
   async onLogin(): Promise<void> {

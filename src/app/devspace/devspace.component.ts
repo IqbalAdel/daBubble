@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, HostListener, inject, OnInit, Output } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../main/header/header.component';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
@@ -24,7 +24,7 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class DevspaceComponent implements OnInit{
   firestore: Firestore = inject(Firestore);
-  users$: Observable<any[]>;
+  users$: Observable<any[]> | null = null;
   channels$: Observable<any[]>;
   channelsIqbal: Channel[] = [];
   messages: any[] = [];
@@ -67,6 +67,14 @@ export class DevspaceComponent implements OnInit{
   userStatus: { [key: string]: boolean } = {};
   userStatusFetched: { [userId: string]: boolean } = {};
 
+  screenWidth: number;
+  supportsTouch: boolean = false;
+  @Output() isMobile: EventEmitter<void> = new EventEmitter<void>();
+  @Output() navigateToChannel: EventEmitter<void> = new EventEmitter<void>();
+  @Output() navigateToDirectChat: EventEmitter<void> = new EventEmitter<void>();
+  @Output() navigateToNewMessage: EventEmitter<void> = new EventEmitter<void>();
+
+
 
   constructor(
     private router: Router,
@@ -75,22 +83,7 @@ export class DevspaceComponent implements OnInit{
     private userService: UserService,
     private dialog: MatDialog,
   ) {
-    const fireUsers = collection(this.firestore, 'users');
-    this.users$ = collectionData(fireUsers).pipe(
-      map(users => {
-        // Der aktuell eingeloggte Benutzername (Beispiel: aus einer anderen Quelle)
-        const loggedInUserName = this.loggedInUserName;
-    
-        // Sortiere so, dass der eingeloggte Benutzer oben steht und die anderen alphabetisch sortiert werden
-        return users.sort((a, b) => {
-          if (a['name'] === loggedInUserName) return -1; // Zeigt den eingeloggten User als ersten an
-          if (b['name'] === loggedInUserName) return 1;
-          
-          // Fallunabhängige alphabetische Sortierung der restlichen Benutzer
-          return a['name'].toLowerCase().localeCompare(b['name'].toLowerCase());
-        });
-      })
-    );
+    this.screenWidth = window.innerWidth;
 
     const fireChannels = collection(this.firestore, 'channels');
     this.channels$ = collectionData(fireChannels).pipe(
@@ -104,9 +97,9 @@ export class DevspaceComponent implements OnInit{
   }
 
 
-  getUsers$(): Observable<any[]> {
+  async getUsers$(): Promise<void> {
     const fireUsers = collection(this.firestore, 'users');
-    return collectionData(fireUsers).pipe(
+    this.users$ =  collectionData(fireUsers).pipe(
       map(users => {
         // Sortiere so, dass der eingeloggte Benutzer oben steht und die anderen alphabetisch sortiert werden
         return users.sort((a, b) => {
@@ -121,20 +114,26 @@ export class DevspaceComponent implements OnInit{
   }
 
   async ngOnInit(): Promise<void>{
+    await this.getUsers$();
     await this.getActiveUser();
-
-    // if(this.currentUser && this.currentUser.channels){
-    //   this.firebaseService.getChannels().subscribe((channels) => {
-    //     this.currentUserChannels = channels.filter(channel =>{
-    //       const channelId = channel['id']
-    //       return channelId && this.currentUser.channels!.includes(channelId)
-    //     })
-        	  
-    //   })
-      
-    // };
+    this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if(this.supportsTouch && window.innerWidth <= 992){
+      this.isMobile.emit();
+    }
 
   }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    // this.screenWidth = window.innerWidth;
+    // console.log('Window resized:', this.screenWidth);
+    this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if(this.supportsTouch && window.innerWidth <= 992){
+      this.isMobile.emit();
+    }
+  }
+
+
   
   async loggedInUser() {
     try {
@@ -186,6 +185,9 @@ export class DevspaceComponent implements OnInit{
     this.selectedUserId = userId;
     this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
     this.router.navigate(['/main/chat', userId]);
+    if(this.supportsTouch && window.innerWidth <= 992){
+      this.navigateToDirectChat.emit();
+    }
     this.selectedChannelId = null;
     this.userServes.showGroupAnswer = false;
   }
@@ -217,6 +219,16 @@ export class DevspaceComponent implements OnInit{
   navigateRouteChannel(id: string) {
     if(id){
       this.router.navigate(['/main/group-chat', id]);
+      if(this.supportsTouch && window.innerWidth <= 992){
+        this.navigateToChannel.emit();
+      }
+    }
+  }
+
+  navigateRouteToNewMessage() {
+    this.router.navigate(['/main/new-message']);
+    if(this.supportsTouch && window.innerWidth <= 992){
+      this.navigateToNewMessage.emit();
     }
   }
 

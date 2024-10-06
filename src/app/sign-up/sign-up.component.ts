@@ -21,6 +21,9 @@ export class SignUpComponent {
   isPrivacyChecked: boolean = false;
   emailExistsError: boolean = false;
   isVisible: boolean = true;
+  isPasswordFocused: boolean = false;
+  isEmailFocused: boolean = false;
+  isNameFocused: boolean = false;
   constructor(private router: Router, private userService: UserService, private authService: AuthService) { }
 
   ngOnInit(): void {
@@ -58,12 +61,5 @@ export class SignUpComponent {
       this.user.password.trim() !== '' &&
       this.isPrivacyChecked;
   }
-  // onSubmit(): void {
-  //   if (this.isFormValid()) {
-  //     // Wenn die E-Mail nicht existiert, setze den Benutzer und navigiere weiter
-  //     this.emailExistsError = false;
-  //     this.userService.setUser(this.user);
-  //     this.router.navigate(['/create-avatar']);
-  //   }
-  // }
+
 }

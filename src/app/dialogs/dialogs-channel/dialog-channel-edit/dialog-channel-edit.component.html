@@ -1,59 +1,61 @@
 <mat-card class="user-profile">
-    <div class="profile-aot">
-        <span class="profile-txt" >{{channelName}}</span>
-        <img (click)="closeDialog()" class="close" [src]="imgSrc"
-        (mouseover)="imgSrc = 'assets/img/close_hover.svg'"
-        (mouseout)="imgSrc = 'assets/img/close_default.svg'" 
-        alt="">
-    </div>
-    <div class="channel-name" [ngClass] = "{'hide-color': edit == true, 'color': edit == false}">
-        <div>
-            <span [ngClass] = "{'slide-left': edit == true, 'slide-left-back': edit == false}" class="animate-name position-left">Channel Name</span>
-            <span (click)="editSwitch()" [ngClass] = "{'slide-right': edit == true, 'slide-right-back': edit == false}" class="animate-name position-right">{{editTxtValue}}</span>
+    <div class="scroll">
+        <div class="profile-aot">
+            <span class="profile-txt" >{{channelName}}</span>
+            <img (click)="closeDialog()" class="close" [src]="imgSrc"
+            (mouseover)="imgSrc = 'assets/img/close_hover.svg'"
+            (mouseout)="imgSrc = 'assets/img/close_default.svg'" 
+            alt="">
         </div>
-        @if(edit == true){
-            <input [(ngModel)]="name" placeholder="#  z.B. Kooperationsprojekte" type="text">
-        } @else {
-            <span class="txt" ><strong>#</strong> {{channelName}}</span>
-        }
-    </div>
-    
-    
-    <div class="channel-description" [ngClass] = "{'hide-color': editTwo == true, 'color': editTwo == false}">
-        <div>
-            <span [ngClass] = "{'slide-left-d': editTwo == true, 'slide-left-back-d': editTwo == false}" class="animate-name position-left" class="animate-name position-description">Beschreibung</span>
-            <span [ngClass] = "{'slide-right-d': editTwo == true, 'slide-right-back-d': editTwo == false}" class="animate-name position-edit" (click)="editTwoSwitch()">{{editTxtValueTwo}}</span>
-        </div>
-        @if(editTwo==true){
-            <textarea [(ngModel)]="description" [ngClass] = "{'slide-left-textarea': editTwoInput == true, 'slide-left-back-textarea': editTwoInput == false}" class="animate-textarea" placeholder="Dein Text hier" type="text" name="" id=""></textarea>
-
-        } @else {
-            <p [ngClass] = "{'move-paragraph': editTwoInput == false}" class="description-txt animate-paragraph">{{channelDescription}}</p>
-        }
-        <div [ngClass] = "{'grow-short': editTwo == true, 'grow-long': editTwo == false}" class=" animate-seperator seperator"></div>
-        <div [ngClass] = "{'move-down': editTwo == true, 'move-down-back': editTwo == false}" class=" animate-creator creator">
-            <span>Erstellt von</span>
-            @if(channel){
-                <span>{{channel.creator}}</span>
+        <div class="channel-name" [ngClass] = "{'hide-color': edit == true, 'color': edit == false}">
+            <div>
+                <span [ngClass] = "{'slide-left': edit == true, 'slide-left-back': edit == false}" class="animate-name position-left">Channel Name</span>
+                <span (click)="editSwitch()" [ngClass] = "{'slide-right': edit == true, 'slide-right-back': edit == false}" class="animate-name position-right">{{editTxtValue}}</span>
+            </div>
+            @if(edit == true){
+                <input [(ngModel)]="name" placeholder="#  z.B. Kooperationsprojekte" type="text">
             } @else {
-                <span>Daten fehlen</span>
+                <span class="txt" ><strong>#</strong> {{channelName}}</span>
             }
         </div>
-    </div>
-
-
-
-    <!-- <div class="inputs">
-        <span>Channel Name</span>
-        <input placeholder="#  z.B. Kooperationsprojekte" type="text">
-        <span>Beschreibung <span>(optional)</span></span>
-        <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum Beispiel.</p>
-        <input placeholder="Dein Text hier" type="text">
-    </div> -->
-    <div class="buttons">
-        <button (click)="leaveChannel()">
-            <!-- <img src="" alt=""> -->
-            <span>Channel verlassen</span>
-        </button>
+        
+        
+        <div class="channel-description" [ngClass] = "{'hide-color': editTwo == true, 'color': editTwo == false}">
+            <div>
+                <span [ngClass] = "{'slide-left-d': editTwo == true, 'slide-left-back-d': editTwo == false}" class="animate-name position-left" class="animate-name position-description">Beschreibung</span>
+                <span [ngClass] = "{'slide-right-d': editTwo == true, 'slide-right-back-d': editTwo == false}" class="animate-name position-edit" (click)="editTwoSwitch()">{{editTxtValueTwo}}</span>
+            </div>
+            @if(editTwo==true){
+                <textarea [(ngModel)]="description" [ngClass] = "{'slide-left-textarea': editTwoInput == true, 'slide-left-back-textarea': editTwoInput == false}" class="animate-textarea" placeholder="Dein Text hier" type="text" name="" id=""></textarea>
+    
+            } @else {
+                <p [ngClass] = "{'move-paragraph': editTwoInput == false}" class="description-txt animate-paragraph">{{channelDescription}}</p>
+            }
+            <div [ngClass] = "{'grow-short': editTwo == true, 'grow-long': editTwo == false}" class=" animate-seperator seperator"></div>
+            <div [ngClass] = "{'move-down': editTwo == true, 'move-down-back': editTwo == false}" class=" animate-creator creator">
+                <span>Erstellt von</span>
+                @if(channel){
+                    <span>{{channel.creator}}</span>
+                } @else {
+                    <span>Daten fehlen</span>
+                }
+            </div>
+        </div>
+    
+    
+    
+        <!-- <div class="inputs">
+            <span>Channel Name</span>
+            <input placeholder="#  z.B. Kooperationsprojekte" type="text">
+            <span>Beschreibung <span>(optional)</span></span>
+            <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum Beispiel.</p>
+            <input placeholder="Dein Text hier" type="text">
+        </div> -->
+        <div class="buttons">
+            <button (click)="leaveChannel()">
+                <!-- <img src="" alt=""> -->
+                <span>Channel verlassen</span>
+            </button>
+        </div>
     </div>
 </mat-card>
