@@ -19,8 +19,6 @@
                         @for(userImage of userImages; track userImage){
                         <img src="{{userImage}}" alt="">
                         }
-                        <!-- <img src="assets/img/avatar-6.png" alt="">
-                    <img src="assets/img/avatar-6.png" alt=""> -->
                     </div>
 
                     <!-- Zeige die Benutzeranzahl für den jeweiligen Kanal -->
@@ -62,14 +60,16 @@
                                     <input *ngIf="isEditing[message.id]" [(ngModel)]="message.text"
                                         (blur)="saveText(message.id)" />
                                 </div>
-                                <div class="smiles">
-                                    <img src="assets/img/smiley/check-mark-green.svg" alt="">
-                                    <p>1</p>
-                                    <div class="hover-smiles">
-                                        <img src="assets/img/smiley/check-mark-green.svg" alt="">
-                                        <p>Sofia Müller hast reagiert</p>
+                                <div class="text">
+                                    <div *ngFor="let smileyGroup of groupSmileys(message.smileys || [])" class="smiles">
+                                        <p>{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji anzeigen -->
+                                        <p>{{ smileyGroup.count }}</p> <!-- Zeige die Anzahl der Smileys an -->
+                                        <div class="hover-smiles">
+                                            <p>{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji -->
+                                            <p>{{ smileyGroup.clickedBy.join(', ') }} haben reagiert</p>
+                                            <!-- Zeige die Benutzer an -->
+                                        </div>
                                     </div>
-
                                 </div>
                                 <div class="answer">
                                     <div class="answers" (click)="navigateToAnswers(message.id)">
@@ -85,11 +85,19 @@
                                 </div>
                             </div>
                             <div class="add-smiley">
-                                <div class="smiley-div"><img src="assets/img/smiley/check-mark-green.svg" alt=""></div>
-                                <div class="smiley-div"><img src="assets/img/smiley/hands_in_celebration.svg" alt="">
+                                <div class="smiley-div"><img src="assets/img/smiley/check-mark-green.svg"
+                                        (click)="saveSmileyToMessage('✅', message.id)"></div>
+                                <div class="smiley-div"><img src="assets/img/smiley/hands_in_celebration.svg" alt=""
+                                        (click)="saveSmileyToMessage('🙌', message.id)">
                                 </div>
-                                <div class="smiley-div"><img (mouseover)="changeImageSmiley(true)"
-                                        (mouseout)="changeImageSmiley(false)" [src]="imgSrc[0]" alt=""></div>
+                                <div class="smiley-div">
+                                    <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
+                                        [src]="imgSrc[0]" alt="" (click)="selectSmiley()">
+                                    <emoji-mart *ngIf="emojiPickerVisible" (emojiSelect)="addEmoji($event, message.id)"
+                                        title="Pick your emoji"
+                                        [ngStyle]="{'position': 'absolute', 'z-index': '1000', 'top': '30px', 'right': '0', 'left': (isUserEqualToChatUser(message.userName) ? '0' : 'auto')}">
+                                    </emoji-mart>
+                                </div>
                                 <div class="smiley-div"><img (mouseover)="changeImageComment(true)"
                                         (mouseout)="changeImageComment(false)" [src]="imgSrc[1]" alt=""
                                         (click)="navigateToAnswers(message.id)"></div>

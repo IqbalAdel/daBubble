@@ -12,16 +12,20 @@ import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
 import { Channel } from '../../models/channel.class';
 import { map } from 'rxjs/operators';
-import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, doc, collection, addDoc } from '@angular/fire/firestore'; // Importiere die modularen Funktionen
 import { FormsModule } from '@angular/forms';
 import { group } from '@angular/animations';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.component';
+import { arrayUnion, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
 
 @Component({
   selector: 'app-group-chat',
   standalone: true,
-  imports: [CommonModule, ChatComponent, RouterOutlet, FormsModule],
+  imports: [CommonModule, ChatComponent, RouterOutlet, FormsModule, PickerModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA], // Hier fügst du CUSTOM_ELEMENTS_SCHEMA hinzu
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
@@ -31,6 +35,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   channels$: Observable<Channel[]> | undefined;
   filteredChannels$: Observable<Channel[]> | undefined;
   groupId!: string;
+  messageId!: string;
   groupName!: string;
   groupDescription!: string;
   userChats: ChatMessage[] = [];
@@ -38,6 +43,8 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   editedMessageText: { [key: string]: string } = {};
   selectedUserId: string = '';
   channelSubscription!: () => void;
+  emojiPickerVisibility: { [key: string]: boolean } = {};
+  emojiPickerVisible: boolean = false;
 
   currentDate!: string;
   currentTime!: string;
@@ -46,13 +53,23 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   loggedInUserName!: string;
   chatsNummbers: ChatMessage[] = [];
   userImages: string[] = [];
+  smileysData: any[] = [];
   dataLoaded = false;
   observerInitialized = false;
   groupChatObserver: any;
   currentThreadStatus: boolean = false;
 
-  messages: { id: string; text: string; timestamp: string; time: any; userName: string; chats: string; image: string; userImage:string | null; }[] = [];
-  groupUsers: User[] = [];
+  messages: {
+    id: string;
+    text: string;
+    timestamp: string;
+    time: any;
+    userName: string;
+    chats: string;
+    image: string;
+    userImage: string;
+    smileys: { smiley: string, clickedBy: string }[] | null;  // Array von Smileys-Objekten oder null
+  }[] = []; groupUsers: User[] = [];
   imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
   imgTextarea = ['assets/img/add.png', 'assets/img/smiley/sentiment_satisfied.png', 'assets/img/smiley/alternate_email.png', 'assets/img/smiley/send.png'];
   groupName$: Observable<string | null> = this.userService.selectedChannelName$;
@@ -92,10 +109,10 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
 
-    
+
   }
 
-  ngAfterViewInit(): void {    
+  ngAfterViewInit(): void {
     this.userService.threadOpenStatus$.subscribe((status: boolean) => {
       this.currentThreadStatus = status;
       console.log('cgange to', this.currentThreadStatus)
@@ -104,14 +121,14 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       // }
       switch (status) {
         case true:
-        this.disconnectGroupChat()
+          this.disconnectGroupChat()
           break;
-      
+
         case false:
           this.observeGroupChat()
           break;
       }
-      
+
     });
   }
 
@@ -119,31 +136,31 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
   observeGroupChat(): void {
     // Select only the group-chat section
     const groupChatContainer = this.scrollContainer!.nativeElement;
-    
+
     if (!groupChatContainer) return;
-  
+
     const config = { childList: true, subtree: false }; // Only observe direct children in group chat
     const observer = new MutationObserver(() => {
       this.scrollToBottom();  // Scroll to bottom only for group chat
-      
+
     });
-  
+
     observer.observe(groupChatContainer, config);
-  
+
     // Store observer reference to disconnect later if necessary
     this.groupChatObserver = observer;
     console.log(this.groupChatObserver, 'observer on')
   }
 
-  disconnectGroupChat(){
+  disconnectGroupChat() {
     if (this.groupChatObserver) {
-    console.log(this.groupChatObserver, 'observer off')
+      console.log(this.groupChatObserver, 'observer off')
       this.groupChatObserver.disconnect(); // Stop observing group-chat
     }
-    
+
   }
 
-  
+
   ngOnInit(): void {
     this.userImages = [];
     this.route.paramMap.subscribe(params => {
@@ -157,7 +174,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       this.loadUserChats();
       console.log('test')
       this.loadChannelData(this.groupId);
-
+      this.loadSmileysForMessage(this.messageId);
     });
     // this.userService.emitSignal.subscribe(() => {
     //   this.disconnectParent();
@@ -207,21 +224,18 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       }
     );
   }
-
   loadMessages(): void {
     if (this.groupId) {
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
         (channelData: any[]) => {
           this.messages = this.formatMessages(channelData); // Formatierte Nachrichten setzen
-
+          console.log("Geladene Nachrichten mit Smileys:", this.messages);
         },
         (error: any) => {
           console.error('Fehler beim Abrufen der Nachrichten:', error);
         }
       );
-
     }
-
   }
 
   formatMessageTime(timestamp: any): string {
@@ -232,7 +246,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
       // Sekunden weglassen
     });
   }
-  
+
   formatMessages(messages: any[]): any[] {
     let previousDate: string = "";
 
@@ -364,6 +378,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
     this.router.navigate([`/main/group-chat/${this.groupId}/group-answer/${answerId}`]);
     this.userService.showGroupAnswer = true;
     this.userService.setThreadStatus(true);
+    this.closeEmojiSelection();
   }
 
 
@@ -473,6 +488,7 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
     if (currentText) {
       this.editedMessageText[messageId] = currentText;  // Speichert den aktuellen Text
     }
+
   }
 
   saveText(messageId: string) {
@@ -496,15 +512,15 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
     if (message.chats && message.chats.length > 0) {
       // Hole die Zeit des letzten Chat-Eintrags
       const lastChat = message.chats[message.chats.length - 1];
-  
+
       let timeString = lastChat.time; // Nimm den Zeitstring
-  
+
       // Überprüfe, ob timeString im "HH:mm:ss" Format ist
       const timePattern = /^\d{2}:\d{2}:\d{2}$/;
       if (timePattern.test(timeString)) {
         // Teile den String in Stunden, Minuten und Sekunden
         const [hours, minutes] = timeString.split(':');
-  
+
         // Gib die Zeit nur mit Stunden und Minuten zurück
         return `${hours}:${minutes}`;
       } else {
@@ -512,11 +528,169 @@ export class GroupChatComponent implements OnInit, AfterViewInit {
         return null; // Ungültiges Zeitformat
       }
     }
-  
+
     return null; // Keine Chats vorhanden
   }
-  
+  async saveSmileyToMessage(smiley: string, messageId: string) {
+    if (!this.loggedInUserName) {
+        console.error('Kein Benutzer eingeloggt.');
+        return;
+    }
 
+    const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
+    const messageDocSnapshot = await getDoc(messageDocRef);
+
+    if (messageDocSnapshot.exists()) {
+        const messageData = messageDocSnapshot.data();
+        const smileysArray = messageData?.['smileys'] || [];
+
+        // Überprüfen, ob der Benutzer bereits auf dieses Smiley reagiert hat
+        const existingReactionIndex = smileysArray.findIndex((s: { smiley: string, clickedBy: string[] }) =>
+            s.smiley === smiley && s.clickedBy.includes(this.loggedInUserName)
+        );
+
+        if (existingReactionIndex > -1) {
+            // Entferne die Reaktion, wenn der Benutzer bereits reagiert hat
+            smileysArray.splice(existingReactionIndex, 1);
+        } else {
+            // Wenn der Smiley schon existiert, füge den Benutzer zur bestehenden Reaktion hinzu
+            const existingSmileyIndex = smileysArray.findIndex((s: { smiley: string }) => s.smiley === smiley);
+            if (existingSmileyIndex > -1) {
+                // Wenn der Smiley bereits existiert, füge den Benutzer zu clickedBy hinzu
+                const clickedByArray = smileysArray[existingSmileyIndex].clickedBy;
+                if (!clickedByArray.includes(this.loggedInUserName)) {
+                    clickedByArray.push(this.loggedInUserName);
+                }
+            } else {
+                // Füge die neue Reaktion hinzu
+                smileysArray.push({
+                    smiley: smiley,
+                    clickedBy: [this.loggedInUserName], // Benutzer als Reagierender hinzufügen
+                    clickedAt: new Date()
+                });
+            }
+        }
+
+        try {
+            // Aktualisiere die Smileys in der Nachricht
+            await updateDoc(messageDocRef, {
+                smileys: smileysArray
+            });
+            console.log('Smiley erfolgreich aktualisiert:', smileysArray);
+        } catch (error) {
+            console.error('Fehler beim Aktualisieren des Smileys:', error);
+        }
+    } else {
+        console.error('Nachricht nicht gefunden:', messageId);
+    }
+}
+
+
+
+  // 1. Nachricht und Smileys abrufen
+  async getMessageSmileys(messageId: string): Promise<any[]> {
+    const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
+    const messageDocSnapshot = await getDoc(messageDocRef);
+
+    if (messageDocSnapshot.exists()) {
+      const messageData = messageDocSnapshot.data();
+      return messageData?.['smileys'] || [];
+    } else {
+      throw new Error('Nachricht nicht gefunden: ' + messageId);
+    }
+  }
+
+  // 2. Smiley für Benutzer umschalten (hinzufügen oder entfernen)
+  toggleSmileyForUser(smileysArray: any[], smiley: string): any[] {
+    const existingReactionIndex = smileysArray.findIndex((s: { smiley: string; clickedBy: string }) =>
+      s.smiley === smiley && s.clickedBy === this.loggedInUserName
+    );
+
+    if (existingReactionIndex > -1) {
+      // Entferne die Reaktion
+      smileysArray.splice(existingReactionIndex, 1);
+    } else {
+      // Füge die neue Reaktion hinzu
+      smileysArray.push({
+        smiley: smiley,
+        clickedBy: this.loggedInUserName,
+        clickedAt: new Date(),
+      });
+    }
+
+    return smileysArray;
+  }
+
+  // 3. Aktualisierte Smileys in der Nachricht speichern
+  async saveUpdatedSmileys(messageId: string, smileysArray: any[]): Promise<void> {
+    const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
+    await updateDoc(messageDocRef, {
+      smileys: smileysArray,
+    });
+  }
+
+
+  // laden der Smileys
+  async loadSmileysForMessage(messageId: string) {
+    const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
+    console.log('Lade Smiley für Nachricht:', messageId, 'in Gruppe:', this.groupId);
+    try {
+      const messageDocSnapshot = await getDoc(messageDocRef);
+
+      if (messageDocSnapshot.exists()) {
+        const messageData = messageDocSnapshot.data();
+        this.smileysData = messageData?.['smileys'] || [];
+        console.log("Smileys geladen:", this.smileysData);
+      } else {
+        console.error('Nachricht nicht gefunden:', messageId);
+      }
+    } catch (error) {
+      console.error('Fehler beim Laden der Smileys:', error);
+    }
+  }
+
+  groupSmileys(smileys: { smiley: string, clickedBy: string }[]): { smiley: string, count: number, clickedBy: string[] }[] {
+    const smileyGroups: { [key: string]: { smiley: string, count: number, clickedBy: string[] } } = {};
+
+    smileys.forEach(({ smiley, clickedBy }) => {
+      if (!smileyGroups[smiley]) {
+        smileyGroups[smiley] = { smiley: smiley, count: 0, clickedBy: [] };
+      }
+      smileyGroups[smiley].count += 1;
+      smileyGroups[smiley].clickedBy.push(clickedBy);
+    });
+
+    return Object.values(smileyGroups);
+  }
+
+  toggleEmojiPicker(messageId: string): void {
+    // Toggelt die Sichtbarkeit basierend auf der aktuellen Sichtbarkeit
+    this.emojiPickerVisibility[messageId] = !this.emojiPickerVisibility[messageId];
+  }
+
+  // Methode, die prüft, ob der Emoji-Picker für eine Nachricht sichtbar sein soll
+  isEmojiPickerVisible(messageId: string): boolean {
+    return !!this.emojiPickerVisibility[messageId]; // Gibt true zurück, wenn sichtbar, sonst false
+  }
+
+  selectSmiley() {
+    this.emojiPickerVisible = !this.emojiPickerVisible; // Umschalten der Sichtbarkeit
+  }
+
+  addEmoji(event: any, messageId: string) {
+    const emoji = event.emoji.native;
+    console.log("Selected Emoji:", emoji, "for message:", messageId);
+
+    this.saveSmileyToMessage(emoji, messageId);
+    this.closeEmojiSelection();
+  }
+
+  closeEmojiSelection() {
+    this.emojiPickerVisible = false;
+  }
+  isUserEqualToChatUser(chatUserName: string): boolean {
+    return this.loggedInUserName === chatUserName;
+}
 }
 
 
