@@ -11,24 +11,16 @@ import { Observable, switchMap } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
 import { Channel } from '../../models/channel.class';
-<<<<<<< HEAD
-import { map } from 'rxjs/operators';
-import { Firestore, doc, collection, addDoc } from '@angular/fire/firestore'; // Importiere die modularen Funktionen
-=======
 import { filter, map } from 'rxjs/operators';
 import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
->>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
 import { FormsModule } from '@angular/forms';
 import { group } from '@angular/animations';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.component';
-<<<<<<< HEAD
-import { arrayUnion, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { arrayUnion, getDoc, updateDoc } from 'firebase/firestore';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
-=======
 import { GroupAnswerComponent } from '../group-answer/group-answer.component';
->>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
 
 @Component({
   selector: 'app-group-chat',
@@ -137,33 +129,31 @@ closeImageModal(): void {
 
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
-<<<<<<< HEAD
 
 
   }
 
-  ngAfterViewInit(): void {
-    this.userService.threadOpenStatus$.subscribe((status: boolean) => {
-      this.currentThreadStatus = status;
-      console.log('cgange to', this.currentThreadStatus)
-      // if(status === true){
-      //   this.disconnectGroupChat()
-      // }
-      switch (status) {
-        case true:
-          this.disconnectGroupChat()
-          break;
+  // ngAfterViewInit(): void {
+  //   this.userService.threadOpenStatus$.subscribe((status: boolean) => {
+  //     this.currentThreadStatus = status;
+  //     console.log('cgange to', this.currentThreadStatus)
+  //     // if(status === true){
+  //     //   this.disconnectGroupChat()
+  //     // }
+  //     switch (status) {
+  //       case true:
+  //         this.disconnectGroupChat()
+  //         break;
 
-        case false:
-          this.observeGroupChat()
-          break;
-      }
+  //       case false:
+  //         this.observeGroupChat()
+  //         break;
+  //     }
 
-    });
-=======
-    // this.screenWidth = window.innerWidth;
+  //   });
+  //   // this.screenWidth = window.innerWidth;
     
-  }
+  // }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
@@ -190,7 +180,6 @@ closeImageModal(): void {
       });
     }    
 
->>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
   }
 
 
@@ -628,7 +617,6 @@ closeImageModal(): void {
         return;
     }
 
-<<<<<<< HEAD
     const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
     const messageDocSnapshot = await getDoc(messageDocRef);
 
@@ -741,19 +729,38 @@ closeImageModal(): void {
     }
   }
 
-  groupSmileys(smileys: { smiley: string, clickedBy: string }[]): { smiley: string, count: number, clickedBy: string[] }[] {
-    const smileyGroups: { [key: string]: { smiley: string, count: number, clickedBy: string[] } } = {};
+  groupSmileys(smileys: any[]): any[] {
+    const groupedSmileys: any[] = [];
 
-    smileys.forEach(({ smiley, clickedBy }) => {
-      if (!smileyGroups[smiley]) {
-        smileyGroups[smiley] = { smiley: smiley, count: 0, clickedBy: [] };
-      }
-      smileyGroups[smiley].count += 1;
-      smileyGroups[smiley].clickedBy.push(clickedBy);
+    smileys.forEach((smiley) => {
+        const existingSmiley = groupedSmileys.find(
+            (group) => group.smiley === smiley.smiley
+        );
+
+        if (existingSmiley) {
+            // Wenn das Smiley schon existiert, füge die Benutzer zur bestehenden Gruppe hinzu
+            // Prüfe, ob `smiley.clickedBy` wirklich ein Array ist
+            if (Array.isArray(smiley.clickedBy)) {
+                existingSmiley.clickedBy.push(...smiley.clickedBy);
+            } else {
+                // Füge den Benutzer als Ganzes hinzu, falls es ein String ist
+                existingSmiley.clickedBy.push(smiley.clickedBy);
+            }
+            existingSmiley.count = existingSmiley.clickedBy.length; // Aktualisiere die Anzahl der Reaktionen
+        } else {
+            // Neues Smiley hinzufügen
+            groupedSmileys.push({
+                smiley: smiley.smiley,
+                clickedBy: Array.isArray(smiley.clickedBy) ? [...smiley.clickedBy] : [smiley.clickedBy],
+                count: Array.isArray(smiley.clickedBy) ? smiley.clickedBy.length : 1, // Setze die Anzahl der Reaktionen
+            });
+        }
     });
 
-    return Object.values(smileyGroups);
-  }
+    return groupedSmileys;
+}
+
+
 
   toggleEmojiPicker(messageId: string): void {
     // Toggelt die Sichtbarkeit basierend auf der aktuellen Sichtbarkeit
@@ -780,10 +787,11 @@ closeImageModal(): void {
   closeEmojiSelection() {
     this.emojiPickerVisible = false;
   }
+  
   isUserEqualToChatUser(chatUserName: string): boolean {
     return this.loggedInUserName === chatUserName;
 }
-=======
+
   onActivate(componentRef: any) {
     if (componentRef instanceof GroupAnswerComponent) {
       this.groupAnswerComponent = componentRef;
@@ -792,7 +800,32 @@ closeImageModal(): void {
     }
   }
 
->>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
+  getFormattedNames(clickedBy: string[]): string {
+    // Prüfe, ob der eingeloggte Benutzer in der Liste ist
+    const loggedInUserIndex = clickedBy.indexOf(this.loggedInUserName);
+
+    if (loggedInUserIndex > -1) {
+        // Entferne den eingeloggten Benutzer aus der Liste
+        clickedBy.splice(loggedInUserIndex, 1);
+        // Füge "Du" ans Ende der Liste hinzu
+        clickedBy.push('Du');
+    }
+
+    // Dynamisch das Verb anpassen
+    if (clickedBy.length === 1) {
+        // Wenn nur der eingeloggte Benutzer reagiert hat
+        return clickedBy[0] === 'Du' ? 'Du hast reagiert' : `${clickedBy[0]} hat reagiert`;  // Nur eine Person
+    }
+    if (clickedBy.length === 2) {
+        return `${clickedBy.join(' und ')} haben reagiert`;  // Zwei Personen
+    }
+    
+    // Mehr als zwei Personen
+    const lastUser = clickedBy.pop();  // Letzte Person entfernen
+    return `${clickedBy.join(', ')} und ${lastUser} haben reagiert`;  // Erst Namen mit Komma, dann "und"
+}
+
+
 }
 
 
