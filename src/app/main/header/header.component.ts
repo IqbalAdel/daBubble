@@ -264,7 +264,7 @@ export class HeaderComponent implements OnInit{
   }
 
   openProfileMenu(){
-    if(this.supportsTouch && navigator.maxTouchPoints > 0 && window.innerWidth < 992){
+    if(window.innerWidth < 992){
       console.log('mobile')
       this.openDialogMobile();
     } else{
@@ -287,7 +287,7 @@ export class HeaderComponent implements OnInit{
 
 
   isMobile(){
-    if(this.supportsTouch && this.hasEnteredChannel){
+    if((this.supportsTouch || window.innerWidth < 992) && this.hasEnteredChannel){
       return 'assets/Workspace.svg'
     } else{
       return 'assets/img/Logo.png'

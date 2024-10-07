@@ -1,16 +1,19 @@
-
-<app-header (userLeftChannel)="closeDevSpace(false)" (openMobMenu)="openMobMenu(true)"></app-header>
-<div class="main">
-   <app-devspace (navigateToNewMessage)="this.closeDevSpace(true)" (navigateToDirectChat)="this.closeDevSpace(true)" (navigateToChannel)="closeDevSpace(true)" (isMobile)="detectMobileDevice(true)"
-   [ngStyle]="userEnteredChannel ? {'display': 'none', 'width':'auto'} : isMobile ? {'display': 'block', 'width': '100%'} : {}"
-   ></app-devspace>
-   <!-- @if(!closeDevSpace){
-   } -->
-   <router-outlet (activate)="onActivate($event)"></router-outlet>
-   <app-dialog-profile-mobile-menu
-   
-   [ngClass] = "{'slide-up': openMenu == true, 'slide-down': openMenu == false}"
-   class="profile-menu"
-   (closeMenu)="openMobMenu(false)"
-   ></app-dialog-profile-mobile-menu>
+<div>
+   <app-header (userLeftChannel)="closeDevSpace(false)" (openMobMenu)="openMobMenu(true)"></app-header>
+   <div class="main">
+      <app-devspace (navigateToNewMessage)="this.closeDevSpace(true)" (navigateToDirectChat)="this.closeDevSpace(true)" (navigateToChannel)="closeDevSpace(true)" (isMobile)="detectMobileDevice(true)"
+      [ngStyle]="userEnteredChannel ? {'display': 'none', 'width':'auto'} : isMobile ? {'display': 'block', 'width': '100%'} : {}"
+      ></app-devspace>
+      <!-- @if(!closeDevSpace){
+      } -->
+      <router-outlet (activate)="onActivate($event)"></router-outlet>
+      <app-dialog-profile-mobile-menu
+      [ngClass] = "{'slide-up': openMenu == true, 'slide-down': openMenu == false}"
+      class="profile-menu"
+      (closeMenu)="closeMenu()"
+      ></app-dialog-profile-mobile-menu>
+      <div *ngIf="openMenu" class="bg-drop" (click)="openMobMenu(false)"
+      [ngClass] = "{'overlay': openMenu == true}"
+      ></div>
+   </div>
 </div>

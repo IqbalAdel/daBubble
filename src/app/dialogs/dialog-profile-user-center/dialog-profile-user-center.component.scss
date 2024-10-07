@@ -106,9 +106,7 @@
 .buttons{
     margin-top: 25px;
     @include d-flex();
-    img{
 
-    }
     span{
         color: white;
     }
@@ -134,4 +132,76 @@
     color: white;
     margin-top: 11px;
     font-size: 14px;
+}
+
+@media(width < 992px){
+    .user-txt{
+        margin-bottom: 30px;
+        span{
+            &:first-child{
+                font-size: 36px;
+            }
+        }
+    }
+
+    .status{
+        margin-bottom: 40px;
+        div{
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+        }
+        span{
+            font-size: 20px;
+        }
+    }
+
+    .email{
+        gap: 10px;
+        img{
+            @include widthHeight($w: 30px, $h: 30px);
+            margin-top: -4px;
+        }
+    
+        div{
+            font-size: 20px;
+            gap: 10px;
+        }
+    }
+
+    .profile-aot{
+        
+        span{
+            font-size: 24px;
+        }
+        img{
+            width: 40px;
+            height: 40px;
+        }
+
+        margin-bottom: 50px;
+    }
+
+    .avatar{
+        margin-bottom: 60px;
+        img{
+            width: 180px;
+            height: 180px;
+        }
+    }
+
+    .buttons{
+        span{
+            font-size: 20px;
+        }
+        button{
+            @include widthHeight($w: 150px, $h: 50px);
+        }
+    }
+
+    .icon-default{
+        margin-top: 5px;
+        margin-right: 5px;
+        font-size: 20px;
+    }
 }

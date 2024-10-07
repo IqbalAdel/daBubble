@@ -52,6 +52,7 @@ ngOnInit(): void {
     })
 
     // Update any other component logic that depends on groupId or groupName
+    this.isMobile = false;
   }
 
   @HostListener('window:resize', ['$event'])
@@ -59,7 +60,7 @@ ngOnInit(): void {
     // this.screenWidth = window.innerWidth;
     // console.log('Window resized:', this.screenWidth);
     // this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (this.supportsTouch && window.innerWidth <= 992) {   
+    if (window.innerWidth <= 992) {   
       if (!this.hasMobileTriggered) { // Only trigger once
         this.isMobile = true;
         if(this.chatBoxHasLoaded)
@@ -81,6 +82,8 @@ ngOnInit(): void {
       this.isMobile = false;
       if(this.chatBoxHasLoaded){
         this.chat.isMobile = false;
+        // console.log(this.chat, window.innerWidth)
+        // console.log(this.chat.isMobile, window)
       }
       this.hasMobileTriggered = false; // Reset flag once screen width exceeds 992
     }
@@ -94,7 +97,7 @@ ngOnInit(): void {
       activeRoute = activeRoute.firstChild;
       // Check if the current component is GroupAnswerComponent
       if (activeRoute.component === GroupAnswerComponent) {
-        if(this.chatBoxHasLoaded && this.groupChatComponent && this.supportsTouch && window.innerWidth <= 992 ){
+        if(this.chatBoxHasLoaded && this.groupChatComponent && ( window.innerWidth <= 992) ){
           this.groupChatComponent.threadOpen = true;
         console.log('GroupAnswerComponent is activated in mobile');
 
@@ -159,15 +162,17 @@ ngOnInit(): void {
   
     openMobMenu(status: boolean){
       this.openMenu = status;
-      if(this.openMenu){
-        this.showMenu = true;
-      } else{
-        this.showMenu = false;
+    }
+
+    closeMenu(){
+    console.log('signal received');
+      if(this.openMenu = true){
+        this.openMenu = false;
       }
     }
   
     detectMobileDevice(status: boolean){
-      // console.log('signal recieved, closing space', status)
+      console.log('signal recieved, closing space', status)
       this.isMobile = status;
       
     }

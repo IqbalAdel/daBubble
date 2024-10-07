@@ -6,6 +6,7 @@ import { FirebaseService } from '../../services/firebase.service';
 import { UserService } from '../../services/user.service';
 import { User } from '../../../models/user.class';
 import { CommonModule } from '@angular/common';
+import { DialogProfileUserComponent } from '../dialog-profile-user/dialog-profile-user.component';
 
 @Component({
   selector: 'app-dialog-profile-mobile-menu',
@@ -39,6 +40,7 @@ export class DialogProfileMobileMenuComponent implements OnInit{
   openMenu: boolean = false;
 
   constructor( 
+    // public dialogMobile: MatDialogRef<DialogProfileMobileMenuComponent>,
     public dialogUser: MatDialog,
     private firebaseservice: FirebaseService,
     private userService: UserService,
@@ -54,12 +56,14 @@ export class DialogProfileMobileMenuComponent implements OnInit{
   }
 
   openDialog(){
-    this.openMenu = false;
-    let dialogRef = this.dialogUser.open(DialogProfileUserCenterComponent, {
-      backdropClass: 'custom-backdrop',
-      panelClass: 'upper-right-round',
-      // width: '350px',
-      // height: '400px',
+    // this.openMenu = false;
+    // this.dialogMobile.close();
+    this.closeMenu.emit()
+    console.log('signal send');
+    let dialogRef = this.dialogUser.open(DialogProfileUserComponent, {
+      panelClass: 'mobile-profile',
+      width: 'calc(100% - 10px)',
+      height: 'calc(100% - 40px)',
       // position: {top: '90px', right: '15px'},
       data: {
         username: this.currentUser.name,

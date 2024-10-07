@@ -32,7 +32,7 @@
                     <h2>Channels</h2>
                 </div>
             </div>
-            <div (click)="openDialog()" class="add"
+            <div (click)="createChannel()" class="add"
             (mouseover)="imgAdd2='assets/add_blue.svg'"
             (mouseleave)="imgAdd2='assets/img/add.svg'"
             (mousedown)="imgAdd2='assets/img/add-click.svg'">
@@ -57,7 +57,7 @@
             </div>
         </ng-container> -->
 
-        <div (click)="openDialog()" class="new-channel"
+        <div (click)="createChannel()" class="new-channel"
             (mouseover)="imgAdd='assets/add_circle_blue.svg'"
             (mouseleave)="imgAdd='assets/img/add_circle.svg'"
             (mousedown)="imgAdd='assets/add_circle-click.svg'">
@@ -81,6 +81,8 @@
                 <h2>Direktnachrichten</h2>
             </div>
         </div>
+
+
         <div class="solo-chat" *ngIf="openEmployees">
             <div class="solo-employees" *ngFor="let user of users$ | async" (click)="selectUser(user.id)"
                 [ngClass]="{'selected': user.id === selectedUserId, 'chat-blinking': user.isBlinking}">
@@ -97,18 +99,20 @@
         </div>
 
     </div>
-    <button *ngIf="isDavspaceVisible" (click)="devspaceCloseOpen()" (mouseover)="changeImage(true)"
-        (mouseout)="changeImage(false)">
-        <div class="image-close">
-            <span>Workspace-Menü schließen</span>
-            <img [src]="imgSrc[0]" alt="Schließen">
-        </div>
-    </button>
-    <button *ngIf="!isDavspaceVisible;" (click)="devspaceCloseOpen()" (mouseover)="changeImageTwo(true)"
-        (mouseout)="changeImageTwo(false)">
-        <div class="image-open">
-            Workspace-Menü öffnen
-            <img [src]="imgSrc[0]" alt="Öffnen">
-        </div>
-    </button>
+    @if(screenWidth >992){
+        <button *ngIf="isDavspaceVisible" (click)="devspaceCloseOpen()" (mouseover)="changeImage(true)"
+            (mouseout)="changeImage(false)">
+            <div class="image-close">
+                <span>Workspace-Menü schließen</span>
+                <img [src]="imgSrc[0]" alt="Schließen">
+            </div>
+        </button>
+        <button *ngIf="!isDavspaceVisible;" (click)="devspaceCloseOpen()" (mouseover)="changeImageTwo(true)"
+            (mouseout)="changeImageTwo(false)">
+            <div class="image-open">
+                Workspace-Menü öffnen
+                <img [src]="imgSrc[0]" alt="Öffnen">
+            </div>
+        </button>
+    }
 </section>

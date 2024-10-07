@@ -119,30 +119,46 @@ closeImageModal(): void {
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     this.screenWidth = window.innerWidth;
+    // if(this.supportsTouch || window.innerWidth < 992){
+    //   this.isMobile = true;
+    // }
     if(this.currentThreadStatus && this.screenWidth < 993){
       this.threadOpen = true;
+      // console.log(this.currentThreadStatus && this.screenWidth < 993, this.screenWidth)
+      // console.log(this.threadOpen, this.screenWidth)
+    } else if(!this.currentThreadStatus && this.screenWidth >993){
+      this.checkThreadStatus();
+    } else{
+      this.threadOpen = false;
+      // this.isMobile = false;
+      // console.log(this.currentThreadStatus && this.screenWidth < 993, this.screenWidth)
+      // console.log(this.threadOpen, this.screenWidth)
+      // console.log(this.isMobile)
     }
   }
 
   ngAfterViewInit(): void {
     if(!this.isMobile){
-      this.userService.threadOpenStatus$.subscribe((status: boolean) => {
-        this.currentThreadStatus = status;
-        switch (status) {
-          case true:
-          this.disconnectGroupChat()
-            break;
-        
-          case false:
-            this.observeGroupChat()
-            break;
-        }
-        
-      });
+      this.checkThreadStatus();
     }    
 
   }
 
+  checkThreadStatus(){
+    this.userService.threadOpenStatus$.subscribe((status: boolean) => {
+      this.currentThreadStatus = status;
+      switch (status) {
+        case true:
+        this.disconnectGroupChat()
+          break;
+      
+        case false:
+          this.observeGroupChat()
+          break;
+      }
+      
+    });
+  }
 
   observeGroupChat(): void {
     // Select only the group-chat section
@@ -187,7 +203,7 @@ closeImageModal(): void {
 
     });
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-    if(this.supportsTouch && window.innerWidth < 992){
+    if(window.innerWidth < 992){
       this.isMobile = true;
     }
 
@@ -436,18 +452,20 @@ closeImageModal(): void {
     this.imgSrc[3] = isHover ? 'assets/more_vert_hover.svg' : 'assets/more_vert.svg';
   }
 
-  openDialog() {
+  openChannelInfo(){
+    this.openEditChannel();
+    
+  }
+
+  openEditChannel() {
     this.dialog.open(DialogChannelEditComponent, {
       panelClass: 'border-30',
-      width: '700px',
-      height: '400px',
       data: {
         channelID: this.groupId,
         channelName: this.groupName,
         channelDescription: this.groupDescription,
       },
       autoFocus: false,
-
     });
   }
 

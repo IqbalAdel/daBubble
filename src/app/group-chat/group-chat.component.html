@@ -2,7 +2,7 @@
     <!-- <span>{{screenWidth}}</span> -->
     <div class="chat-group" [ngStyle]="threadOpen ? {'display': 'none'} : {}">
         <div class="chat-header-group">
-            <div (click)="openDialog()" class="name"
+            <div (click)="openChannelInfo()" class="name"
                 (mouseover)="imgKeyboard = 'assets/img/keyboard_arrow_down-blue.svg'"
                 (mouseleave)="imgKeyboard = 'assets/img/keyboard_arrow_down.svg'">
                 <h2 *ngIf="groupName; else loading"># {{ groupName }}</h2>
