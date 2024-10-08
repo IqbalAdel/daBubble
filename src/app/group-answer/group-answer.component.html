@@ -43,7 +43,7 @@
           <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
           [src]="imgSrc[0]" alt="">
         </div>
-        <div class="img-hover">
+        <div class="img-hover" *ngIf="chat.userName === loggedInUserName">
           <img (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)"
           [src]="imgSrc[3]">
         </div>
