@@ -56,21 +56,8 @@ export class DialogProfileUserComponent implements OnInit{
     this.dialog.close();
     let dialogRef = this.dialogUserEdit.open(DialogProfileUserEditComponent, {
       backdropClass: 'custom-backdrop',
-      panelClass: 'border-radius',
-      width: '350px',
-      height: '465px',
-      position: {top: '90px', right: '15px'},
-    });
-  }
-
-  openEditMob(){
-    this.dialog.close();
-    let dialogRef = this.dialogUserEdit.open(DialogProfileUserEditComponent, {
-      panelClass: 'mobile-profile',
-      width: 'calc(100% - 20px)',
-      height: 'calc(100% - 40px)',
       autoFocus: false,
-      // position: {top: '90px', right: '15px'},
+
     });
   }
 

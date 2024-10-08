@@ -11,24 +11,16 @@ import { Observable, switchMap } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { User } from '../../models/user.class';
 import { Channel } from '../../models/channel.class';
-<<<<<<< HEAD
-import { map } from 'rxjs/operators';
-import { Firestore, doc, collection, addDoc } from '@angular/fire/firestore'; // Importiere die modularen Funktionen
-=======
 import { filter, map } from 'rxjs/operators';
 import { docSnapshots, Firestore, collection, doc, onSnapshot } from '@angular/fire/firestore';
->>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
 import { FormsModule } from '@angular/forms';
 import { group } from '@angular/animations';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackbarMessageComponent } from '../snackbar-message/snackbar-message.component';
-<<<<<<< HEAD
-import { arrayUnion, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { arrayUnion, getDoc, updateDoc } from 'firebase/firestore';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
-=======
 import { GroupAnswerComponent } from '../group-answer/group-answer.component';
->>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
 
 @Component({
   selector: 'app-group-chat',
@@ -137,30 +129,6 @@ closeImageModal(): void {
 
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
-<<<<<<< HEAD
-
-
-  }
-
-  ngAfterViewInit(): void {
-    this.userService.threadOpenStatus$.subscribe((status: boolean) => {
-      this.currentThreadStatus = status;
-      console.log('cgange to', this.currentThreadStatus)
-      // if(status === true){
-      //   this.disconnectGroupChat()
-      // }
-      switch (status) {
-        case true:
-          this.disconnectGroupChat()
-          break;
-
-        case false:
-          this.observeGroupChat()
-          break;
-      }
-
-    });
-=======
     // this.screenWidth = window.innerWidth;
     
   }
@@ -191,7 +159,6 @@ closeImageModal(): void {
       this.checkThreadStatus();
     }    
 
->>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
   }
 
   checkThreadStatus(){
@@ -646,7 +613,6 @@ closeImageModal(): void {
         return;
     }
 
-<<<<<<< HEAD
     const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
     const messageDocSnapshot = await getDoc(messageDocRef);
 
@@ -801,7 +767,6 @@ closeImageModal(): void {
   isUserEqualToChatUser(chatUserName: string): boolean {
     return this.loggedInUserName === chatUserName;
 }
-=======
   onActivate(componentRef: any) {
     if (componentRef instanceof GroupAnswerComponent) {
       this.groupAnswerComponent = componentRef;
@@ -810,7 +775,6 @@ closeImageModal(): void {
     }
   }
 
->>>>>>> 8d5cf8408dcb8932b3e4ab3ba3977905ac2b38a9
 }
 
 

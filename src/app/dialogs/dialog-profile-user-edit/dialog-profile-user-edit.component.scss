@@ -105,6 +105,28 @@
     }
 }
 
+::ng-deep .mat-mdc-dialog-container {
+    box-shadow: none !important;/* Removes the box shadow */
+    --mdc-dialog-container-shape: 30px;
+  }
+
+  ::ng-deep .cdk-overlay-pane.mat-mdc-dialog-panel {
+    max-width: none;
+    width: 350px;
+    height: 500px;
+    @media(width >= 992px){
+        position: absolute !important;
+        top: 90px;
+        right: 15px;
+    }
+    @media(width < 992px){
+        width: calc(100% - 20px);
+        height: calc(100% - 40px);
+    }
+}
+
+
+
 @media(width < 992px){
 
 
