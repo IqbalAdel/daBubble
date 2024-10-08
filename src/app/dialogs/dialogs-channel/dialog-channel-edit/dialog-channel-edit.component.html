@@ -9,8 +9,13 @@
         </div>
         <div class="channel-name" [ngClass] = "{'hide-color': edit == true, 'color': edit == false}">
             <div>
-                <span [ngClass] = "{'slide-left': edit == true, 'slide-left-back': edit == false}" class="animate-name position-left">Channel Name</span>
-                <span (click)="editSwitch()" [ngClass] = "{'slide-right': edit == true, 'slide-right-back': edit == false}" class="animate-name position-right">{{editTxtValue}}</span>
+                <span [ngClass] = "{'slide-left': edit == true, 'slide-left-back': edit == false}" class="animate-name position-left desktop">Channel Name</span>
+                <span (click)="editSwitch()" [ngClass] = "{'slide-right': edit == true, 'slide-right-back': edit == false}" class="desktop animate-name position-right">{{editTxtValue}}</span>
+
+            </div>
+            <div class="mobileEdit margin">
+                <span>Channel Name</span>
+                <img (click)="editSwitch()" [src]="editImg" class="editImage" alt="">
             </div>
             @if(edit == true){
                 <input [(ngModel)]="name" placeholder="#  z.B. Kooperationsprojekte" type="text">
@@ -22,8 +27,13 @@
         
         <div class="channel-description" [ngClass] = "{'hide-color': editTwo == true, 'color': editTwo == false}">
             <div>
-                <span [ngClass] = "{'slide-left-d': editTwo == true, 'slide-left-back-d': editTwo == false}" class="animate-name position-left" class="animate-name position-description">Beschreibung</span>
-                <span [ngClass] = "{'slide-right-d': editTwo == true, 'slide-right-back-d': editTwo == false}" class="animate-name position-edit" (click)="editTwoSwitch()">{{editTxtValueTwo}}</span>
+                <span [ngClass] = "{'slide-left-d': editTwo == true, 'slide-left-back-d': editTwo == false}" class=" animate-name position-left" class="animate-name position-description desktop">Beschreibung</span>
+                <span [ngClass] = "{'slide-right-d': editTwo == true, 'slide-right-back-d': editTwo == false}" class="desktop animate-name position-edit" (click)="editTwoSwitch()">{{editTxtValueTwo}}</span>
+                <!-- <img src="" alt=""> -->
+            </div>
+            <div class="mobileEdit">
+                <span>Beschreibung</span>
+                <img (click)="editTwoSwitch()" [src]="editImg2" class="editImage" alt="">
             </div>
             @if(editTwo==true){
                 <textarea [(ngModel)]="description" [ngClass] = "{'slide-left-textarea': editTwoInput == true, 'slide-left-back-textarea': editTwoInput == false}" class="animate-textarea" placeholder="Dein Text hier" type="text" name="" id=""></textarea>
@@ -43,6 +53,7 @@
         </div>
     
     
+        <app-dialog-channel-members *ngIf="screenWidth < 992"></app-dialog-channel-members>
     
         <!-- <div class="inputs">
             <span>Channel Name</span>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogProfileUserEditComponent } from '../dialog-profile-user-edit/dialog-profile-user-edit.component';
@@ -36,22 +36,27 @@ export class DialogProfileUserComponent implements OnInit{
     }
   };
 
+  screenWidth: number = 0;
+
   constructor( 
     public dialog: MatDialogRef<DialogProfileUserComponent>, 
     public dialogUserEdit: MatDialog,
     public userService: UserService,
     public fire: FirebaseService
   ) {    
+    this.screenWidth = window.innerWidth
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.screenWidth = window.innerWidth;
   }
 
   openDialog(){
     this.dialog.close();
     let dialogRef = this.dialogUserEdit.open(DialogProfileUserEditComponent, {
       backdropClass: 'custom-backdrop',
-      panelClass: 'border-radius',
-      width: '350px',
-      height: '465px',
-      position: {top: '90px', right: '15px'},
+      autoFocus: false,
 
     });
   }

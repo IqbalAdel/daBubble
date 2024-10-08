@@ -2,7 +2,9 @@
 
 .user-profile{
     padding: 30px 30px 30px 30px;
-    height: 100%;
+    @media(width >992){
+        height: 100%;
+    }
     // @include d-flex($dir: column);
    
 }
@@ -26,6 +28,25 @@
 .member-list{
     @include d-flex($dir: column, $ai: flex-start);
     margin-top: 20px;
+    height: 300px;
+    overflow-y: scroll;
+    // &::-webkit-scrollbar{
+    //     display: none;
+    //     width: 0;
+    // }
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(136, 136, 136, 0.3);
+        border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 255, 0.5);
+    }
 }
 
 .member{
@@ -115,3 +136,26 @@
     --mdc-dialog-container-shape: 30px 0px 30px 30px;
 }
 
+@media(width < 992px){
+    .mat-mdc-card {
+        border-radius: 20px ;
+        border: 1px solid rgba(121, 126, 243, 1 );
+        box-shadow: none ; 
+    }
+
+    // mat-card{
+    //     border-radius: 20px !important;
+    //     border: 1px solid rgba(121, 126, 243, 1)!important;
+    //     box-shadow: none !important;     
+    // }
+
+    
+}
+
+// ::ng-deep .mat-mdc-card {
+//     @media(width < 992px){
+//         border-radius: 20px !important;
+//         border: 1px solid rgba(121, 126, 243, 1 )!important;
+//         box-shadow: none !important; 
+//     }
+// }

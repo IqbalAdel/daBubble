@@ -104,3 +104,83 @@
         }
     }
 }
+
+::ng-deep .mat-mdc-dialog-container {
+    box-shadow: none !important;/* Removes the box shadow */
+    --mdc-dialog-container-shape: 30px;
+  }
+
+  ::ng-deep .cdk-overlay-pane.mat-mdc-dialog-panel {
+    max-width: none;
+    width: 350px;
+    height: 500px;
+    @media(width >= 992px){
+        position: absolute !important;
+        top: 90px;
+        right: 15px;
+    }
+    @media(width < 992px){
+        width: calc(100% - 20px);
+        height: calc(100% - 40px);
+    }
+}
+
+
+
+@media(width < 992px){
+
+
+    .email{
+        gap: 10px;
+        img{
+            @include widthHeight($w: 30px, $h: 30px);
+        }
+    
+        div{
+            font-size: 20px;
+            gap: 10px;
+        }
+    }
+
+    .profile-aot{
+        
+        span{
+            font-size: 24px;
+        }
+        img{
+            width: 40px;
+            height: 40px;
+        }
+
+        margin-bottom: 50px;
+    }
+
+    .avatar{
+        margin-bottom: 60px;
+        img{
+            width: 180px;
+            height: 180px;
+        }
+    }
+
+    .user-profile{
+        input{
+            font-size: 20px;
+            padding: 10px 0px 10px 15px;
+            // &:focus::placeholder{
+            //     transform: translateY(3px);
+            // }
+            &::placeholder {
+                font-size: 20px;
+                transition: transform 0.3s ease;
+              }
+        }
+    }
+
+    .buttons{
+        button{
+            @include widthHeight($w: 130px, $h: 45px);
+            font-size: 20px;
+        }
+    }
+}

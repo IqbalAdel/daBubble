@@ -17,25 +17,17 @@
                 <span>{{user.name}}</span>
             </div>
         }
-        <!-- <div class="member">
-            <div class="image">
-                <img src="assets/img/profiles/boy.png" alt="">
-                <div class="online-status"></div>
-            </div>
-            <span>Sofia Müller</span>
-        </div> -->
 
-
-        <div (click)="openDialogAddMember()" class="add-member"
-        (mouseover)="imgSrcAdd = 'assets/img/person_add_hover.png'"
-        (mouseout)="imgSrcAdd = 'assets/img/person_add_default.png'">
-            <div class="add-image">
-                <img 
-                [src]="imgSrcAdd"
-                 alt="">
-            </div>
-            <span>Mitglieder hinzufügen</span>
+    </div>
+    <div (click)="openDialogAddMember()" class="add-member"
+    (mouseover)="imgSrcAdd = 'assets/person_add_hover.svg'"
+    (mouseout)="imgSrcAdd = 'assets/person_add_default.svg'">
+        <div class="add-image">
+            <img 
+            [src]="imgSrcAdd"
+             alt="">
         </div>
+        <span>Mitglieder hinzufügen</span>
     </div>
     
 </mat-card>

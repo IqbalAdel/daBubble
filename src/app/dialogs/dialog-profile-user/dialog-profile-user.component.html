@@ -13,6 +13,7 @@
     <div class="user-txt">
         <span>{{user.name}}</span>
         <span (click)="openDialog()">Bearbeiten</span>
+
     </div>
     <div class="status" [ngClass]="!userService.getUserStatus(user.id) ? 'offline' : 'online'">
         <div></div>

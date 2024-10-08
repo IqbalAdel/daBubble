@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 // import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -10,6 +10,7 @@ import { catchError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../../../models/user.class';
 import { UserService } from '../../../services/user.service';
+import { DialogChannelMembersComponent } from '../dialog-channel-members/dialog-channel-members.component';
 
 @Component({
   selector: 'app-dialog-channel-edit',
@@ -18,6 +19,7 @@ import { UserService } from '../../../services/user.service';
     MatCard,
     CommonModule,
     FormsModule,
+    DialogChannelMembersComponent,
   ],
   templateUrl: './dialog-channel-edit.component.html',
   styleUrls: ['./dialog-channel-edit.component.scss'],
@@ -27,6 +29,8 @@ export class DialogChannelEditComponent implements OnInit{
   edit!:boolean ;
   editTwo!:boolean ;
   editTwoInput!:boolean ;
+  editImg = 'assets/editPencil.svg'
+  editImg2 = 'assets/editPencil.svg'
 
   imgSrc: string = "assets/img/close_default.svg";
   channelID: string = "";
@@ -38,6 +42,7 @@ export class DialogChannelEditComponent implements OnInit{
   description: string = "";
   channelName: string;
   channelDescription: string;
+  screenWidth: number = 0;
 
   user: User = {
     name: '',
@@ -68,6 +73,9 @@ export class DialogChannelEditComponent implements OnInit{
     this.channelID = data.channelID;
     this.channelName = data.channelName;
     this.channelDescription = data.channelDescription;
+    this.name = data.channelName;
+    this.description = data.channelDescription;
+    
     // this.channel = this.fire.getChannelById(this.channelID);
   }
 
@@ -83,6 +91,8 @@ export class DialogChannelEditComponent implements OnInit{
         console.log('error channel edit, loading', error)
       }
     console.log(this.user.id)
+    this.screenWidth = window.innerWidth;
+
   }
 
   async getActiveUser(){
@@ -102,6 +112,11 @@ export class DialogChannelEditComponent implements OnInit{
     }
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.screenWidth = window.innerWidth;
+    }
+
   closeDialog() {
     this.dialog.close();
   }
@@ -111,10 +126,13 @@ export class DialogChannelEditComponent implements OnInit{
     this.edit = !this.edit;
     if(this.edit == true){
       this.editTxtValue = "Speichern"
+      this.editImg2 = 'assets/saveCheck.svg'
     } else{
       this.saveData('name');
       this.channelName = this.name;
       this.editTxtValue = "Bearbeiten"
+      this.editImg2 = 'assets/editPencil.svg'
+
     }
   }
   editTwoSwitch() {
@@ -122,10 +140,14 @@ export class DialogChannelEditComponent implements OnInit{
     this.editTwoInput = !this.editTwoInput;
     if(this.editTwo == true){
       this.editTxtValueTwo = "Speichern"
+      this.editImg = 'assets/saveCheck.svg'
+
     } else{
       this.saveData('description');
       this.channelDescription = this.description;
       this.editTxtValueTwo = "Bearbeiten"
+      this.editImg = 'assets/editPencil.svg'
+
     }
   }
 

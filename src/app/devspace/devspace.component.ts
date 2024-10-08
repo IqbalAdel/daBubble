@@ -116,8 +116,10 @@ export class DevspaceComponent implements OnInit{
   async ngOnInit(): Promise<void>{
     await this.getUsers$();
     await this.getActiveUser();
+    this.screenWidth = window.innerWidth;
+
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if(this.supportsTouch && window.innerWidth <= 992){
+    if(window.innerWidth <= 992){
       this.isMobile.emit();
     }
 
@@ -125,11 +127,12 @@ export class DevspaceComponent implements OnInit{
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
-    // this.screenWidth = window.innerWidth;
+    this.screenWidth = window.innerWidth;
     // console.log('Window resized:', this.screenWidth);
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if(this.supportsTouch && window.innerWidth <= 992){
+    if(window.innerWidth <= 992){
       this.isMobile.emit();
+      this.isDavspaceVisible = true;
     }
   }
 
@@ -187,7 +190,7 @@ export class DevspaceComponent implements OnInit{
     this.selectedUserId = userId;
     this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
     this.router.navigate(['/main/chat', userId]);
-    if(this.supportsTouch && window.innerWidth <= 992){
+    if(this.supportsTouch || window.innerWidth <= 992){
       this.navigateToDirectChat.emit();
     }
     this.selectedChannelId = null;
@@ -211,9 +214,11 @@ export class DevspaceComponent implements OnInit{
   openDialog() {
     let dialogRef = this.dialog.open(DialogChannelCreateComponent, {
       panelClass: 'border-30',
-      width: '700px',
-      height: '400px',
     });
+  }
+
+  createChannel(){
+    this.openDialog();
   }
 
  
@@ -221,7 +226,7 @@ export class DevspaceComponent implements OnInit{
   navigateRouteChannel(id: string) {
     if(id){
       this.router.navigate(['/main/group-chat', id]);
-      if(this.supportsTouch && window.innerWidth <= 992){
+      if(this.supportsTouch || window.innerWidth <= 992){
         this.navigateToChannel.emit();
       }
     }
@@ -229,7 +234,7 @@ export class DevspaceComponent implements OnInit{
 
   navigateRouteToNewMessage() {
     this.router.navigate(['/main/new-message']);
-    if(this.supportsTouch && window.innerWidth <= 992){
+    if(window.innerWidth <= 992){
       this.navigateToNewMessage.emit();
     }
   }

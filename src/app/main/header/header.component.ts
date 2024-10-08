@@ -18,7 +18,7 @@ import { UserService } from '../../services/user.service';
 import { Firestore, collection, addDoc, collectionData, onSnapshot, doc, updateDoc, getDoc, setDoc, docData, DocumentData, CollectionReference, arrayUnion, writeBatch, DocumentReference } from '@angular/fire/firestore';
 import { ChatComponent } from '../../chat/chat.component';
 import { FilterGroup } from '../../new-message/new-message.component';
-import { map, Observable, of, startWith, switchMap } from 'rxjs';
+import { combineLatest, debounceTime, distinctUntilChanged, map, Observable, of, startWith, switchMap } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -67,6 +67,7 @@ export class HeaderComponent implements OnInit{
   supportsTouch!: boolean;
   @Output() openMobMenu: EventEmitter<void> = new EventEmitter<void>();
   @Output() userLeftChannel: EventEmitter<void> = new EventEmitter<void>();
+  filterOpen = false;
  
 
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
@@ -112,12 +113,15 @@ export class HeaderComponent implements OnInit{
       this.channels$ = this.firebaseService.getChannels();
   
       this.filterGroupOptions = this.searchFieldControl.valueChanges.pipe(
-        startWith(''),
-        switchMap(value => this._filterData(value || ''))
-      ) ?? of([]); 
+        startWith(''), // Ensure an initial empty value to show all options at the start
+        debounceTime(300), // Add debounce to reduce frequent API calls or filtering
+        distinctUntilChanged(), // Avoid re-filtering if the input hasn't changed
+        switchMap(value => this._filterData(value || '')) // Call filter function
+      );
   
       this.searchFieldControl.valueChanges.subscribe(selectedId => {
         if (typeof selectedId === 'string') {
+        this.filterOpen = true;
           console.log('Selected ID:', selectedId);
           // Handle the selected ID as needed
         }
@@ -151,44 +155,40 @@ export class HeaderComponent implements OnInit{
   }
 
   // Filter function to handle both Users and Channels
-  private _filterData(value: any): Observable<FilterGroup[]> {
-    const filterValue = typeof value.name === 'string' ? value.name.trim().toLowerCase() : '';
+  private _filterData(value: string): Observable<FilterGroup[]> {
+    const filterValue = (value || '').trim().toLowerCase();
   
-    return this.users$.pipe(
-      switchMap(users =>
-        this.channels$.pipe(
-          map(channels => {
-            const filteredUsers = users
-              .filter(user => user.name.toLowerCase().includes(filterValue))  // Compare in lowercase
-              .filter(user => !!user.id);  // Ensure only users with an ID are included
+    return combineLatest([this.users$, this.channels$]).pipe(
+      map(([users, channels]) => {
+        const filteredUsers = users
+          .filter(user => user.name.toLowerCase().includes(filterValue)) // Filter users
+          .filter(user => !!user.id); // Ensure only users with an ID are included
   
-            const filteredChannels = channels
-              .filter(channel => channel.name.toLowerCase().includes(filterValue))  // Compare in lowercase
-              .filter(channel => !!channel.id);  // Ensure only channels with an ID are included
+        const filteredChannels = channels
+          .filter(channel => channel.name.toLowerCase().includes(filterValue)) // Filter channels
+          .filter(channel => !!channel.id); // Ensure only channels with an ID are included
   
-            return [
-              {
-                type: 'Users',
-                items: filteredUsers.map(user => ({
-                  name: user.name,
-                  id: user.id!,
-                  img: user.img,
-                  type: 'Users'
-                }))
-              },
-              {
-                type: 'Channels',
-                items: filteredChannels.map(channel => ({
-                  name: channel.name,
-                  id: channel.id!,
-                  img: "",
-                  type: 'Channels'
-                }))
-              }
-            ];
-          })
-        )
-      )
+        return [
+          {
+            type: 'Users',
+            items: filteredUsers.map(user => ({
+              name: user.name,
+              id: user.id!,
+              img: user.img,
+              type: 'Users'
+            }))
+          },
+          {
+            type: 'Channels',
+            items: filteredChannels.map(channel => ({
+              name: channel.name,
+              id: channel.id!,
+              img: "",
+              type: 'Channels'
+            }))
+          }
+        ];
+      })
     );
   }
 
@@ -202,6 +202,7 @@ export class HeaderComponent implements OnInit{
     this.searchFieldControl.setValue(selectedName, { emitEvent: false });
     this.routeToSelectedItem(selectedItem)
     this.clearInputField();
+    this.filterOpen = false;
   }
 
   routeToSelectedItem(selectedItem: any){
@@ -230,11 +231,20 @@ export class HeaderComponent implements OnInit{
   }
 
   onFocus(): void {
+
     // Check if there's a value in the search field
     const currentValue = this.searchFieldControl.value;
     
     // If the input is focused, trigger the valueChanges to show the autocomplete options
     this.searchFieldControl.setValue(currentValue || '', { emitEvent: true });
+  }
+
+  changeBottom(){
+    setTimeout(() => {
+      this.filterOpen = true;
+      
+    }, 700);
+    console.log(this.filterOpen)
   }
 
 
@@ -264,7 +274,7 @@ export class HeaderComponent implements OnInit{
   }
 
   openProfileMenu(){
-    if(this.supportsTouch && navigator.maxTouchPoints > 0 && window.innerWidth < 992){
+    if(window.innerWidth < 992){
       console.log('mobile')
       this.openDialogMobile();
     } else{
@@ -287,7 +297,7 @@ export class HeaderComponent implements OnInit{
 
 
   isMobile(){
-    if(this.supportsTouch && this.hasEnteredChannel){
+    if((this.supportsTouch || window.innerWidth < 992) && this.hasEnteredChannel){
       return 'assets/Workspace.svg'
     } else{
       return 'assets/img/Logo.png'
@@ -299,6 +309,13 @@ export class HeaderComponent implements OnInit{
   returnToDevSpace(){
     this.router.navigate(['/main/group-chat/pEylXqZMW1zKPIC0VDXL']);
     this.userLeftChannel.emit()
+  }
+
+  onBlur(){
+    setTimeout(() => {
+      this.filterOpen = false;
+    }, 90);
+
   }
   
 }

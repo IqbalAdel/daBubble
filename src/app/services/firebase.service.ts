@@ -128,6 +128,22 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
     return collectionData(usersRef);
   }
 
+  getUsersDataTest(): Observable<any> {
+    const usersRef = collection(this.firestore, 'users');
+    return collectionData(usersRef).pipe(
+      map(usersArray => {
+        return this.arrayToObject(usersArray);  // Convert array to object
+      })
+    );
+  }
+
+  arrayToObject(usersArray: any[]): any {
+    return usersArray.reduce((obj, user) => {
+      obj[user.id] = user;  // Assuming each user has a unique 'id' field
+      return obj;
+    }, {});
+  }
+
   getUserDocRef(docID: string) {
     return doc(collection(this.firestore, 'users'), docID)
   }

@@ -35,6 +35,7 @@
 .user-txt{
     @include d-flex($jc: space-between);
     margin-bottom: 20px;
+
     span{
         &:first-child{
             font-size: 24px;
@@ -108,7 +109,85 @@
     }
 }
 
-::ng-deep .border-radius .mat-mdc-dialog-container {
+::ng-deep .mat-mdc-dialog-container {
     box-shadow: none !important;/* Removes the box shadow */
+    --mdc-dialog-container-shape: 30px 0px 30px 30px;
+
+    @media(width < 992px){
     --mdc-dialog-container-shape: 30px;
+    }
   }
+
+  ::ng-deep .cdk-overlay-pane.mat-mdc-dialog-panel {
+    max-width: none;
+    width: 350px;
+    height: 400px;
+    @media(width >= 992px){
+        position: absolute !important;
+        top: 90px;
+        right: 15px;
+    }
+    @media(width < 992px){
+        width: calc(100% - 20px);
+        height: calc(100% - 40px);
+    }
+}
+
+
+
+  @media(width < 992px){
+    .user-txt{
+        margin-bottom: 30px;
+        span{
+            &:first-child{
+                font-size: 36px;
+            }
+        }
+    }
+
+    .status{
+        margin-bottom: 40px;
+        div{
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+        }
+        span{
+            font-size: 20px;
+        }
+    }
+
+    .email{
+        gap: 10px;
+        img{
+            @include widthHeight($w: 30px, $h: 30px);
+            margin-top: -2px;
+        }
+    
+        div{
+            font-size: 20px;
+            gap: 10px;
+        }
+    }
+
+    .profile-aot{
+        
+        span{
+            font-size: 24px;
+        }
+        img{
+            width: 40px;
+            height: 40px;
+        }
+
+        margin-bottom: 50px;
+    }
+
+    .avatar{
+        margin-bottom: 60px;
+        img{
+            width: 180px;
+            height: 180px;
+        }
+    }
+}

@@ -1,5 +1,14 @@
 <mat-card class="menu">
-    <span (click)="openDialog()" >Profile</span>
-    <span >Log Out</span>
-    <span (click)="close()">close</span>
+    <div class="line-container">
+        <div (click)="close()" class="line"></div>
+    </div>
+    <div class="options">
+        <img src="assets/account_circle.svg" alt="">
+        <span (click)="openDialog()" >Profile</span>
+    </div>
+    <div class="options">
+        <img src="assets/logout.svg" alt="">
+        <span>Log out</span>
+    </div>
+    <!-- <span (click)="close()">close</span> -->
 </mat-card>

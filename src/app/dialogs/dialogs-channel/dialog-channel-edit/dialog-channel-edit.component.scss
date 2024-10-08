@@ -70,7 +70,7 @@ mat-card{
     }
     textarea{
         top: 65px;
-        left: 10;
+        left: 28px;
         // height: 50px;
         resize: none;
         overflow: hidden;
@@ -520,5 +520,49 @@ mat-card{
 .move-down-back{
     animation-name: move-down-back;
 
+}
+
+
+::ng-deep .border-30 .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 30px;
+    @media(width < 992px){
+        --mdc-dialog-container-shape: 0;    
+    }
+}
+
+
+::ng-deep .cdk-overlay-pane.mat-mdc-dialog-panel {
+    max-width: none;
+    width: 700px;
+    height: 500px;
+    @media(width < 992px){
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.desktop{
+    @media(width < 992px){
+        display: none;
+    }
+}
+
+.mobileEdit{
+    @media(width >=992px){
+        display: none;
+    }
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    span{
+        font-weight: bold;
+    }
+}
+
+.margin{
+    margin-left: 25px;
+    margin-right: 25px;
+    margin-top: 10px;
 }
 

@@ -1,6 +1,6 @@
 import { CommonModule, formatDate } from '@angular/common';
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
@@ -125,63 +125,59 @@ closeImageModal(): void {
     private firebaseService: FirebaseService,
     private firestore: Firestore,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    // public dialogRef: MatDialogRef<DialogChannelMembersComponent>
 
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
-
-
-  }
-
-  // ngAfterViewInit(): void {
-  //   this.userService.threadOpenStatus$.subscribe((status: boolean) => {
-  //     this.currentThreadStatus = status;
-  //     console.log('cgange to', this.currentThreadStatus)
-  //     // if(status === true){
-  //     //   this.disconnectGroupChat()
-  //     // }
-  //     switch (status) {
-  //       case true:
-  //         this.disconnectGroupChat()
-  //         break;
-
-  //       case false:
-  //         this.observeGroupChat()
-  //         break;
-  //     }
-
-  //   });
-  //   // this.screenWidth = window.innerWidth;
+    this.screenWidth = window.innerWidth;
     
-  // }
+  }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     this.screenWidth = window.innerWidth;
+    // if(this.supportsTouch || window.innerWidth < 992){
+    //   this.isMobile = true;
+    // }
     if(this.currentThreadStatus && this.screenWidth < 993){
       this.threadOpen = true;
+      // console.log(this.currentThreadStatus && this.screenWidth < 993, this.screenWidth)
+      // console.log(this.threadOpen, this.screenWidth)
+    } else if(!this.currentThreadStatus && this.screenWidth >993){
+      this.checkThreadStatus();
+    } else{
+      this.threadOpen = false;
+      // this.isMobile = false;
+      // console.log(this.currentThreadStatus && this.screenWidth < 993, this.screenWidth)
+      // console.log(this.threadOpen, this.screenWidth)
+      // console.log(this.isMobile)
     }
+    
   }
 
   ngAfterViewInit(): void {
     if(!this.isMobile){
-      this.userService.threadOpenStatus$.subscribe((status: boolean) => {
-        this.currentThreadStatus = status;
-        switch (status) {
-          case true:
-          this.disconnectGroupChat()
-            break;
-        
-          case false:
-            this.observeGroupChat()
-            break;
-        }
-        
-      });
+      this.checkThreadStatus();
     }    
 
   }
 
+  checkThreadStatus(){
+    this.userService.threadOpenStatus$.subscribe((status: boolean) => {
+      this.currentThreadStatus = status;
+      switch (status) {
+        case true:
+        this.disconnectGroupChat()
+          break;
+      
+        case false:
+          this.observeGroupChat()
+          break;
+      }
+      
+    });
+  }
 
   observeGroupChat(): void {
     // Select only the group-chat section
@@ -226,7 +222,7 @@ closeImageModal(): void {
       this.loadSmileysForMessage(this.messageId);
     });
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-    if(this.supportsTouch && window.innerWidth < 992){
+    if(window.innerWidth < 992){
       this.isMobile = true;
     }
 
@@ -460,18 +456,20 @@ closeImageModal(): void {
     this.imgSrc[3] = isHover ? 'assets/more_vert_hover.svg' : 'assets/more_vert.svg';
   }
 
-  openDialog() {
+  openChannelInfo(){
+    this.openEditChannel();
+    
+  }
+
+  openEditChannel() {
     this.dialog.open(DialogChannelEditComponent, {
       panelClass: 'border-30',
-      width: '700px',
-      height: '400px',
       data: {
         channelID: this.groupId,
         channelName: this.groupName,
         channelDescription: this.groupDescription,
       },
       autoFocus: false,
-
     });
   }
 
@@ -485,6 +483,8 @@ closeImageModal(): void {
       }
 
     });
+    if(this.screenWidth < 992){
+    }
   }
 
   openDialogAddMember() {
@@ -731,7 +731,6 @@ closeImageModal(): void {
   isUserEqualToChatUser(chatUserName: string): boolean {
     return this.loggedInUserName === chatUserName;
 }
-
   onActivate(componentRef: any) {
     if (componentRef instanceof GroupAnswerComponent) {
       this.groupAnswerComponent = componentRef;
