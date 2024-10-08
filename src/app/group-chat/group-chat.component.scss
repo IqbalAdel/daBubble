@@ -18,55 +18,67 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.1); /* Transparenter Hintergrund */
-    z-index: 1000; /* Über allem anderen */
-  }
-  
+    background-color: rgba(0, 0, 0, 0.1);
+    /* Transparenter Hintergrund */
+    z-index: 1000;
+    /* Über allem anderen */
+}
 
 
-
-  /* Inhalt des Modals */
-  .modal-content {
+/* Inhalt des Modals */
+.modal-content {
     max-width: 60%;
     max-height: 60%;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  /* Vergrößertes Bild */
+}
+
+/* Vergrößertes Bild */
 .modal-image {
-    width: 80vw!important; /* Breite auf 80% der Ansicht */
-    height: auto; /* Höhe wird proportional angepasst */
-   height: 80vh!important; /* Maximal 80% der Höhe der Ansicht */
-    border-radius: 10px; /* Optionale Abrundung der Ecken */
-    transition: transform 0.3s ease; /* Sanfte Übergänge bei Transformation */
-  }
-  
-  /* Standard Bild */
-  .message-image {
-    max-width: 200px; /* Größe der Nachricht-Bilder */
+    width: 80vw !important;
+    /* Breite auf 80% der Ansicht */
+    height: auto;
+    /* Höhe wird proportional angepasst */
+    height: 80vh !important;
+    /* Maximal 80% der Höhe der Ansicht */
+    border-radius: 10px;
+    /* Optionale Abrundung der Ecken */
+    transition: transform 0.3s ease;
+    /* Sanfte Übergänge bei Transformation */
+}
+
+/* Standard Bild */
+.message-image {
+    max-width: 200px;
+    /* Größe der Nachricht-Bilder */
     cursor: pointer;
     border-radius: 5px;
-  }
+}
 
 
 
 .chat-group {
     background-color: white;
     height: calc(100vh - 131px);
-    @media(width < 992px){
+    transition: all 0.3s ease-in-out;
+
+
+    @media(width < 992px) {
         height: calc(100vh - 63px);
         border-radius: 0;
         margin: 0;
     }
+
     width: 100%;
     border-radius: 30px;
     margin: 20px 30px 0px 30px;
-    @media(width < 1350px){
+
+    @media(width < 1350px) {
         margin: 20px 10px 0px 10px;
     }
+
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -82,11 +94,12 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-    
+        transition: all 0.3s ease-in-out;
 
         .group-news {
             display: flex;
             flex-direction: row-reverse;
+            transition: all 0.3s ease-in-out;
 
             span {
                 border-top-right-radius: 0px;
@@ -94,7 +107,7 @@
                 border-bottom-right-radius: 30px;
                 border-bottom-left-radius: 30px;
                 background-color: rgba(121, 126, 243, 1);
-        
+
 
             }
 
@@ -114,7 +127,8 @@
                     left: 20px;
                     margin-top: -40px;
                     border: 1px solid rgba(51, 38, 235, 0.2);
-                
+                    transition: all 0.3s ease-in-out;
+
                 }
 
                 span {
@@ -185,7 +199,7 @@
                 cursor: pointer;
                 padding-right: 5px;
 
-                @media(width < 992px){
+                @media(width < 992px) {
                     display: none;
                 }
 
@@ -277,9 +291,12 @@
         cursor: pointer;
         box-sizing: border-box;
         position: relative;
+        transition: all 0.3s ease-in-out;
+
 
         &:hover {
             background-color: rgba(236, 238, 254, 1);
+
 
             span {
                 background-color: white;
@@ -300,6 +317,8 @@
                 right: 20px;
                 margin-top: -40px;
                 border: 1px solid rgba(51, 38, 235, 0.2);
+
+
             }
         }
 
@@ -492,14 +511,15 @@
 
 ::ng-deep .border-30 .mat-mdc-dialog-container {
     --mdc-dialog-container-shape: 30px 30px 30px 30px;
-  
+
 }
 
 
-  
-  .border-30 .mat-mdc-dialog-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
-  }
+
+.border-30 .mat-mdc-dialog-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+}
 
 
 ::ng-deep .border-30-right .mat-mdc-dialog-container {
@@ -513,6 +533,8 @@ h2 {
 
 .all {
     display: flex;
+    width: 100%;
+    transition: width 0.3s ease;
 }
 
 .smiles {
@@ -527,8 +549,9 @@ h2 {
     width: auto;
     height: 34px;
     position: relative;
-    &:hover{
-        .hover-smiles{
+
+    &:hover {
+        .hover-smiles {
             display: block;
         }
     }
@@ -552,7 +575,7 @@ h2 {
         border-top-right-radius: 30px;
         border-bottom-right-radius: 30px;
         position: absolute;
-        top: -95px;
+        bottom: 30px;
         left: 25px;
         display: flex;
         flex-direction: column;
@@ -562,12 +585,12 @@ h2 {
     }
 }
 
-.text{
+.text {
     display: flex;
 }
 
-.group-answer{
-    @media(width < 993px){
+.group-answer {
+    @media(width < 993px) {
         width: 100%;
     }
 }

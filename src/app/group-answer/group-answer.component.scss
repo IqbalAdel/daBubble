@@ -16,6 +16,13 @@
     margin: 20px 20px 20px 0px;
     border-radius: 30px;
     position: relative;
+    &.collapsed {
+        width: 0; // Setze die Breite auf 0
+        padding-left: 0; // Optional: Entferne den Padding
+        padding-right: 0; // Optional: Entferne den Padding
+        opacity: 0; // Optional: Setze die Opazität auf 0
+        transition: width 0.3s ease-in-out; // Füge eine Übergangszeit für die Breite hinzu
+    }
 
     .commplet-chat {
         height: calc(100% - 315px);

@@ -156,6 +156,8 @@ export class DevspaceComponent implements OnInit{
 
   devspaceCloseOpen() {
     this.isDavspaceVisible = !this.isDavspaceVisible;
+
+    
   }
 
   closeDirectMessages() {

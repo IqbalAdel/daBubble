@@ -1,5 +1,6 @@
 <!-- group-answer.component.html -->
-<div class="main" *ngIf="userService.threadOpenStatus$">
+<div class="main"  *ngIf="(userService.threadOpenStatus$ | async)" 
+[ngClass]="{'collapsed': !userService.showGroupAnswer}">
   <div class="header">
     <h1>Thread</h1>
     <span># {{ groupName }}</span>

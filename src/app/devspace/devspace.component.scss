@@ -38,16 +38,26 @@ button {
     }
 }
 section{
-    margin-left: 15px;
+    margin-left: 30px;
     margin-top: 20px;
     // background-color: white;
     border-radius: 30px;
     padding: 30px 10px 20px 0;
+    transition: all 0.3s ease-in-out;
+    width: 380px;
+    height: 86vh;
+
     @media(width < 992px){
         border-radius: 0;
         margin: 0;
         padding: 0;
     }
+    &.collapsed {
+        width: 0; // Setze die Breite auf 0
+        padding-left: 0;
+        padding-right: 0;
+    
+      }
 }
 
 .davspace {

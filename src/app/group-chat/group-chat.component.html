@@ -85,7 +85,7 @@
                                         <p>{{ smileyGroup.count }}</p> <!-- Zeige die Anzahl der Smileys an -->
                                         <div class="hover-smiles">
                                             <p>{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji -->
-                                            <p>{{ smileyGroup.clickedBy.join(', ') }} haben reagiert</p>
+                                            <p>{{ getFormattedNames(smileyGroup.clickedBy) }}</p>
                                             <!-- Zeige die Benutzer an -->
                                         </div>
                                     </div>
