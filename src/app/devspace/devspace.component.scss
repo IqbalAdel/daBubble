@@ -45,12 +45,16 @@ section{
     padding: 30px 10px 20px 0;
     transition: all 0.3s ease-in-out;
     width: 380px;
-    height: 86vh;
+    height: calc(100vh - 131px);
+    // height: 86vh;
+
 
     @media(width < 992px){
         border-radius: 0;
         margin: 0;
         padding: 0;
+        height: calc(100vh - 63px);
+        width: 100%;
     }
     &.collapsed {
         width: 0; // Setze die Breite auf 0
@@ -424,4 +428,10 @@ span {
     100% {
       background-color: yellow;
     }
+  }
+
+  .send-message{
+    position: absolute;
+    right: 0;
+    bottom: 0;
   }

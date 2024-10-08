@@ -132,6 +132,7 @@ export class DevspaceComponent implements OnInit{
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if(window.innerWidth <= 992){
       this.isMobile.emit();
+      this.isDavspaceVisible = true;
     }
   }
 
@@ -233,7 +234,7 @@ export class DevspaceComponent implements OnInit{
 
   navigateRouteToNewMessage() {
     this.router.navigate(['/main/new-message']);
-    if(this.supportsTouch || window.innerWidth <= 992){
+    if(window.innerWidth <= 992){
       this.navigateToNewMessage.emit();
     }
   }

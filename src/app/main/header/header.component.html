@@ -10,10 +10,11 @@
         <span>DABubble</span>
       }
     </div>
-    <div class="search-container">
+    <div class="search-container custom-overlay-container">
         
         <form class="search-bar" [formGroup]="stateForm">
           <input
+          [ngClass]="filterOpen ? 'border-bottom0' : 'border-bottom30'"
               #searchInput
               placeholder="Code learning durchsuchen"
               type="text"
@@ -21,6 +22,8 @@
               [formControl]="searchFieldControl"
               [matAutocomplete]="auto"
               (focus)="onFocus()"
+              (click)="changeBottom()"
+              (blur)="onBlur()"
           />
           <mat-icon>search</mat-icon>
 

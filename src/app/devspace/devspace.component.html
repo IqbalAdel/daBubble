@@ -97,7 +97,9 @@
                 {{ user.name }}<span *ngIf="user.name === loggedInUserName">(Du)</span>
             </div>
         </div>
-
+        <div *ngIf="screenWidth < 992" class="send-message" (click)="navigateRouteToNewMessage()">
+            <img src="assets/sendMessage_default.svg" alt="">
+        </div>
     </div>
     @if(screenWidth >992){
         <button *ngIf="isDavspaceVisible" (click)="devspaceCloseOpen()" (mouseover)="changeImage(true)"

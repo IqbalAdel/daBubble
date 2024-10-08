@@ -205,3 +205,22 @@
         font-size: 20px;
     }
 }
+
+::ng-deep .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 30px 0px 30px 30px;
+
+    @media(width < 992px){
+    --mdc-dialog-container-shape: 30px;
+    }
+  }
+
+  ::ng-deep .cdk-overlay-pane.mat-mdc-dialog-panel {
+    max-width: none;
+    width: 400px;
+    height: 450px;
+
+    @media(width < 992px){
+        width: calc(100% - 20px);
+        height: calc(100% - 40px);
+    }
+}

@@ -1,6 +1,6 @@
 import { CommonModule, formatDate } from '@angular/common';
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { DialogChannelEditComponent } from '../dialogs/dialogs-channel/dialog-channel-edit/dialog-channel-edit.component';
@@ -125,7 +125,8 @@ closeImageModal(): void {
     private firebaseService: FirebaseService,
     private firestore: Firestore,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    // public dialogRef: MatDialogRef<DialogChannelMembersComponent>
 
   ) {
     this.groupName$ = this.userService.selectedChannelName$;
@@ -152,6 +153,7 @@ closeImageModal(): void {
       // console.log(this.threadOpen, this.screenWidth)
       // console.log(this.isMobile)
     }
+    
   }
 
   ngAfterViewInit(): void {
@@ -494,6 +496,8 @@ closeImageModal(): void {
       }
 
     });
+    if(this.screenWidth < 992){
+    }
   }
 
   openDialogAddMember() {

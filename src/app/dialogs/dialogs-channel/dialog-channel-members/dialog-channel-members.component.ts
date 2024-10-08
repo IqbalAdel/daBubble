@@ -24,7 +24,7 @@ import { UserService } from '../../../services/user.service';
 export class DialogChannelMembersComponent{
 
   imgSrc: string = "assets/img/close_default.svg";
-  imgSrcAdd: string = "assets/img/person_add_default.png";
+  imgSrcAdd: string = "assets/person_add_default.svg";
 
   allUsers: User[] = [];
   channelID: string = "";
@@ -93,8 +93,8 @@ export class DialogChannelMembersComponent{
     this.dialogRefAddMember.close();
     let dialogRef = this.dialogProfile.open(DialogProfileUserCenterComponent, {
       panelClass: 'border-30-right',
-      width: '400px',
-      height: '450px',
+      // width: '400px',
+      // height: '450px',
       data: {
         username: user.name,
         email: user.email,
