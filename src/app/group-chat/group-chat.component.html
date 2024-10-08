@@ -79,12 +79,12 @@
                                     <input *ngIf="isEditing[message.id]" [(ngModel)]="message.text"
                                         (blur)="saveText(message.id)" />
                                 </div>
-                                <div class="text">
+                                <div class="smiley-div">
                                     <div *ngFor="let smileyGroup of groupSmileys(message.smileys || [])" class="smiles">
-                                        <p>{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji anzeigen -->
+                                        <p (click)="saveSmileyToMessage(smileyGroup.smiley, message.id)">{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji anzeigen -->
                                         <p>{{ smileyGroup.count }}</p> <!-- Zeige die Anzahl der Smileys an -->
                                         <div class="hover-smiles">
-                                            <p>{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji -->
+                                            <p >{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji -->
                                             <p>{{ getFormattedNames(smileyGroup.clickedBy) }}</p>
                                             <!-- Zeige die Benutzer an -->
                                         </div>
@@ -99,8 +99,9 @@
                                             {{ message.chats.length }} Antworten
                                         </ng-container>
                                     </div>
-                                    <div class="last-answers-time">Letzte Antwort {{ getLastChatTime(message) }}</div>
-
+                                    <div *ngIf="message.chats.length > 0" class="last-answers-time">
+                                        Letzte Antwort {{ getLastChatTime(message) }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="add-smiley">
@@ -124,7 +125,8 @@
                                         (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)"
                                         [src]="imgSrc[3]" (click)="editText(message.id)" alt="">
                                     <div class="edit-text" (click)="editText(message.id)">
-                                        Nachricht bearbeiten
+                                        <p>Nachricht bearbeiten</p>
+                                    
                                     </div>
                                 </div>
 

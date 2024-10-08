@@ -38,6 +38,17 @@
         </div>
         <div class="massage">{{ chat.text }}</div>
       </div>
+      <div class="hover-container">
+        <div class="img-hover">
+          <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
+          [src]="imgSrc[0]" alt="">
+        </div>
+        <div class="img-hover">
+          <img (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)"
+          [src]="imgSrc[3]">
+        </div>
+      
+      </div>
     </div>
   </div>
   <app-chat [groupId]="groupId" [answerId]="answerId"></app-chat>

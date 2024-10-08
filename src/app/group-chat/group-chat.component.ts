@@ -288,18 +288,6 @@ closeImageModal(): void {
     return new Date(`${year}-${month}-${day}`);
   }
 
-  loadChats(): void {
-    const channelId = 'your-channel-id'; // Channel ID hier setzen
-    this.firebaseService.getChannelsMessages(channelId).subscribe(
-      (messages: ChatMessage[]) => {
-        this.chatsNummbers = messages;
-
-      },
-      (error) => {
-        console.error('Fehler beim Abrufen der Nachrichten:', error);
-      }
-    );
-  }
   loadMessages(): void {
     if (this.groupId) {
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
@@ -395,7 +383,6 @@ closeImageModal(): void {
       console.error('Fehler beim Abrufen der Benutzerdaten:', error);
     }
   }
-
 
   // async loadGroupName() {
   //   try {
@@ -611,6 +598,7 @@ closeImageModal(): void {
 
     return null; // Keine Chats vorhanden
   }
+  
   async saveSmileyToMessage(smiley: string, messageId: string) {
     if (!this.loggedInUserName) {
         console.error('Kein Benutzer eingeloggt.');
@@ -620,95 +608,30 @@ closeImageModal(): void {
     const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
     const messageDocSnapshot = await getDoc(messageDocRef);
 
-    if (messageDocSnapshot.exists()) {
-        const messageData = messageDocSnapshot.data();
-        const smileysArray = messageData?.['smileys'] || [];
-
-        // Überprüfen, ob der Benutzer bereits auf dieses Smiley reagiert hat
-        const existingReactionIndex = smileysArray.findIndex((s: { smiley: string, clickedBy: string[] }) =>
-            s.smiley === smiley && s.clickedBy.includes(this.loggedInUserName)
-        );
-
-        if (existingReactionIndex > -1) {
-            // Entferne die Reaktion, wenn der Benutzer bereits reagiert hat
-            smileysArray.splice(existingReactionIndex, 1);
-        } else {
-            // Wenn der Smiley schon existiert, füge den Benutzer zur bestehenden Reaktion hinzu
-            const existingSmileyIndex = smileysArray.findIndex((s: { smiley: string }) => s.smiley === smiley);
-            if (existingSmileyIndex > -1) {
-                // Wenn der Smiley bereits existiert, füge den Benutzer zu clickedBy hinzu
-                const clickedByArray = smileysArray[existingSmileyIndex].clickedBy;
-                if (!clickedByArray.includes(this.loggedInUserName)) {
-                    clickedByArray.push(this.loggedInUserName);
-                }
-            } else {
-                // Füge die neue Reaktion hinzu
-                smileysArray.push({
-                    smiley: smiley,
-                    clickedBy: [this.loggedInUserName], // Benutzer als Reagierender hinzufügen
-                    clickedAt: new Date()
-                });
-            }
-        }
-
-        try {
-            // Aktualisiere die Smileys in der Nachricht
-            await updateDoc(messageDocRef, {
-                smileys: smileysArray
-            });
-            console.log('Smiley erfolgreich aktualisiert:', smileysArray);
-        } catch (error) {
-            console.error('Fehler beim Aktualisieren des Smileys:', error);
-        }
-    } else {
+    if (!messageDocSnapshot.exists()) {
         console.error('Nachricht nicht gefunden:', messageId);
+        return;
+    }
+
+    const smileysArray = messageDocSnapshot.data()?.['smileys'] || [];
+    const existingSmileyIndex = smileysArray.findIndex((s: { smiley: string }) => s.smiley === smiley);
+    const clickedByArray = existingSmileyIndex > -1 ? smileysArray[existingSmileyIndex].clickedBy : null;
+
+    if (clickedByArray) {
+        const userIndex = clickedByArray.indexOf(this.loggedInUserName);
+        userIndex > -1 ? clickedByArray.splice(userIndex, 1) : clickedByArray.push(this.loggedInUserName);
+        if (clickedByArray.length === 0) smileysArray.splice(existingSmileyIndex, 1);
+    } else {
+        smileysArray.push({ smiley, clickedBy: [this.loggedInUserName], clickedAt: new Date() });
+    }
+
+    try {
+        await updateDoc(messageDocRef, { smileys: smileysArray });
+        console.log('Smiley erfolgreich aktualisiert:', smileysArray);
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren des Smileys:', error);
     }
 }
-
-
-
-  // 1. Nachricht und Smileys abrufen
-  async getMessageSmileys(messageId: string): Promise<any[]> {
-    const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
-    const messageDocSnapshot = await getDoc(messageDocRef);
-
-    if (messageDocSnapshot.exists()) {
-      const messageData = messageDocSnapshot.data();
-      return messageData?.['smileys'] || [];
-    } else {
-      throw new Error('Nachricht nicht gefunden: ' + messageId);
-    }
-  }
-
-  // 2. Smiley für Benutzer umschalten (hinzufügen oder entfernen)
-  toggleSmileyForUser(smileysArray: any[], smiley: string): any[] {
-    const existingReactionIndex = smileysArray.findIndex((s: { smiley: string; clickedBy: string }) =>
-      s.smiley === smiley && s.clickedBy === this.loggedInUserName
-    );
-
-    if (existingReactionIndex > -1) {
-      // Entferne die Reaktion
-      smileysArray.splice(existingReactionIndex, 1);
-    } else {
-      // Füge die neue Reaktion hinzu
-      smileysArray.push({
-        smiley: smiley,
-        clickedBy: this.loggedInUserName,
-        clickedAt: new Date(),
-      });
-    }
-
-    return smileysArray;
-  }
-
-  // 3. Aktualisierte Smileys in der Nachricht speichern
-  async saveUpdatedSmileys(messageId: string, smileysArray: any[]): Promise<void> {
-    const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
-    await updateDoc(messageDocRef, {
-      smileys: smileysArray,
-    });
-  }
-
 
   // laden der Smileys
   async loadSmileysForMessage(messageId: string) {
@@ -722,7 +645,6 @@ closeImageModal(): void {
         this.smileysData = messageData?.['smileys'] || [];
         console.log("Smileys geladen:", this.smileysData);
       } else {
-        console.error('Nachricht nicht gefunden:', messageId);
       }
     } catch (error) {
       console.error('Fehler beim Laden der Smileys:', error);
@@ -775,6 +697,24 @@ closeImageModal(): void {
   selectSmiley() {
     this.emojiPickerVisible = !this.emojiPickerVisible; // Umschalten der Sichtbarkeit
   }
+  
+  addSmileyToGroup(smileyGroup: any, message: any) {
+    // Überprüfen, ob der Benutzer bereits auf den Smiley reagiert hat
+    const userIndex = smileyGroup.clickedBy.indexOf(this.loggedInUserName);
+  
+    if (userIndex === -1) {
+      // Wenn der Benutzer noch nicht reagiert hat, füge den Benutzernamen hinzu
+      smileyGroup.clickedBy.push(this.loggedInUserName);
+      smileyGroup.count++; // Erhöhe den Zähler für den Smiley
+    } else {
+      // Wenn der Benutzer bereits reagiert hat, entferne den Benutzernamen aus der Liste
+      smileyGroup.clickedBy.splice(userIndex, 1);
+      smileyGroup.count--; // Verringere den Zähler für den Smiley
+    }
+  
+    // Optional: Hier könntest du die Smiley-Daten auf der Server-Seite aktualisieren, falls nötig
+    // this.messageService.updateSmiley(message.id, smileyGroup);
+  }
 
   addEmoji(event: any, messageId: string) {
     const emoji = event.emoji.native;
@@ -801,29 +741,26 @@ closeImageModal(): void {
   }
 
   getFormattedNames(clickedBy: string[]): string {
-    // Prüfe, ob der eingeloggte Benutzer in der Liste ist
-    const loggedInUserIndex = clickedBy.indexOf(this.loggedInUserName);
+    let clickedByCopy = [...clickedBy]; // Array kopieren
+    const loggedInUserIndex = clickedByCopy.indexOf(this.loggedInUserName);
 
     if (loggedInUserIndex > -1) {
-        // Entferne den eingeloggten Benutzer aus der Liste
-        clickedBy.splice(loggedInUserIndex, 1);
-        // Füge "Du" ans Ende der Liste hinzu
-        clickedBy.push('Du');
+        clickedByCopy.splice(loggedInUserIndex, 1);
+        clickedByCopy.push('Du');
     }
 
-    // Dynamisch das Verb anpassen
-    if (clickedBy.length === 1) {
-        // Wenn nur der eingeloggte Benutzer reagiert hat
-        return clickedBy[0] === 'Du' ? 'Du hast reagiert' : `${clickedBy[0]} hat reagiert`;  // Nur eine Person
+    if (clickedByCopy.length === 1) {
+        return clickedByCopy[0] === 'Du' ? 'Du hast reagiert' : `${clickedByCopy[0]} hat reagiert`;
     }
-    if (clickedBy.length === 2) {
-        return `${clickedBy.join(' und ')} haben reagiert`;  // Zwei Personen
+    if (clickedByCopy.length === 2) {
+        return `${clickedByCopy.join(' und ')} haben reagiert`;
     }
-    
-    // Mehr als zwei Personen
-    const lastUser = clickedBy.pop();  // Letzte Person entfernen
-    return `${clickedBy.join(', ')} und ${lastUser} haben reagiert`;  // Erst Namen mit Komma, dann "und"
+
+    const lastUser = clickedByCopy.pop();
+    return `${clickedByCopy.join(', ')} und ${lastUser} haben reagiert`;
 }
+
+
 
 
 }

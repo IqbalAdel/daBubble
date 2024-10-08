@@ -33,7 +33,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   messages: { id:string; text: string; timestamp: string; time: string; userName: string; chats: string}[] = [];
   @ViewChild('scrollerContainer', { static: false }) scrollContainer: ElementRef | undefined;
   @Output() threadClosed: EventEmitter<void> = new EventEmitter<void>();
-
+  imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
 
 
 
@@ -268,5 +268,13 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
     this.threadClosed.emit()
 
   }
+
+  changeImageMoreVert(isHover: boolean) {
+    this.imgSrc[3] = isHover ? 'assets/more_vert_hover.svg' : 'assets/more_vert.svg';
+  }
   
+  changeImageSmiley(isHover: boolean) {
+    this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.svg' : 'assets/img/smiley/add_reaction.svg';
+  }
+
 }
