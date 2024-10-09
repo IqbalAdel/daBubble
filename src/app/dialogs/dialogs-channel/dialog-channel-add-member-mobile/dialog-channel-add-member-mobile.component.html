@@ -1,0 +1,24 @@
+<mat-card class="menu user-profile">
+    <div class="line-container">
+        <div (click)="closeDialogAddMember()" class="line"></div>
+    </div>
+    <div class="profile-aot">
+        <span class="profile-txt" >Leute hinzufügen</span>
+        <img (click)="closeDialogAddMember()" class="close" [src]="imgSrcClose"
+        (mouseover)="imgSrcClose = 'assets/img/close_hover.svg'"
+        (mouseout)="imgSrcClose = 'assets/img/close_default.svg'" 
+        alt="">
+    </div>
+
+    <app-chips-add-members [test]="test"></app-chips-add-members>
+    
+    <div class="add-btn">
+        <button
+        [ngStyle]="checkUserSelection() ? {'background-color': '#444DF2'} : {'background-color': '#686868'}"
+        type="submit"
+        [disabled]="!checkUserSelection()"
+        (click)="onSubmit()">
+            Hinzufügen
+        </button>
+    </div>
+</mat-card>

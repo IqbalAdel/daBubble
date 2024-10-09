@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogChannelCreateAddMembersComponent } from '../dialog-channel-create-add-members/dialog-channel-create-add-members.component';
@@ -8,6 +8,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatInput, MatInputModule } from '@angular/material/input';
+import { DialogChannelCreateAddMemberMobileComponent } from '../dialog-channel-create-add-member-mobile/dialog-channel-create-add-member-mobile.component';
 
 @Component({
   selector: 'app-dialog-channel-create',
@@ -19,15 +20,19 @@ import { MatInput, MatInputModule } from '@angular/material/input';
     FormsModule,
     CommonModule,
     MatInputModule,
+    DialogChannelCreateAddMemberMobileComponent,
   ],
   templateUrl: './dialog-channel-create.component.html',
   styleUrl: './dialog-channel-create.component.scss'
 })
 export class DialogChannelCreateComponent {
 
+  @ViewChild(DialogChannelCreateAddMemberMobileComponent) createChannelAddMobile!: DialogChannelCreateAddMemberMobileComponent;
+
   imgSrc: string = "assets/img/close_default.svg";
   name: string = '';
   description: string = '';
+  showAddMemberMenu = false;
   
 
 
@@ -58,13 +63,26 @@ export class DialogChannelCreateComponent {
 
 
   onSubmit(): void {
-    // if (this.name.trim() === '' || this.description.trim() === '') {
-    //   // Form is invalid
-    //   console.log('Form is invalid');
-    //   return;
-    // }
-    // else{
-    // }
-    this.openDialogAddMembers();
+    if(window.innerWidth <= 992){
+      this.addMembersToNewChannelMobile()
+      if(this.createChannelAddMobile){
+        this.createChannelAddMobile.newChannel.name = this.name;
+        this.createChannelAddMobile.newChannel.description = this.description;
+      }
+
+    } else{
+      this.openDialogAddMembers();
+    }
   }
+
+  addMembersToNewChannelMobile(){
+    this.showAddMemberMenu = true;
+
+  }
+
+  closeDialogAddMembersMobile(){
+    this.showAddMemberMenu = false;
+    
+  }
+
 }

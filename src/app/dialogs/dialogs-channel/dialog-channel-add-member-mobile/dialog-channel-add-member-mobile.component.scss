@@ -1,8 +1,6 @@
 @import './../../../../mixins.scss';
 
 .user-profile{
-    padding: 30px 30px 30px 30px;
-    height: 100%;
     >span{
         color: #444DF2;
         margin-bottom: 10px;
@@ -70,26 +68,26 @@
     }
 }
 
-
-
-
-
-::ng-deep .border-radius .mat-mdc-dialog-container {
-    box-shadow: none !important;/* Removes the box shadow */
-    --mdc-dialog-container-shape: 30px;
-  }
-
-  ::ng-deep .cdk-overlay-pane.mat-mdc-dialog-panel {
-    max-width: none;
-    width: 400px;
+.menu{
     height: 200px;
-    // margin-top: 200px;
-    // margin-right: 50px;
-    // position: absolute;
-    // top: 200px;
-    // right: 50px;
-    @media(width < 992px){
-        // width: 100%;
-        // height: 100%;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    padding: 20px 26px;
+    gap: 10px;
+    .line-container{
+      display: flex;
+      justify-content: center;
+      width: 100%;
     }
-}
+    .line{
+        background-color: #D9D9D9;
+        display: flex;
+        justify-content: center;
+        width: 62px;
+        height: 6px;
+        border-radius: 23px;
+  
+    }
+
+
+  }

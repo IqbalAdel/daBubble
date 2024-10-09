@@ -28,6 +28,7 @@ export class DialogChannelMembersComponent{
 
   allUsers: User[] = [];
   channelID: string = "";
+  hideButton: boolean = false;
 
   // dialogRefAddMember: MatDialogRef<DialogChannelAddMembersComponent>;
 

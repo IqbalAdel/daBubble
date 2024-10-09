@@ -2,7 +2,7 @@
   <div class="chat-header-group">
     <!-- Einmalige asynchrone Abfrage für den Benutzer -->
     <ng-container *ngIf="user$ | async as user">
-      <div class="name">
+      <div (click)="openDialogMemberProfile(user)" class="name">
         <img [src]="user.img" alt="">
         <h2>{{ user.name }}</h2>
       </div>

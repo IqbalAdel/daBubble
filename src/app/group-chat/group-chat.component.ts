@@ -488,10 +488,18 @@ closeImageModal(): void {
   }
 
   openDialogAddMember() {
+    if(this.screenWidth <= 992){
+      this.openDialogMemberList();
+    } else{
+      this.showAddMembersMenu()
+    }
+  }
+
+  showAddMembersMenu(){
     this.dialog.open(DialogChannelAddMembersComponent, {
       panelClass: 'border-30-right',
-      width: '400px',
-      height: '200px',
+      // width: '400px',
+      // height: '200px',
       position: { top: '200px', right: '50px' },
       data: {
         channelID: this.groupId,
@@ -600,6 +608,7 @@ closeImageModal(): void {
   }
   
   async saveSmileyToMessage(smiley: string, messageId: string) {
+    this.disconnectGroupChat()
     if (!this.loggedInUserName) {
         console.error('Kein Benutzer eingeloggt.');
         return;
@@ -722,11 +731,13 @@ closeImageModal(): void {
 
     this.saveSmileyToMessage(emoji, messageId);
     this.closeEmojiSelection();
+    // this.observeGroupChat();
   }
 
   closeEmojiSelection() {
     this.emojiPickerVisible = false;
   }
+
   
   isUserEqualToChatUser(chatUserName: string): boolean {
     return this.loggedInUserName === chatUserName;

@@ -6,20 +6,22 @@
         (mouseout)="imgSrc = 'assets/img/close_default.svg'" 
         alt="">
     </div>
-    <div class="member-list">
-        @for (user of allUsers; track user.id) {
-            <div (click)="openDialogMemberProfile(user)" class="member">
-                <div class="image">
-                    <img src="{{user.img}}" alt="">
-                    <div class="online-status"></div>
-                    <div class="online-status" [ngClass]="!userService.getUserStatus(user.id) ? 'offline' : 'online'"></div>
+    <div class="member-list-container">
+        <div class="member-list">
+            @for (user of allUsers; track user.id) {
+                <div (click)="openDialogMemberProfile(user)" class="member">
+                    <div class="image">
+                        <img src="{{user.img}}" alt="">
+                        <div class="online-status"></div>
+                        <div class="online-status" [ngClass]="!userService.getUserStatus(user.id) ? 'offline' : 'online'"></div>
+                    </div>
+                    <span>{{user.name}}</span>
                 </div>
-                <span>{{user.name}}</span>
-            </div>
-        }
-
+            }
+    
+        </div>
     </div>
-    <div (click)="openDialogAddMember()" class="add-member"
+    <div *ngIf="!hideButton" (click)="openDialogAddMember()" class="add-member"
     (mouseover)="imgSrcAdd = 'assets/person_add_hover.svg'"
     (mouseout)="imgSrcAdd = 'assets/person_add_default.svg'">
         <div class="add-image">

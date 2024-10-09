@@ -21,4 +21,11 @@
             </button>
         </div>
     </form>
+
+    <app-dialog-channel-create-add-member-mobile
+        [ngClass] = "{'slide-up': showAddMemberMenu == true, 'slide-down': showAddMemberMenu == false}"
+        class="profile-menu"
+        (closeAddMenu)="closeDialogAddMembersMobile()"
+        (successAdd)="closeDialog()">
+    </app-dialog-channel-create-add-member-mobile>
 </mat-card>

@@ -1,0 +1,40 @@
+<mat-card class="menu user-profile">
+    <div class="line-container">
+        <div (click)="closeDialogAddMember()" class="line"></div>
+    </div>
+    <div class="profile-aot">
+        <span class="profile-txt" >Leute hinzufügen</span>
+        <img (click)="closeDialogAddMember()" class="close" [src]="imgSrcClose"
+        (mouseover)="imgSrcClose = 'assets/img/close_hover.svg'"
+        (mouseout)="imgSrcClose = 'assets/img/close_default.svg'" 
+        alt="">
+    </div>
+
+    <form #form="ngForm" (ngSubmit)="onSubmit()">
+        <div class="option-container">
+            <div class="option">
+                <input type="radio" name="channelOption" id="" [value]="'option1'" [(ngModel)]="selectedValue" (change)="onRadioChange('option1')">
+                <span>Alle Mitglieder von <span class="channel">OfficeTeam</span> hinzufügen</span>
+            </div>
+            <div class="option">
+                <input type="radio" name="channelOption" id="" [value]="'option2'" [(ngModel)]="selectedValue" (change)="onRadioChange('option2')">
+                <span>Bestimmte Leute hinzufügen</span>
+            </div>
+        </div>
+
+        @if(selectedValue == 'option2'){
+            <app-chips-add-members></app-chips-add-members>
+        }
+    
+        <div class="add-btn">
+            <button type="submit" [disabled]="!selectedValue" [ngClass]="{'colorPurple': selectedValue, 'colorGrey': !selectedValue}">
+                Erstellen
+            </button>
+        </div>
+        
+    </form>
+
+    
+    
+    
+</mat-card>

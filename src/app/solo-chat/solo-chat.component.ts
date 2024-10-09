@@ -12,6 +12,8 @@ import { FirebaseService } from '../services/firebase.service';
 import { addDoc, collection, getDocs, Timestamp, updateDoc, writeBatch } from 'firebase/firestore';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogProfileUserCenterComponent } from '../dialogs/dialog-profile-user-center/dialog-profile-user-center.component';
 
 interface Chat {
   text: string;
@@ -53,7 +55,8 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewInit {
     private firestore: Firestore,
     private userService: UserService,
     private firebaseService: FirebaseService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialogProfile: MatDialog,
   ) { 
 
   }
@@ -300,6 +303,20 @@ listenToChats(userId: string): void {
     });
 
     observer.observe(this.scrollContainer.nativeElement, config);
+  }
+
+  openDialogMemberProfile(user: User){
+    this.dialogProfile.open(DialogProfileUserCenterComponent, {
+      panelClass: 'border-30-right',
+      data: {
+        username: user.name,
+        email: user.email,
+        image: user.img,
+        user: user,
+        status: this.userService.getUserStatus(user.id)
+      }
+
+    });
   }
 
 }

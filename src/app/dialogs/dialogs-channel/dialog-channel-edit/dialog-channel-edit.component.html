@@ -52,8 +52,19 @@
             </div>
         </div>
     
-    
-        <app-dialog-channel-members *ngIf="screenWidth < 992"></app-dialog-channel-members>
+        <div *ngIf="screenWidth < 992" class="member-list-container">
+            <app-dialog-channel-members ></app-dialog-channel-members>
+            <div (click)="openDialogAddMember()" class="add-member"
+                (mouseover)="imgSrcAdd = 'assets/person_add_hover.svg'"
+                (mouseout)="imgSrcAdd = 'assets/person_add_default.svg'">
+                <div class="add-image">
+                    <img 
+                    [src]="imgSrcAdd"
+                        alt="">
+                </div>
+                <span>Mitglieder hinzufügen</span>
+            </div>
+        </div>
     
         <!-- <div class="inputs">
             <span>Channel Name</span>
@@ -69,4 +80,16 @@
             </button>
         </div>
     </div>
+
+    <app-dialog-channel-add-member-mobile
+        [ngClass] = "{'slide-up': showAddMemberMenu == true, 'slide-down': showAddMemberMenu == false}"
+        class="profile-menu"
+        (closeAddMenu)="closeDialogAddMember()"
+        (successAdd)="closeDialog()">
+    </app-dialog-channel-add-member-mobile>
+
+
+    
 </mat-card>
+
+

@@ -32,6 +32,7 @@ export class ChatComponent implements OnInit{
   @ViewChild('messageInput') messageInput: any;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
   @Output() notify: EventEmitter<void> = new EventEmitter<void>();
+  @Output() sendChatMessage: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
   channelId!: string;
   // receivingUserId: string | null = "";
@@ -213,6 +214,7 @@ export class ChatComponent implements OnInit{
 
 
   async sendMessage(messageText: string): Promise<void> {
+    this.sendChatMessage.emit()
     console.log('Sende Nachricht:', messageText);
     console.log('Bild URL:', this.selectedImageUrl);
   

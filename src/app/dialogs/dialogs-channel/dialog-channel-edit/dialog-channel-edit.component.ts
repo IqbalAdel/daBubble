@@ -1,4 +1,4 @@
-import { Component, HostListener, Inject, OnInit } from '@angular/core';
+import { Component, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 // import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { User } from '../../../../models/user.class';
 import { UserService } from '../../../services/user.service';
 import { DialogChannelMembersComponent } from '../dialog-channel-members/dialog-channel-members.component';
+import { DialogChannelAddMemberMobileComponent } from '../dialog-channel-add-member-mobile/dialog-channel-add-member-mobile.component';
 
 @Component({
   selector: 'app-dialog-channel-edit',
@@ -20,6 +21,7 @@ import { DialogChannelMembersComponent } from '../dialog-channel-members/dialog-
     CommonModule,
     FormsModule,
     DialogChannelMembersComponent,
+    DialogChannelAddMemberMobileComponent,
   ],
   templateUrl: './dialog-channel-edit.component.html',
   styleUrls: ['./dialog-channel-edit.component.scss'],
@@ -37,6 +39,9 @@ export class DialogChannelEditComponent implements OnInit{
   channel: Channel | null = null;
   editTxtValue: string = "Bearbeiten";
   editTxtValueTwo: string = "Bearbeiten";
+  imgSrcAdd: string = "assets/person_add_default.svg";
+
+  showAddMemberMenu = false;
 
   name: string = "";
   description: string = "";
@@ -58,6 +63,8 @@ export class DialogChannelEditComponent implements OnInit{
       throw new Error('Function not implemented.');
     }
   };
+  @ViewChild(DialogChannelMembersComponent) membersList!: DialogChannelMembersComponent;
+  @ViewChild(DialogChannelAddMemberMobileComponent) addMembersMobile!: DialogChannelAddMemberMobileComponent;
   
 
   constructor(
@@ -70,6 +77,7 @@ export class DialogChannelEditComponent implements OnInit{
       channelDescription: string; 
        }
   ) {
+    // this.addMembersMobile.channelID = data.channelID;
     this.channelID = data.channelID;
     this.channelName = data.channelName;
     this.channelDescription = data.channelDescription;
@@ -92,7 +100,8 @@ export class DialogChannelEditComponent implements OnInit{
       }
     console.log(this.user.id)
     this.screenWidth = window.innerWidth;
-
+    this.membersList.hideButton = true;
+    this.addMembersMobile.channelID = this.channelID
   }
 
   async getActiveUser(){
@@ -115,6 +124,13 @@ export class DialogChannelEditComponent implements OnInit{
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     this.screenWidth = window.innerWidth;
+    if(this.membersList){
+      this.membersList.hideButton = true;
+    }
+    if(this.screenWidth > 992 && this.showAddMemberMenu){
+      this.closeDialogAddMember()
+    }
+
     }
 
   closeDialog() {
@@ -166,5 +182,13 @@ export class DialogChannelEditComponent implements OnInit{
     this.fire.deleteChannelFromUser(this.user.id, this.channelID)
     this.fire.deleteUserFromChannel(this.channelID, this.user.id)
     this.dialog.close();
+  }
+
+  openDialogAddMember(){
+    this.showAddMemberMenu = true;
+  }
+  closeDialogAddMember(){
+    this.showAddMemberMenu = false;
+    
   }
 }
