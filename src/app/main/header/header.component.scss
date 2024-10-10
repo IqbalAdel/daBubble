@@ -85,12 +85,15 @@
         font-weight: bold;
         padding-right: 10px;
         transition: color ease-in 125ms;
+        width: max-content;
 
         @media (width < 992px) {
             display: none;
         }
     }
 }
+
+
 
 .image{
     position: relative;
@@ -159,9 +162,7 @@
         // border-bottom-right-radius: 30px;
         height: 60px;
 
-        @media (width < 992px) {
-            display: none;
-        }
+       
     }
     ::placeholder{
         font-size: 20px;

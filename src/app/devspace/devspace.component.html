@@ -1,4 +1,5 @@
 <section [ngClass]="{'collapsed': !isDavspaceVisible}" [ngStyle]="isDavspaceVisible ? {'background-color': 'white'} : {}">
+    <!-- <app-search-bar *ngIf="screenWidth < 992"></app-search-bar> -->
     <div *ngIf="isDavspaceVisible" class="davspace">
         <div *ngIf="screenWidth >= 992" class="davspace-menu">
             <div class="davspace-picture">
@@ -13,6 +14,7 @@
                 <img [src]="imgEdit" alt="">
             </div>
         </div>
+        <app-search-bar *ngIf="screenWidth < 992"></app-search-bar>
         <div class="channels">
             <div class="channel-group" (click)="closeChannels()"
             (mouseover)="imgDropDown ='assets/arrow_drop_down-blue.svg'"
@@ -97,8 +99,14 @@
                 {{ user.name }}<span *ngIf="user.name === loggedInUserName">(Du)</span>
             </div>
         </div>
-        <div *ngIf="screenWidth < 992" class="send-message" (click)="navigateRouteToNewMessage()">
-            <img src="assets/sendMessage_default.svg" alt="">
+        <div *ngIf="screenWidth < 992" class="send-message" (click)="navigateRouteToNewMessage()"
+        (touchstart)="imgSendMsgBttn = 'assets/sendMessage_click.svg'" 
+        (touchend)="imgSendMsgBttn = 'assets/sendMessage_default.svg'" 
+        (mouseover)="imgSendMsgBttn = 'assets/sendMessage_click.svg'" 
+        (mousedown)="imgSendMsgBttn = 'assets/sendMessage_click.svg'" 
+        (mouseleave)="imgSendMsgBttn = 'assets/sendMessage_default.svg'" 
+        >
+            <img [src]="imgSendMsgBttn" alt="">
         </div>
     </div>
     @if(screenWidth >992){

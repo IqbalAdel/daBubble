@@ -14,11 +14,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogChannelCreateComponent } from '../dialogs/dialogs-channel/dialog-channel-create/dialog-channel-create.component';
 import { Channel } from '../../models/channel.class';
 import { HttpClientModule } from '@angular/common/http';
+import { SearchBarComponent } from '../main/header/search-bar/search-bar.component';
 
 @Component({
   selector: 'app-devspace',
   standalone: true,
-  imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent, RouterModule, RouterLink, HttpClientModule],
+  imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent, RouterModule, RouterLink, HttpClientModule, SearchBarComponent],
   templateUrl: './devspace.component.html',
   styleUrls: ['./devspace.component.scss'] // corrected styleUrl to styleUrls
 })
@@ -62,6 +63,7 @@ export class DevspaceComponent implements OnInit{
   imgDropDownRight2 = "assets/arrow_drop_down-right.svg";
   imgAccountCircle = "assets/account_circle.svg";
   imgAccountCircle2 = "assets/account_circle.svg";
+  imgSendMsgBttn = "assets/sendMessage_default.svg";
 
   selectedUserId: string | null = null; // Variable to track the selected user
   userStatus: { [key: string]: boolean } = {};

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MatDialogRef } from '@angular/material/dialog';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -97,6 +97,14 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
       });
     });
   }  
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    const screenWidth = window.innerWidth;
+    if(screenWidth < 992){
+      this.dialog.close();
+    }
+    }
 
   async ngOnInit(): Promise<void> {
     try {

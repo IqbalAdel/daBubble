@@ -82,6 +82,9 @@
     @media(width < 1350px) {
         margin: 20px 10px 0px 10px;
     }
+    @media(width < 992px) {
+        margin: 0px;
+    }
 
     box-sizing: border-box;
     display: flex;

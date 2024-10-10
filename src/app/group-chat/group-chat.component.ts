@@ -476,23 +476,22 @@ closeImageModal(): void {
   openDialogMemberList() {
     this.dialog.open(DialogChannelMembersComponent, {
       panelClass: 'border-30-right',
-      width: '300px',
-      position: { top: '200px', right: '100px' },
+      // width: '300px',
+      // position: { top: '200px', right: '100px' },
       data: {
         channelID: this.groupId,
       }
 
     });
-    if(this.screenWidth < 992){
-    }
+   
   }
 
   openDialogAddMember() {
-    if(this.screenWidth <= 992){
-      this.openDialogMemberList();
-    } else{
-      this.showAddMembersMenu()
-    }
+    this.openDialogMemberList();
+    // if(this.screenWidth <= 992){
+    // } else{
+    //   this.showAddMembersMenu()
+    // }
   }
 
   showAddMembersMenu(){

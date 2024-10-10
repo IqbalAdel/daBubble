@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, ViewChild } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogChannelCreateAddMembersComponent } from '../dialog-channel-create-add-members/dialog-channel-create-add-members.component';
@@ -39,10 +39,18 @@ export class DialogChannelCreateComponent {
   constructor( 
     public dialogChannel: MatDialogRef<DialogChannelCreateComponent>, 
     public dialogAddMembers: MatDialog,
+    public dialogAddMembersClose: MatDialogRef<DialogChannelCreateAddMembersComponent>,
     private fire: FirebaseService,
   ) {    
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    const screenWidth = window.innerWidth;
+    if(screenWidth >= 992){
+      this.showAddMemberMenu = false;
+    }
+    }
 
   closeDialog(){
     this.dialogChannel.close();

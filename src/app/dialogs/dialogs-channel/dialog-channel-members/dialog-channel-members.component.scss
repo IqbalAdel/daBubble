@@ -147,6 +147,17 @@
 
   ::ng-deep .border-30-right .mat-mdc-dialog-container {
     --mdc-dialog-container-shape: 30px 0px 30px 30px;
+    width: 300px;
+    position: absolute;
+    right: 40px;
+    top: 170px;
+    margin-top: 0px;
+    margin-right: 0;
+}
+
+::ng-deep .mdc-dialog{
+    height: auto;
+    left: auto;
 }
 
 @media(width < 992px){

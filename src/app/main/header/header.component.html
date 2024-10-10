@@ -10,7 +10,7 @@
         <span>DABubble</span>
       }
     </div>
-    <div class="search-container custom-overlay-container">
+    <!-- <div class="search-container custom-overlay-container">
         
         <form class="search-bar" [formGroup]="stateForm">
           <input
@@ -43,7 +43,8 @@
               </ng-container>
           </mat-autocomplete>
         </form> 
-      </div>
+      </div> -->
+      <app-search-bar *ngIf="screenWidth >= 992"></app-search-bar>
     <div (mouseover)="imgSrc = 'assets/img/keyboard_arrow_down_v3.png'"
     (mouseout)="imgSrc = 'assets/img/keyboard_arrow_down_v2.png'" (click)="openProfileMenu()" class="profile">
         <span>{{user.name}}</span>
