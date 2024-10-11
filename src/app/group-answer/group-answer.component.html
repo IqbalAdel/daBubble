@@ -1,14 +1,11 @@
 <!-- group-answer.component.html -->
-<div class="main"  *ngIf="(userService.threadOpenStatus$ | async)" 
-[ngClass]="{'collapsed': !userService.showGroupAnswer}">
+<div class="main" *ngIf="(userService.threadOpenStatus$ | async)"
+  [ngClass]="{'collapsed': !userService.showGroupAnswer}">
   <div class="header">
     <h1>Thread</h1>
     <span># {{ groupName }}</span>
-    <img (click)="closeAnswer()"
-     [src]="imgClose"
-     (mouseover)="imgClose = 'assets/img/close_hover.svg'" 
-    (mouseleave)="imgClose = 'assets/img/close_default.svg'"
-     alt="" >
+    <img (click)="closeAnswer()" [src]="imgClose" (mouseover)="imgClose = 'assets/img/close_hover.svg'"
+      (mouseleave)="imgClose = 'assets/img/close_default.svg'" alt="">
   </div>
   <div class="line"></div>
   <div class="commplet-chat" #scrollerContainer>
@@ -25,11 +22,12 @@
     <div class="answers-and-line">
       <!-- <div > {{ answerChats.length }} Antworten</div> -->
       <ng-container *ngIf="answerChats.length === 0">Antworten</ng-container>
-                                        <ng-container *ngIf="answerChats.length === 1">1 Antwort</ng-container>
-                                        <ng-container *ngIf="answerChats.length > 1"> Antworten </ng-container>
+      <ng-container *ngIf="answerChats.length === 1">1 Antwort</ng-container>
+      <ng-container *ngIf="answerChats.length > 1"> Antworten </ng-container>
       <div class="line-two"></div>
     </div>
-    <div *ngFor="let chat of answerChats" [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
+    <div *ngFor="let chat of answerChats"
+      [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
       <img src="assets/img/avatar-1.png" alt="">
       <div class="messages">
         <div class="name-and-time">
@@ -40,14 +38,16 @@
       </div>
       <div class="hover-container">
         <div class="img-hover">
-          <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
-          [src]="imgSrc[0]" alt="">
+          <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)" [src]="imgSrc[0]" alt=""
+            (click)="openSmiley()">
         </div>
         <div class="img-hover" *ngIf="chat.userName === loggedInUserName">
-          <img (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)"
-          [src]="imgSrc[3]">
+          <img (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)" [src]="imgSrc[3]">
         </div>
-      
+        <emoji-mart *ngIf="emojiPickerVisible"  (emojiSelect)="addEmoji($event, chat.messageId, chatIndex)" title="Pick your emoji"
+          [style.position]="'absolute'" [style.zIndex]="1000" [style.top.px]="30" [style.left.px]="0">
+        </emoji-mart>
+
       </div>
     </div>
   </div>

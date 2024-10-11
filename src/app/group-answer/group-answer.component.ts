@@ -4,15 +4,25 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
 import { Firestore } from '@angular/fire/firestore';
 import { from, map, Observable, tap } from 'rxjs';
-import { collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
 import { User } from '../../models/user.class';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+interface Chat {
+  messageId: string;
+  smileys?: Smiley[];
+}
+
+interface Smiley {
+  smiley: string;
+  clickedBy: string[];
+}
 
 @Component({
   selector: 'app-group-answer',
   standalone: true,
-  imports: [ChatComponent, CommonModule],
+  imports: [ChatComponent, CommonModule, PickerModule],
   templateUrl: './group-answer.component.html',
   styleUrl: './group-answer.component.scss'
 })
@@ -34,8 +44,13 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   @ViewChild('scrollerContainer', { static: false }) scrollContainer: ElementRef | undefined;
   @Output() threadClosed: EventEmitter<void> = new EventEmitter<void>();
   imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
-
-
+  emojiPickerVisible: boolean = false; // Variable zum Anzeigen/Ausblenden des Emoji-Pickers
+  chatIndex: number = 0;
+  chat = {
+    messageId: '12345',  // Beispielhafte Nachricht-ID, dies muss dynamisch gesetzt werden
+    userName: 'JohnDoe'
+  };
+  
 
   constructor(private route: ActivatedRoute, public userService: UserService,  private firebaseService: FirebaseService, private router: Router) {
     const channelsCollection = collection(this.firestore, 'channels');
@@ -276,5 +291,77 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   changeImageSmiley(isHover: boolean) {
     this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.svg' : 'assets/img/smiley/add_reaction.svg';
   }
+
+  openSmiley() {
+    this.emojiPickerVisible = !this.emojiPickerVisible; // Emoji-Picker umschalten
+  }
+
+  async addEmoji(event: any, messageId: string, chatIndex: number) {
+    const emoji = event.emoji.native;  // Das ausgewählte Emoji
+    const groupId = this.groupId; // Die ID des Channels oder der Gruppe
+
+    try {
+        // Referenz auf das spezifische Dokument in der Firebase-Datenbank
+        const messageDocRef = doc(this.firestore, `channels/${groupId}/messages/${messageId}`);
+    
+        // Hole das Dokument (Nachricht) aus Firebase
+        const messageDocSnapshot = await getDoc(messageDocRef);
+    
+        if (messageDocSnapshot.exists()) {
+            const messageData = messageDocSnapshot.data();
+            console.log('Nachrichtendaten:', messageData); // Debugging: Zeige die abgerufenen Daten an
+            
+            const chatsArray = messageData['chats'] || [];
+    
+            if (chatsArray[chatIndex]) {
+                const chat = chatsArray[chatIndex];
+                const smileysArray = chat['smileys'] || [];
+    
+                const existingSmileyIndex = smileysArray.findIndex((s: { smiley: string }) => s.smiley === emoji);
+    
+                if (existingSmileyIndex > -1) {
+                    const clickedByArray = smileysArray[existingSmileyIndex].clickedBy;
+                    const userIndex = clickedByArray.indexOf(this.loggedInUserName);
+    
+                    if (userIndex > -1) {
+                        clickedByArray.splice(userIndex, 1);
+                        if (clickedByArray.length === 0) {
+                            smileysArray.splice(existingSmileyIndex, 1);
+                        }
+                    } else {
+                        clickedByArray.push(this.loggedInUserName);
+                    }
+                } else {
+                    smileysArray.push({
+                        smiley: emoji,
+                        clickedBy: [this.loggedInUserName],
+                    });
+                }
+    
+                chatsArray[chatIndex]['smileys'] = smileysArray;
+    
+                // Aktualisiere das Dokument in Firebase mit dem neuen `chats`-Array
+                await updateDoc(messageDocRef, {
+                    chats: chatsArray,
+                });
+    
+                console.log('Smiley erfolgreich im Chat aktualisiert:', smileysArray);
+            } else {
+                console.error('Chat mit Index', chatIndex, 'nicht gefunden.');
+            }
+        } else {
+            console.error('Nachricht nicht gefunden:', messageId);
+        }
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren des Smileys:', error);
+    }
+  
+    // Emoji-Picker schließen nach Auswahl
+    this.emojiPickerVisible = false;
+}
+
+
+  
+  
 
 }
