@@ -136,8 +136,6 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
         throw new Error('Failed to get DocumentReference for the new channel.');
     }
       const newChannelId = newChannelRef.id;
-
-      console.log('New Channel ID:', newChannelId);
       if(this.selectedValue === "option1"){
         const batch = writeBatch(this.fire.getFirestore());
         this.allUsers.forEach(user => {
@@ -180,9 +178,7 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
       if (this.selectedValue === "option1") {
         const userIDs = this.allUsers
         .map(user => user.id)
-        .filter((id): id is string => id !== undefined);
-        console.log(userIDs)
-        
+        .filter((id): id is string => id !== undefined);        
         this.newChannel.users?.push(...userIDs);
         this.onAddChannel();
       } else if(this.selectedValue === 'option2'){

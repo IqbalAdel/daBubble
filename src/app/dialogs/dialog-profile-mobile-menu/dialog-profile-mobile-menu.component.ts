@@ -57,7 +57,6 @@ export class DialogProfileMobileMenuComponent implements OnInit{
   openDialog(){
 
     this.closeMenu.emit()
-    console.log('signal send');
     let dialogRef = this.dialogUser.open(DialogProfileUserComponent, {
       panelClass: 'mobile-profile',
       width: 'calc(100% - 10px)',

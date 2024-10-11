@@ -50,6 +50,7 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
+
 export class HeaderComponent implements OnInit{
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
   user: User = {
@@ -73,15 +74,11 @@ export class HeaderComponent implements OnInit{
   filterOpen = false;
   screenWidth: number = window.innerWidth;
  
-
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
   users: User[] = [];
   test!: boolean;
   onlineStaus: boolean = false;
   hasEnteredChannel: boolean = false;
-
-
-
 
   constructor( 
     public dialog: MatDialog,
@@ -90,14 +87,10 @@ export class HeaderComponent implements OnInit{
     private firestore: Firestore,
     private router: Router,
     
-  ) {
-
-  }
-
+  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.getActiveUser();
-    
     const uid = await this.firebaseService.getCurrentUserUid();
     if (uid) {
       const userDocRef = doc(this.firebaseService.firestore, 'users', uid);
@@ -109,20 +102,13 @@ export class HeaderComponent implements OnInit{
         }
       });
     }
-
-
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-      
-    
-
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     this.screenWidth = window.innerWidth;
-    }
-
+  }
 
   async getActiveUser(){
     try {
@@ -134,8 +120,7 @@ export class HeaderComponent implements OnInit{
         if(user){
           this.user = new User(user);
           this.test = true;
-        }
-        
+        }  
       }
     } catch (error) {
       console.error('Fehler beim Abrufen der Benutzerdaten:', error);
@@ -164,20 +149,16 @@ export class HeaderComponent implements OnInit{
     this.openMobMenu.emit();
   }
 
-
   isMobile(){
     if((this.supportsTouch || window.innerWidth < 992) && this.hasEnteredChannel){
       return 'assets/Workspace.svg'
     } else{
       return 'assets/img/Logo.png'
     }
-
-    
   }
 
   returnToDevSpace(){
     this.router.navigate(['/main/group-chat/pEylXqZMW1zKPIC0VDXL']);
     this.userLeftChannel.emit()
-  }
-  
+  } 
 }

@@ -19,6 +19,7 @@ import { NewMessageComponent } from '../new-message/new-message.component';
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
+
 export class MainComponent{
 
 channelID = '';
@@ -31,7 +32,6 @@ hasMobileTriggered: boolean = false;
 chat: any;
 chatBoxHasLoaded: boolean = false;
 supportsTouch: boolean = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
 
 groupAnswerComponent: GroupAnswerComponent | null = null;
 newMessageComponent: NewMessageComponent | null = null;
@@ -50,18 +50,15 @@ ngOnInit(): void {
       this.isMainRoute = this.router.url.startsWith('/main')
       this.checkForGroupAnswerComponent(this.route);
     })
-
     this.isMobile = false;
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
-
     if (window.innerWidth <= 992) {   
       if (!this.hasMobileTriggered) { 
         this.isMobile = true;
         if(this.chatBoxHasLoaded)
-
         this.closeDevSpace(true)
         this.hasMobileTriggered = true; 
       }
@@ -79,15 +76,12 @@ ngOnInit(): void {
       this.isMobile = false;
       if(this.chatBoxHasLoaded){
         this.chat.isMobile = false;
-
       }
       this.hasMobileTriggered = false; 
     }
-  
   }
 
   checkForGroupAnswerComponent(route: ActivatedRoute) {
-
     let activeRoute = route;
     while (activeRoute.firstChild) {
       activeRoute = activeRoute.firstChild;
@@ -95,23 +89,15 @@ ngOnInit(): void {
       if (activeRoute.component === GroupAnswerComponent) {
         if(this.chatBoxHasLoaded && this.groupChatComponent && ( window.innerWidth <= 992) ){
           this.groupChatComponent.threadOpen = true;
-        console.log('GroupAnswerComponent is activated in mobile');
-
         }
-        console.log('GroupAnswerComponent is activated');
-      }
-
-      
+      } 
     }
-
   }
 
-  
   closeDevSpace(status: boolean){
     this.userEnteredChannel = status;
     this.chatBoxHasLoaded = this.chat instanceof GroupChatComponent || this.chat instanceof SoloChatComponent || this.chat instanceof NewMessageComponent;
     if(this.chatBoxHasLoaded && this.userEnteredChannel){
-      console.log(status, 'user entered channel')
       setTimeout(() => {
         this.chat.isMobile = false;
       }, 50);
@@ -149,26 +135,20 @@ ngOnInit(): void {
     } else if (componentRef instanceof GroupAnswerComponent) {
       this.groupAnswerComponent = componentRef;
       this.chat = componentRef;
-      console.log('group has answered the call')
     }
   }
 
-
-  
     openMobMenu(status: boolean){
       this.openMenu = status;
     }
 
     closeMenu(){
-    console.log('signal received');
       if(this.openMenu = true){
         this.openMenu = false;
       }
     }
   
     detectMobileDevice(status: boolean){
-      console.log('signal recieved, closing space', status)
       this.isMobile = status;
-      
     }
 }

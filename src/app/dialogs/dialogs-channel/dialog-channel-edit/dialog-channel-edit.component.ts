@@ -89,13 +89,12 @@ export class DialogChannelEditComponent implements OnInit{
       try{
         this.channel = await this.fire.getChannelById(this.channelID);
         if(!this.channel){
-          console.log('channel not found')
+          console.error('channel not found')
         }
       }
       catch(error){
         console.log('error channel edit, loading', error)
       }
-    console.log(this.user.id)
     this.screenWidth = window.innerWidth;
     this.membersList.hideButton = true;
     this.addMembersMobile.channelID = this.channelID
@@ -126,13 +125,11 @@ export class DialogChannelEditComponent implements OnInit{
     if(this.screenWidth > 992 && this.showAddMemberMenu){
       this.closeDialogAddMember()
     }
-
-    }
+  }
 
   closeDialog() {
     this.dialog.close();
   }
-
 
   editSwitch() {
     this.edit = !this.edit;
@@ -144,22 +141,20 @@ export class DialogChannelEditComponent implements OnInit{
       this.channelName = this.name;
       this.editTxtValue = "Bearbeiten"
       this.editImg2 = 'assets/editPencil.svg'
-
     }
   }
+
   editTwoSwitch() {
     this.editTwo = !this.editTwo;
     this.editTwoInput = !this.editTwoInput;
     if(this.editTwo == true){
       this.editTxtValueTwo = "Speichern"
       this.editImg = 'assets/saveCheck.svg'
-
     } else{
       this.saveData('description');
       this.channelDescription = this.description;
       this.editTxtValueTwo = "Bearbeiten"
       this.editImg = 'assets/editPencil.svg'
-
     }
   }
 
@@ -167,7 +162,6 @@ export class DialogChannelEditComponent implements OnInit{
     if(this.name.length > 0 || this.description.length >0 && this.channelID){
       await this.fire.updateChannelData(this.channelID, editField, this.name, this.description )
     }
-
   }
 
   leaveChannel(){
@@ -181,6 +175,5 @@ export class DialogChannelEditComponent implements OnInit{
   }
   closeDialogAddMember(){
     this.showAddMemberMenu = false;
-    
   }
 }

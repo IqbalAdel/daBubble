@@ -81,7 +81,6 @@ export class DialogChannelAddMembersComponent{
   triggerChipsFormSubmit(): void {
     if (this.chipsAddMembersComponent) {
       this.chipsAddMembersComponent.onSubmit();
-      console.log('sent from chips:',this.chipsAddMembersComponent.users())
     }
   }
 
@@ -92,7 +91,6 @@ export class DialogChannelAddMembersComponent{
         if(selectedUser.id){
           this.userId = selectedUser.id; 
         }
-        console.log('User ID:', this.userId);
       }
       await this.addChannelToUser();
       await this.addUserToChannel();

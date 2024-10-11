@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild,inject } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild,inject } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
@@ -10,6 +10,7 @@ import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { CommonModule } from '@angular/common';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { MatMenuModule } from '@angular/material/menu';
 
 export interface ChatMessage {
   text: string;
@@ -24,18 +25,20 @@ export interface ChatMessage {
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, PickerComponent],
+  imports: [CommonModule, PickerComponent, MatMenuModule],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']  
 })
+
 export class ChatComponent implements OnInit{
+
   @ViewChild('messageInput') messageInput: any;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
   @Output() notify: EventEmitter<void> = new EventEmitter<void>();
   @Output() sendChatMessage: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
   channelId!: string;
-  messages: any[] = [];
+  messages: string[] = [];
   messageIds: string[] = [];
   @Input() groupId: string | null = null;
   @Input() answerId: string | null = null; placeholderText: string = 'Nachricht an #Gruppenname';
@@ -46,62 +49,96 @@ export class ChatComponent implements OnInit{
   userService: UserService; 
   userName!: string;
   storage: Storage = inject(Storage);
-
+  selectUsers: User[] = []
   selectedFile: File | null = null;
   selectedImageUrl: string | null = null;
   @ViewChild('fileInput') fileInput!: ElementRef;
   showEmojiPicker = false;
   isImageSelected: boolean = false; 
 
-  constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore) {
+  constructor(
+    private fireService: FirebaseService, 
+    private route: ActivatedRoute, 
+    userService: UserService, 
+    private firestore: Firestore,
+  private elementRef: ElementRef) {
     this.userService = userService;
+
+    this.fireService.getUsersData().subscribe((list) => {
+      this.selectUsers = list.map(element => {
+        const data = element;
+        return new User(
+          data['name'] || '',
+          data['email'] || '',
+          data['id'] || '', 
+          data['img'] || '',
+          data['password'] || '',
+          data['channels'] || [],
+          data['chats'] || []
+        );
+      });
+    });
   }
+
+  @Output() clickOutside: EventEmitter<null> = new EventEmitter<null>();
+
+  @HostListener('document:click', ['$event.target'])
+  public onClick(targetElement: HTMLElement): void {
+    const clickedInside = this.elementRef.nativeElement.contains(targetElement);
+    // console.log(targetElement)
+    // console.log(clickedInside)
+    if (!clickedInside) {
+      if(this.showEmojiPicker){
+        this.showEmojiPicker = false;
+      }
+
+    }
+  }
+
+  addUserToInput(name: string){
+    const userName = '@'+ name;
+    const textarea = this.messageInput.nativeElement;
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+
+  this.messages.push(textarea.value.substring(0, startPos) + userName + textarea.value.substring(endPos));
+  const finalMessage = this.messages.join('');
+  textarea.value = finalMessage;
+  textarea.setSelectionRange(startPos + userName.length, startPos + userName.length);
+  this.messages = []
+  }
+
+
 
   toggleEmojiPicker(): void {
     this.showEmojiPicker = !this.showEmojiPicker; 
-    console.log('Emoji Picker Status:', this.showEmojiPicker); 
-}
-
+  }
  
- addEmoji(event: any) {
-  const emoji = event.emoji.native; 
-  console.log(typeof(emoji))
-  console.log(typeof(String(emoji)) )
+  addEmoji(event: any) {
+    const emoji = event.emoji.native; 
+    const textarea = this.messageInput.nativeElement;
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
 
-  
-  const textarea = this.messageInput.nativeElement;
-
-
-  const startPos = textarea.selectionStart;
-  const endPos = textarea.selectionEnd;
-
- 
-  this.messages= textarea.value.substring(0, startPos) + emoji + textarea.value.substring(endPos);
-
-
-  textarea.value = this.messages;
-
- 
-  textarea.setSelectionRange(startPos + emoji.length, startPos + emoji.length);
-
-
-  this.showEmojiPicker = false;
-}
+    this.messages= textarea.value.substring(0, startPos) + emoji + textarea.value.substring(endPos);
+    textarea.value = this.messages;
+    textarea.setSelectionRange(startPos + emoji.length, startPos + emoji.length);
+    this.showEmojiPicker = false;
+  }
 
   triggerFileInput(): void {
     this.fileInput.nativeElement.click();
   }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.selectedFile = input.files[0]; 
-  
       const reader = new FileReader();
       reader.onload = (e) => {
         this.selectedImageUrl = e.target?.result as string; 
         this.isImageSelected = true; 
       };
-  
       reader.readAsDataURL(this.selectedFile); 
     }
   }
@@ -113,22 +150,15 @@ export class ChatComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    
-
     this.routeSubscription = this.route.params.subscribe(params => {
       const id = params['id']; 
       this.answerId = params['answerId']; 
-
-
-      
       this.loadCurrentUser();
       
-      if (this.answerId) {
-        
+      if (this.answerId) { 
         this.placeholderText = 'Antworten';
       } else if (id) {
         this.channelId = id;
-
         if (this.channelId) {
           this.loadDataBasedOnId(id);
         } else {
@@ -137,8 +167,6 @@ export class ChatComponent implements OnInit{
       }
     });
   }
-
-
 
   async loadCurrentUser() {
     try {
@@ -149,13 +177,11 @@ export class ChatComponent implements OnInit{
         if (this.user) {
           this.userName = this.user.name;  
         }
-
       } else {
       }
     } catch (error) {
     }
   }
-
 
   private async loadDataBasedOnId(id: string): Promise<void> {
     try {
@@ -191,7 +217,6 @@ export class ChatComponent implements OnInit{
     if (chatId) {
       const chatDocRef = doc(this.firestore, 'chats', chatId);
       addDoc(collection(chatDocRef, 'messages'), message)
-        .then(() => console.log('Message sent successfully'))
         .catch(error => console.error('Error sending message:', error));
     } else {
     }
@@ -211,30 +236,26 @@ export class ChatComponent implements OnInit{
 
 
   async sendMessage(messageText: string): Promise<void> {
-    this.sendChatMessage.emit()
-    console.log('Sende Nachricht:', messageText);
-    console.log('Bild URL:', this.selectedImageUrl);
-  
+    this.sendChatMessage.emit()  
     if (!this.user) {
-      console.log('Kein Benutzer vorhanden');
+      console.error('Kein Benutzer vorhanden');
       return;
     }
   
 
     if (!this.isMessageValid(messageText) && !this.selectedFile) {
-      console.log('Nachricht oder Bild ist nicht gültig');
+      console.error('Nachricht oder Bild ist nicht gültig');
       return; 
     }
   
     const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId || this.receivingUserId;
     if (!receivingUserId) {
-      console.log('Empfänger-ID nicht vorhanden');
+      console.error('Empfänger-ID nicht vorhanden');
       return;
     }
    
 
     let imageUrl = null;
-    console.log('Ausgewählte Datei:', this.selectedFile);
     if (this.selectedFile) {
       const filePath = `avatars/${this.user.id}/${this.selectedFile.name}`; 
       const fileRef = ref(this.storage, filePath);
@@ -242,22 +263,16 @@ export class ChatComponent implements OnInit{
       try {
         await uploadBytes(fileRef, this.selectedFile); 
         imageUrl = await getDownloadURL(fileRef); 
-        console.log('Bild erfolgreich hochgeladen:', imageUrl);
       } catch (error) {
         console.error('Fehler beim Hochladen des Bildes:', error);
         return; 
       }
     }
-  
     
     const message = this.createMessage(messageText, receivingUserId, imageUrl);
-  
-
     if (this.answerId) {
       this.saveMessageToAnswers(this.answerId, message); 
-      console.log('Message saved to answers');
     }
-    
     this.sendMessageToUser(message.text, receivingUserId); 
     this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
     this.notify.emit();
@@ -286,9 +301,7 @@ export class ChatComponent implements OnInit{
 
   private async saveMessageToAnswers(answerId: string, message: any): Promise<void> {
     try {
-      
       const chatDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${answerId}`);
-      
       await updateDoc(chatDocRef, {
         chats: arrayUnion(message)  
       });
@@ -303,20 +316,15 @@ export class ChatComponent implements OnInit{
       if (!this.channelId) {
         throw new Error('channelId ist nicht definiert');
       }
-
       const userDocRef = doc(this.firestore, 'users', this.channelId);
-
       const userSnapshot = await getDoc(userDocRef);
-
       if (userSnapshot.exists()) {
-       
-        console.log('Benutzer existiert. Nachricht wird in der users-Collection gespeichert.');
+        // console.log('Benutzer existiert. Nachricht wird in der users-Collection gespeichert.');
       } else {
-        
         await this.saveMessageToChannels(message, messageInput);
       }
     } catch (error) {
-      
+      console.error(error)
     }
   }
 
@@ -349,10 +357,9 @@ export class ChatComponent implements OnInit{
   getReceivingUserId(): string | null {
     const receivingUserId = this.route.snapshot.queryParams['receiverId']; 
     if (receivingUserId) {
-      console.log('Empfänger-ID aus der URL:', receivingUserId);
       return receivingUserId;
     } else {
-      console.log('Keine Empfänger-ID in der URL gefunden.');
+      console.error('Keine Empfänger-ID in der URL gefunden.');
       return null;
     }
   }
@@ -366,9 +373,8 @@ export class ChatComponent implements OnInit{
   async sendMessageToFirestore(message: any): Promise<void> {
   
     return this.fireService.addMessageToFirestore(this.channelId, message).then(() => {
-      console.log('confirmed success')
     }).catch((error) => {
-      console.log('failed to send message to firestore',error)
+      console.error('failed to send message to firestore',error)
     });
   }
 
@@ -397,7 +403,6 @@ export class ChatComponent implements OnInit{
  
   private clearMessageInputAndScroll(messageInput: HTMLTextAreaElement): void {
     messageInput.value = ''; 
-    console.log('nachrichht solle gelöscht werden ');
     this.removeImage();
   }
 

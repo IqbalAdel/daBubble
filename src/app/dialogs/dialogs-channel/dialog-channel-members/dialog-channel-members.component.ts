@@ -25,12 +25,9 @@ export class DialogChannelMembersComponent{
 
   imgSrc: string = "assets/img/close_default.svg";
   imgSrcAdd: string = "assets/person_add_default.svg";
-
   allUsers: User[] = [];
   channelID: string = "";
   hideButton: boolean = false;
-
-
 
   constructor( 
     public dialog: MatDialogRef<DialogChannelMembersComponent>,
@@ -44,14 +41,11 @@ export class DialogChannelMembersComponent{
        }
   ) {  
     this.channelID = data.channelID;
-    console.log('received id:', this.channelID)
-
     this.fire.getChannels().subscribe((channels) => {
       const channel = channels.find(c => c['id'] === this.channelID);
       
       if (channel && channel['users']) {
         const userIDs = channel['users'];
-
         const userPromises = userIDs.map((userID: string) =>{
           return this.fire.getUserById(userID);
         })

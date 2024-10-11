@@ -76,8 +76,6 @@ export class DevspaceComponent implements OnInit{
   @Output() navigateToDirectChat: EventEmitter<void> = new EventEmitter<void>();
   @Output() navigateToNewMessage: EventEmitter<void> = new EventEmitter<void>();
 
-
-
   constructor(
     private router: Router,
     public userServes: UserService,
@@ -86,28 +84,21 @@ export class DevspaceComponent implements OnInit{
     private dialog: MatDialog,
   ) {
     this.screenWidth = window.innerWidth;
-
     const fireChannels = collection(this.firestore, 'channels');
     this.channels$ = collectionData(fireChannels).pipe(
       map(channels => channels.sort((a, b) => a['name'].localeCompare(b['name'])))
     );
-
     this.loadUsers();
     this.loggedInUser();
-
   }
-
 
   async getUsers$(): Promise<void> {
     const fireUsers = collection(this.firestore, 'users');
     this.users$ =  collectionData(fireUsers).pipe(
       map(users => {
-
         return users.sort((a, b) => {
           if (a['name'] === this.loggedInUserName) return -1; 
           if (b['name'] === this.loggedInUserName) return 1;
-
-   
           return a['name'].toLowerCase().localeCompare(b['name'].toLowerCase());
         });
       })
@@ -118,12 +109,10 @@ export class DevspaceComponent implements OnInit{
     await this.getUsers$();
     await this.getActiveUser();
     this.screenWidth = window.innerWidth;
-
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if(window.innerWidth <= 992){
       this.isMobile.emit();
     }
-
   }
 
   @HostListener('window:resize', ['$event'])
@@ -135,8 +124,6 @@ export class DevspaceComponent implements OnInit{
       this.isDavspaceVisible = true;
     }
   }
-
-
   
   async loggedInUser() {
     try {
@@ -146,8 +133,6 @@ export class DevspaceComponent implements OnInit{
         this.user = this.userService.getUser();
         if (this.user) {
           this.loggedInUserName = this.user.name; 
-          
-          
         }
       }
     } catch (error) {
@@ -157,8 +142,6 @@ export class DevspaceComponent implements OnInit{
 
   devspaceCloseOpen() {
     this.isDavspaceVisible = !this.isDavspaceVisible;
-
-    
   }
 
   closeDirectMessages() {
@@ -204,7 +187,6 @@ export class DevspaceComponent implements OnInit{
     this.openGroupChat(channel); 
     this.selectedUserId = null;
     this.userService.showGroupAnswer = false;
-    
   }
 
   openSoloChat(userId: string): void {
@@ -220,8 +202,6 @@ export class DevspaceComponent implements OnInit{
   createChannel(){
     this.openDialog();
   }
-
- 
 
   navigateRouteChannel(id: string) {
     if(id){
@@ -239,7 +219,6 @@ export class DevspaceComponent implements OnInit{
     }
   }
 
-
   loadUsers() {
     const usersRef = this.firebaseService.getUsersRef();  
     collectionData(usersRef).subscribe((users: DocumentData[]) => {
@@ -251,16 +230,13 @@ export class DevspaceComponent implements OnInit{
 
   async getActiveUser(){
     try {
-
       const uid = await this.firebaseService.getCurrentUserUid();
       if (uid) {
-
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){
           this.currentUser = new User(user);
-        }
-      
+        }    
       }
     } catch (error) {
       console.error('Fehler beim Abrufen der Benutzerdaten:', error);

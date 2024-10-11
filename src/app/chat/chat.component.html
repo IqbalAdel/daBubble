@@ -25,13 +25,24 @@
               [src]="imgTextarea[1]" 
               alt="Smiley">
             
-            <img 
+            <img mat-button [matMenuTriggerFor]="aboveMenu"
               (mouseover)="addEmailContact(true)" 
               (mouseout)="addEmailContact(false)" 
               [src]="imgTextarea[2]" 
               alt="Email Icon">
+
+            <mat-menu #aboveMenu="matMenu" yPosition="above">
+                <div class="name-menu">
+                    @for (user of selectUsers; track user) {
+                        <button (click)="addUserToInput(user.name)" mat-menu-item>
+                            <img src="{{user.img}}" alt="">
+                            {{user.name}}
+                        </button>
+                    }
+                </div>
+            </mat-menu>
             
-            <div *ngIf="showEmojiPicker" class="emoji-picker">
+            <div  *ngIf="showEmojiPicker" class="emoji-picker">
                 <emoji-mart (emojiSelect)="addEmoji($event)" title="Pick your emoji…" emoji="point_up"></emoji-mart>
             </div>
         </div>

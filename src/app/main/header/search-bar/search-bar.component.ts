@@ -61,25 +61,17 @@ export class SearchBarComponent implements OnInit{
   };
 
   filterOpen = false;
-
-
   filterGroups: FilterGroup[] = [];
   filterGroupOptions: Observable<FilterGroup[]> = new Observable();
-
   users$: Observable<User[]> = new Observable(); 
   channels$: Observable<Channel[]> = new Observable();
-
   private _formBuilder = inject(FormBuilder);
- 
   stateForm = this._formBuilder.group({
     searchField: '',
   });
-
-
    get searchFieldControl(): FormControl {
     return this.stateForm.get('searchField') as FormControl;
   }
-
 
   constructor( 
     public dialog: MatDialog,
@@ -87,14 +79,11 @@ export class SearchBarComponent implements OnInit{
     public userService: UserService,
     private router: Router,
     
-  ) {
-
-  }
+  ) {}
 
   async ngOnInit(): Promise<void> {
       this.users$ = this.firebaseService.getUsers();
       this.channels$ = this.firebaseService.getChannels();
-  
       this.filterGroupOptions = this.searchFieldControl.valueChanges.pipe(
         startWith(''), 
         debounceTime(300), 
@@ -111,10 +100,9 @@ export class SearchBarComponent implements OnInit{
 
   }
 
-
   private _filterData(value: string): Observable<FilterGroup[]> {
     const filterValue = (value || '').trim().toLowerCase();
-  
+
     return combineLatest([this.users$, this.channels$]).pipe(
       map(([users, channels]) => {
         const filteredUsers = users
@@ -149,7 +137,6 @@ export class SearchBarComponent implements OnInit{
     );
   }
 
-
   onOptionSelected(event: any) {
     const selectedItem = event.option.value; 
     	
@@ -179,7 +166,6 @@ export class SearchBarComponent implements OnInit{
 
   clearInputField() {
     this.searchFieldControl.setValue('', { emitEvent: false });
-  
     if (this.searchInput) {
       this.searchInput.nativeElement.blur();
     }
@@ -200,7 +186,6 @@ export class SearchBarComponent implements OnInit{
     console.log(this.filterOpen)
   }
 
-
   onBlur(){
     setTimeout(() => {
       this.filterOpen = false;
@@ -208,8 +193,6 @@ export class SearchBarComponent implements OnInit{
         this.autocomplete.closePanel();
       }
     }, 50);
-
   }
-
 
 }

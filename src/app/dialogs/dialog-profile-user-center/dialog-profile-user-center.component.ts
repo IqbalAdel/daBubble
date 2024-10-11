@@ -39,8 +39,6 @@ export class DialogProfileUserCenterComponent {
     this.image = data.image;
     this.user = data.user;
     this.status = data.status;
-
-    console.log('Empfangene Daten:', this.username, this.email, this.image, this.user);
   }
 
 
