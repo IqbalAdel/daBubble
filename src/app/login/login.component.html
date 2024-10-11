@@ -12,6 +12,10 @@
     <mat-card >
       <mat-card-content><router-outlet></router-outlet></mat-card-content>
     </mat-card>
+    <div *ngIf="isVisible" class="sing-up-container-mobil">
+      <span class="info-text">Neu bei DABubble?</span>
+      <span [routerLink]="['/sign-up']" class="sign-up">Konto erstellen</span>
+    </div>
     <div class="footer">
       <a [routerLink]="['/inprint']">Impressum</a>
       <a [routerLink]="['/data-protection']">Datenschutz</a>

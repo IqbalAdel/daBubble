@@ -142,7 +142,6 @@ input {
 }
 
 .passwort {
-   
     a {
         padding: 8px;
         font-size: 18px;
@@ -216,4 +215,103 @@ input {
         background-color: #444DF2;
         color: white;
     }
+}
+
+@media screen and (max-width:992px){
+    input:not([type="checkbox"]) {
+        width: 100% !important;
+        padding-left: 37% !important;
+    }
+    .checkbox-container {
+        margin: 0!important;
+        width: 100%!important;
+    }
+
+    .google-container button{
+        width: 100%;
+    }
+
+    .google-icon{
+        left: 27%;
+    }
+
+    .right-line{
+        width: 50%;
+    }
+
+    .left-line{
+        width: 50%;
+    }
+    
+    .error-message {
+        margin: 0 !important;
+        width: 100%!important;
+    }
+
+    .icon {
+        left: 27% !important;
+    }
+
+    .icon-focus {
+        left: 27% !important;
+
+    }
+    h2 {
+        margin: 0 !important;
+        width: 100% !important;
+        padding-bottom: 24px;
+    }
+}
+@media screen and (max-width:650px) {
+    input:not([type="checkbox"]) {
+        padding-left: 22% !important;
+    }
+
+    .google-icon{
+        left: 17%;
+    }
+
+    .icon {
+        left: 10% !important;
+    }
+
+    .icon-focus {
+        left: 10% !important;
+
+    }
+
+    h2 {
+        font-size: 16px !important;
+    }
+}
+@media screen and (max-width:500px) {
+    h2 {
+        font-size: 14px !important;
+    }
+}
+
+@media screen and (max-width:450px){
+    .error-message{
+        font-size: 10px;
+    }
+    .google-icon{
+        left: 8%;
+    }
+
+    .login{
+        font-size: 18px;
+    }
+
+    .login-button{
+        gap: 10px;
+    }
+
+    .guest-login{
+        padding: 12px 16px;
+    }
+
+    .google-container button{
+      padding-left: 20px;
+    }
+    
 }

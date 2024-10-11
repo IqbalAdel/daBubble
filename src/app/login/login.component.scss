@@ -6,6 +6,7 @@ nav {
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
+
     img {
         height: 80px;
         width: 80px;
@@ -14,6 +15,7 @@ nav {
     .logo {
         display: flex;
         align-items: center;
+
         span {
             padding-left: 16px;
             font-size: 24px;
@@ -26,9 +28,11 @@ nav {
         flex-direction: column;
         justify-content: space-around;
         align-items: end;
+
         >.info-text {
             font-size: 20px;
         }
+
         >.sign-up {
             font-size: 20px;
             color: #959AF6;
@@ -36,6 +40,7 @@ nav {
             border: 2px solid transparent;
             transition: border-color 0.3s ease;
             border-radius: 20px;
+
             &:hover {
                 cursor: pointer;
                 border-radius: 20px;
@@ -45,9 +50,39 @@ nav {
     }
 }
 
+.sing-up-container-mobil {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: end;
+    padding-top: 24px;
+
+    >.info-text {
+        font-size: 20px;
+        padding-bottom: 24px;
+
+    }
+
+    >.sign-up {
+        font-size: 20px;
+        color: #444df2;
+        padding: 12px;
+        border: 2px solid transparent;
+        transition: border-color 0.3s ease;
+        border-radius: 20px;
+        border-color: #444df2;
+
+        &:hover{
+            cursor: pointer;
+            background-color: #444DF2;
+            color: white;
+        }
+    }
+}
+
 .hidden {
     display: none;
-  }
+}
 
 .content {
     padding-top: 50px;
@@ -77,14 +112,17 @@ mat-card-content {
     gap: 40px;
     padding-top: 24px;
     padding-bottom: 24px;
-    font-size: 24px;
     color: #959AF6;
+
     a {
         color: #959AF6;
         padding: 12px;
+        font-size: 24px;
+
         border-radius: 20px;
         border: 2px solid transparent;
         transition: border-color 0.3s ease;
+
         &:hover {
             cursor: pointer;
             border-radius: 20px;
@@ -93,3 +131,24 @@ mat-card-content {
     }
 }
 
+
+@media screen and (max-width:992px) {
+    mat-card {
+        width: 95%;
+        max-width: none;
+    }
+
+    .sing-up-container {
+        display: none !important;
+    }
+
+    nav {
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width:450px) {
+    .footer a {
+        font-size: 18px;
+    }
+}
