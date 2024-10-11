@@ -68,11 +68,11 @@ export class CreateAvatarComponent implements OnInit {
     if (input.files && input.files[0]) {
       this.selectedFile = input.files[0];
   
-      // FileReader verwenden, um die Datei als Data URL zu lesen
+  
       const reader = new FileReader();
       reader.onload = () => {
         this.selectedAvatar = reader.result as string;
-        this.user.img = this.selectedAvatar; // Setze das Bild auf das User-Objekt
+        this.user.img = this.selectedAvatar;
       };
       reader.readAsDataURL(this.selectedFile);
     }
@@ -95,7 +95,7 @@ export class CreateAvatarComponent implements OnInit {
   async saveUser() {
     const cleanedUserData = this.cleanUserData(this.user);
 
-    const channelId = 'pEylXqZMW1zKPIC0VDXL'; // Die ID des Channels, zu dem der User hinzugefügt werden soll
+    const channelId = 'pEylXqZMW1zKPIC0VDXL'; 
     cleanedUserData.channels.push(channelId);
 
     try {
@@ -113,12 +113,12 @@ export class CreateAvatarComponent implements OnInit {
                 cleanedUserData.img = downloadURL;
             }
 
-            // Benutzer in der `users`-Sammlung speichern
+          
             const userDocRef = doc(this.firestore, 'users', uid);
             await setDoc(userDocRef, cleanedUserData);
             console.log('User added with ID: ', uid);
 
-            // Channel-Dokument aktualisieren, um den neuen Benutzer hinzuzufügen
+          
             const channelDocRef = doc(this.firestore, 'channels', channelId);
             const channelDocSnap = await getDoc(channelDocRef);
 
@@ -126,7 +126,7 @@ export class CreateAvatarComponent implements OnInit {
                 const channelData = channelDocSnap.data() as Channel;
                 const userIds = channelData.users || [];
 
-                // Überprüfen, ob der Benutzer bereits in der Liste ist
+               
                 if (!userIds.includes(uid)) {
                     userIds.push(uid);
                     await setDoc(channelDocRef, { users: userIds }, { merge: true });

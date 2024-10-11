@@ -3,11 +3,10 @@ import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getAuth, provideAuth } from '@angular/fire/auth'; // Importiere Auth Module
+import { getAuth, provideAuth } from '@angular/fire/auth'; 
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { routes } from './app.routes';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
-// import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,10 +21,9 @@ export const appConfig: ApplicationConfig = {
       appId: "1:255571591771:web:030b649a0f5865b2bbf57e",
       databaseURL: "https://da-bubble-e728c-default-rtdb.europe-west1.firebasedatabase.app",
     })),
-    provideAuth(() => getAuth()), // Stelle Auth bereit
+    provideAuth(() => getAuth()), 
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
-    // provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideDatabase(() => getDatabase())
   ]
 };

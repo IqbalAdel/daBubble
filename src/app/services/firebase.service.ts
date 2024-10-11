@@ -53,7 +53,7 @@ export class FirebaseService {
   }
 
   setOnlineStatus(uid: string): void {
-    const statusRef = dbRef(this.db, `/status/${uid}`);  // Use dbRef for Realtime Database
+    const statusRef = dbRef(this.db, `/status/${uid}`); 
 
     const connectedRef = dbRef(this.db, '.info/connected');
     onValue(connectedRef, (snapshot) => {
@@ -67,8 +67,6 @@ export class FirebaseService {
   getUserStatus(userId: string): Observable<any> {
     const statusRef = dbRef(this.db, `/status/${userId}`);
     
-    
-    // Use the 'get()' method to retrieve a snapshot and convert it into an observable
     return from(get(statusRef).then((snapshot) => snapshot.val()));
   }
 
@@ -90,7 +88,7 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
 
   getUsers(): Observable<User[]> {
     const usersRef = collection(this.firestore, 'users');
-    return collectionData(usersRef, { idField: 'id' }) as Observable<User[]>; // Achte darauf, dass der Typ korrekt ist
+    return collectionData(usersRef, { idField: 'id' }) as Observable<User[]>; 
   }
   getChannels(): Observable<Channel[]> {
     const channelsRef = collection(this.firestore, 'channels');
@@ -110,7 +108,7 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
   getChannelsMessages(channelId: string): Observable<ChatMessage[]> {
     const messagesCollection = collection(this.firestore, 'channels', channelId, 'messages');
     const q = query(messagesCollection, orderBy('timestamp'));
-    return collectionData(q, { idField: 'id' }) as Observable<ChatMessage[]>; // Verwende ChatMessage[]
+    return collectionData(q, { idField: 'id' }) as Observable<ChatMessage[]>;
   }
 
   getChatsForUser(userId: string): Observable<ChatMessage[]> {
@@ -132,14 +130,14 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef).pipe(
       map(usersArray => {
-        return this.arrayToObject(usersArray);  // Convert array to object
+        return this.arrayToObject(usersArray);  
       })
     );
   }
 
   arrayToObject(usersArray: any[]): any {
     return usersArray.reduce((obj, user) => {
-      obj[user.id] = user;  // Assuming each user has a unique 'id' field
+      obj[user.id] = user;  
       return obj;
     }, {});
   }
@@ -228,7 +226,6 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
       const docRef = await addDoc(channelsRef, {
         ...channel,
       });
-      // console.log('Channel added successfully');
       await updateDoc(docRef, {
         id: docRef.id
       });
@@ -320,9 +317,8 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
       const channelDoc = await getDoc(channelDocRef);
       if (channelDoc.exists()) {
         const currentMessages = channelDoc.data()['messages'] || [];
-        const updatedMessages = [...currentMessages, message];  // Nachricht als Objekt hinzufügen
+        const updatedMessages = [...currentMessages, message];  
         await updateDoc(channelDocRef, { messages: updatedMessages });
-        // console.log('Message successfully added to channel:', message);
       } else {
         console.error('Channel does not exist:', channelId);
       }
@@ -333,17 +329,15 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
 
 
   addMessageToUserChats(userId: string, message: any): Promise<void> {
-    // Referenz zur Unter-Sammlung "messages" unter der Benutzer-ID
     const userMessagesRef = collection(this.firestore, `users/${userId}/messages`);
-    
-    // Neue Nachricht in die Unter-Sammlung hinzufügen
+  
     return addDoc(userMessagesRef, message)
       .then(() => {
         console.log('Message successfully added to user chats!');
       })
       .catch((error) => {
         console.error('Error adding message to user chats:', error);
-        throw error; // Falls ein Fehler auftritt, wirft es den Fehler zurück
+        throw error; 
       });
   }
 
@@ -363,16 +357,16 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
 
 
   createChatId(userId1: string, userId2: string): string | null {
-    const isValidUserId = (id: string) => id.startsWith('user_') || id.length === 28; // Beispiel: User-IDs haben ein Präfix 'user_' oder eine bestimmte Länge
+    const isValidUserId = (id: string) => id.startsWith('user_') || id.length === 28;
     
-    // Nur Chat-ID erstellen, wenn beide IDs Benutzer-IDs sind
+   
     if (isValidUserId(userId1) && isValidUserId(userId2)) {
-      const sortedIds = [userId1, userId2].sort();  // Alphabetische Sortierung
-      console.log('User IDs for chat creation:', userId1, userId2);  // Debugging: IDs ausgeben
-      return sortedIds.join('_');  // Kombinierte ID erstellen
+      const sortedIds = [userId1, userId2].sort(); 
+      console.log('User IDs for chat creation:', userId1, userId2); 
+      return sortedIds.join('_'); 
     } else {
       console.warn('One or both IDs are not valid user IDs:', userId1, userId2);
-      return null;  // Gib null zurück, wenn keine Benutzer-IDs vorliegen
+      return null; 
     }
   }
 

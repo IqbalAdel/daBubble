@@ -1,7 +1,6 @@
 import { Component, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FirebaseService } from '../../../services/firebase.service';
@@ -77,14 +76,12 @@ export class DialogChannelEditComponent implements OnInit{
       channelDescription: string; 
        }
   ) {
-    // this.addMembersMobile.channelID = data.channelID;
     this.channelID = data.channelID;
     this.channelName = data.channelName;
     this.channelDescription = data.channelDescription;
     this.name = data.channelName;
     this.description = data.channelDescription;
     
-    // this.channel = this.fire.getChannelById(this.channelID);
   }
 
   async ngOnInit(): Promise<void> {
@@ -92,13 +89,12 @@ export class DialogChannelEditComponent implements OnInit{
       try{
         this.channel = await this.fire.getChannelById(this.channelID);
         if(!this.channel){
-          console.log('channel not found')
+          console.error('channel not found')
         }
       }
       catch(error){
         console.log('error channel edit, loading', error)
       }
-    console.log(this.user.id)
     this.screenWidth = window.innerWidth;
     this.membersList.hideButton = true;
     this.addMembersMobile.channelID = this.channelID
@@ -106,10 +102,9 @@ export class DialogChannelEditComponent implements OnInit{
 
   async getActiveUser(){
     try {
-      // UID des aktuell angemeldeten Benutzers abrufen
       const uid = await this.fire.getCurrentUserUid();
       if (uid) {
-        // Benutzerdaten anhand der UID laden
+
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){
@@ -130,13 +125,11 @@ export class DialogChannelEditComponent implements OnInit{
     if(this.screenWidth > 992 && this.showAddMemberMenu){
       this.closeDialogAddMember()
     }
-
-    }
+  }
 
   closeDialog() {
     this.dialog.close();
   }
-
 
   editSwitch() {
     this.edit = !this.edit;
@@ -148,22 +141,20 @@ export class DialogChannelEditComponent implements OnInit{
       this.channelName = this.name;
       this.editTxtValue = "Bearbeiten"
       this.editImg2 = 'assets/editPencil.svg'
-
     }
   }
+
   editTwoSwitch() {
     this.editTwo = !this.editTwo;
     this.editTwoInput = !this.editTwoInput;
     if(this.editTwo == true){
       this.editTxtValueTwo = "Speichern"
       this.editImg = 'assets/saveCheck.svg'
-
     } else{
       this.saveData('description');
       this.channelDescription = this.description;
       this.editTxtValueTwo = "Bearbeiten"
       this.editImg = 'assets/editPencil.svg'
-
     }
   }
 
@@ -171,11 +162,6 @@ export class DialogChannelEditComponent implements OnInit{
     if(this.name.length > 0 || this.description.length >0 && this.channelID){
       await this.fire.updateChannelData(this.channelID, editField, this.name, this.description )
     }
-
-    console.log(this.description)
-    console.log(this.name)
-    // this.dialog.close();
-
   }
 
   leaveChannel(){
@@ -189,6 +175,5 @@ export class DialogChannelEditComponent implements OnInit{
   }
   closeDialogAddMember(){
     this.showAddMemberMenu = false;
-    
   }
 }

@@ -40,7 +40,6 @@ export class DialogProfileMobileMenuComponent implements OnInit{
   openMenu: boolean = false;
 
   constructor( 
-    // public dialogMobile: MatDialogRef<DialogProfileMobileMenuComponent>,
     public dialogUser: MatDialog,
     private firebaseservice: FirebaseService,
     private userService: UserService,
@@ -56,15 +55,12 @@ export class DialogProfileMobileMenuComponent implements OnInit{
   }
 
   openDialog(){
-    // this.openMenu = false;
-    // this.dialogMobile.close();
+
     this.closeMenu.emit()
-    console.log('signal send');
     let dialogRef = this.dialogUser.open(DialogProfileUserComponent, {
       panelClass: 'mobile-profile',
       width: 'calc(100% - 10px)',
       height: 'calc(100% - 40px)',
-      // position: {top: '90px', right: '15px'},
       data: {
         username: this.currentUser.name,
         email: this.currentUser.email,
@@ -78,10 +74,10 @@ export class DialogProfileMobileMenuComponent implements OnInit{
 
   async getActiveUser(){
     try {
-      // UID des aktuell angemeldeten Benutzers abrufen
+
       const uid = await this.firebaseservice.getCurrentUserUid();
       if (uid) {
-        // Benutzerdaten anhand der UID laden
+       
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){

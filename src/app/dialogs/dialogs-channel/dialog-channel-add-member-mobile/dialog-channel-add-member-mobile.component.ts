@@ -43,15 +43,13 @@ export class DialogChannelAddMemberMobileComponent {
   
   ) {
 
-    // this.channelID = data.channelID;
-
     this.fire.getUsersData().subscribe((list) => {
       this.allUsers = list.map(element => {
         const data = element;
         return new User(
           data['name'] || '',
           data['email'] || '',
-          data['id'] || '', // Falls `id` ein optionales Feld ist
+          data['id'] || '', 
           data['img'] || '',
           data['password'] || '',
           data['channels'] || [],
@@ -75,22 +73,20 @@ export class DialogChannelAddMemberMobileComponent {
   triggerChipsFormSubmit(): void {
     if (this.chipsAddMembersComponent) {
       this.chipsAddMembersComponent.onSubmit();
-      console.log('sent from chips:',this.chipsAddMembersComponent.users())
     }
   }
 
   async onSubmit(): Promise<void> {
     const users: User[] = this.chipsAddMembersComponent.users();
       if (users.length > 0) {
-        const selectedUser = users[0]; // Access the first user
+        const selectedUser = users[0]; 
         if(selectedUser.id){
-          this.userId = selectedUser.id; // Access the ID property
+          this.userId = selectedUser.id;
         }
-        console.log('User ID:', this.userId);
       }
       await this.addChannelToUser();
       await this.addUserToChannel();
-      this.successAdd.emit(); // Close dialog and indicate success
+      this.successAdd.emit(); 
   }
   
   async addChannelToUser(){

@@ -17,7 +17,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class SignUpComponent {
   private auth = inject(Auth);
-  user: User = new User(); // Initialisiere das User-Objekt
+  user: User = new User(); 
   isPrivacyChecked: boolean = false;
   emailExistsError: boolean = false;
   isVisible: boolean = true;
@@ -33,15 +33,13 @@ export class SignUpComponent {
   async onSubmit(): Promise<void> {
     if (this.isFormValid()) {
       try {
-        // Überprüfen, ob die E-Mail bereits existiert
         const emailExists = await this.authService.checkEmailExists(this.user.email);
         if (emailExists) {
-          this.emailExistsError = true; // E-Mail existiert bereits
+          this.emailExistsError = true; 
           return;
         } else {
           this.emailExistsError = false;
         }
-        // Fortfahren mit der Registrierung, da die E-Mail nicht existiert
         this.userService.setUser(this.user);
         this.router.navigate(['/create-avatar']);
       } catch (error) {
@@ -53,8 +51,6 @@ export class SignUpComponent {
   }
 
  
-
-  // Methode zur Validierung des Formulars
   isFormValid(): boolean {
     return this.user.name.trim() !== '' &&
       this.user.email.trim() !== '' &&

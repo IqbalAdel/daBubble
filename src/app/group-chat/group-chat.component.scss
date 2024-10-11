@@ -10,7 +10,7 @@
 }
 
 
-/* Modal Hintergrund */
+
 .modal {
     display: flex;
     justify-content: center;
@@ -21,13 +21,12 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.1);
-    /* Transparenter Hintergrund */
     z-index: 1000;
-    /* Über allem anderen */
+
 }
 
 
-/* Inhalt des Modals */
+
 .modal-content {
     max-width: 60%;
     max-height: 60%;
@@ -37,24 +36,17 @@
     align-items: center;
 }
 
-/* Vergrößertes Bild */
+
 .modal-image {
     width: 80vw !important;
-    /* Breite auf 80% der Ansicht */
     height: auto;
-    /* Höhe wird proportional angepasst */
     height: 80vh !important;
-    /* Maximal 80% der Höhe der Ansicht */
     border-radius: 10px;
-    /* Optionale Abrundung der Ecken */
     transition: transform 0.3s ease;
-    /* Sanfte Übergänge bei Transformation */
 }
 
-/* Standard Bild */
 .message-image {
     max-width: 200px;
-    /* Größe der Nachricht-Bilder */
     cursor: pointer;
     border-radius: 5px;
 }
@@ -229,14 +221,12 @@
 
                 &:hover {
                     background-color: rgba(236, 238, 254, 1);
-                    // color: blue;
                 }
             }
         }
     }
 
     .name {
-        // height: 96px;
         box-sizing: border-box;
         cursor: pointer;
         margin-left: 20px;
@@ -273,7 +263,6 @@
         img {
             height: 65px;
             width: 65px;
-            // border-radius: 50px;
         }
     }
 
@@ -377,8 +366,6 @@
             img {
                 height: 20px;
                 width: auto;
-                // padding: 10px;
-                // border-radius: 50%;
 
                 &:hover {
                     background-color: rgb(236, 238, 254);
@@ -413,31 +400,6 @@
     }
 }
 
-// .my-custom-snackbar {
-//     margin: 0 !important;
-//     position: absolute;
-//     right: 25px;
-//     top: 60px;
-//   }
-
-//   .mat-mdc-snack-bar-container .mdc-snackbar__surface {
-//     min-width: 205px;
-// }
-
-// .mat-mdc-snack-bar-container {
-//     position: absolute; 
-// }
-//   ::ng-deep .mat-mdc-snack-bar-container .mdc-snackbar__surface {
-//     min-width: 205px;
-// }
-
-//  ::ng-deep .mat-mdc-snack-bar-container {
-//     position: absolute; 
-// }
-
-//  ng:deep .mat-mdc-snack-bar-container {
-//     position: absolute; 
-// }
 
 .display-flex {
     display: flex;
@@ -541,7 +503,6 @@
 
 .border-30 .mat-mdc-dialog-container::-webkit-scrollbar {
     display: none;
-    /* Chrome, Safari */
 }
 
 

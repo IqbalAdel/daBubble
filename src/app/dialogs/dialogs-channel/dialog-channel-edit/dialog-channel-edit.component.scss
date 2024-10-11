@@ -25,7 +25,6 @@ mat-card{
 .user-profile {
     padding: 30px 30px 30px 30px;
     height: 100vh;
-    // @include d-flex($dir: column);
 
 }
 
@@ -71,7 +70,6 @@ mat-card{
     textarea{
         top: 65px;
         left: 28px;
-        // height: 50px;
         resize: none;
         overflow: hidden;
         border-radius: 20px;
@@ -84,7 +82,6 @@ mat-card{
         animation-fill-mode: forwards;
         position: absolute;
         width: 100%;
-        // margin-bottom: 10px;
         padding: 13px 10px 13px 20px;
         border: solid 1px #ADB0D9;
         cursor: pointer;
@@ -121,7 +118,6 @@ mat-card{
 }
 
 .channel-name{
-    // padding: 25px 0 25px 0;
     height: 90px;
 }
 
@@ -209,7 +205,6 @@ mat-card{
 
 ::ng-deep .border-radius .mat-mdc-dialog-container {
     box-shadow: none !important;
-    /* Removes the box shadow */
     --mdc-dialog-container-shape: 30px;
 }
 
@@ -639,15 +634,15 @@ mat-card{
   }
 
   .slide-up{
-    transform: translateY(0);  /* Slide into view */
-    transition: transform 0.5s ease;  /* Smooth slide-up animation */
+    transform: translateY(0); 
+    transition: transform 0.5s ease; 
   
   
   }
   
   .slide-down{
-    transform: translateY(500%);  /* Initially off-screen */
-    transition: transform 0.5s ease;  /* Smooth slide-up animation */
+    transform: translateY(500%); 
+    transition: transform 0.5s ease;  
   }
 
 
@@ -658,7 +653,7 @@ mat-card{
     bottom: 0;
     right: 0;
     left: 0;
-    // transition: all transform 0.5s ease;  /* Smooth slide-up animation */
+
   
   }
 

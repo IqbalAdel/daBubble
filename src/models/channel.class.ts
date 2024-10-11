@@ -26,14 +26,4 @@ export class Channel {
       this.id = id;
     }
 
-    // public channelToJSON(){
-    //           return {
-    //               name: this.name,
-    //               description: this.description,
-    //               creator: this.creator,
-    //               messages:this.messages,
-    //               users: this.users?.map(user => user.usersToJSON()),
-    //               id: this.id,
-    //           }
-    //       }
   }

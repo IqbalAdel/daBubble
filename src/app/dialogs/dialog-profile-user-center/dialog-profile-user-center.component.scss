@@ -3,7 +3,6 @@
 .user-profile{
     padding: 30px 25px 30px 25px;
     height: 100%;
-    // @include d-flex($dir: column);
    
 }
 .profile-aot{
@@ -99,7 +98,7 @@
 }
 
 ::ng-deep .border-radius .mat-mdc-dialog-container {
-    box-shadow: none !important;/* Removes the box shadow */
+    box-shadow: none !important;
     --mdc-dialog-container-shape: 30px;
   }
 

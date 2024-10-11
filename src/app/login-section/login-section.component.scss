@@ -55,7 +55,6 @@
     justify-content: center;
     padding-bottom: 24px;
 
-    /* Fügt einen Hover-Effekt für die gesamte Container hinzu */
     &:hover .google-icon,
     &:hover button {
         border-color: #444DF2;
@@ -103,8 +102,8 @@
   .icon,
   .icon-focus {
     position: absolute;
-    left: 15%;  /* Beispielhafte Positionierung, kannst du anpassen */
-    transition: opacity 0.3s ease;  /* Sanfter Übergang für das Umschalten */
+    left: 15%;  
+    transition: opacity 0.3s ease;  
   }
 
 .icon {

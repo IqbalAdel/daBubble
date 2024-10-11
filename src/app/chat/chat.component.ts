@@ -1,15 +1,16 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild,inject } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild,inject } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
 import { User } from '../../models/user.class';
-import { UserService } from '../services/user.service'; // Sicherstellen, dass der Import korrekt ist
+import { UserService } from '../services/user.service'; 
 import { addDoc, arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { collectionData, Firestore } from '@angular/fire/firestore';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { CommonModule } from '@angular/common';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { MatMenuModule } from '@angular/material/menu';
 
 export interface ChatMessage {
   text: string;
@@ -24,19 +25,20 @@ export interface ChatMessage {
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, PickerComponent],
+  imports: [CommonModule, PickerComponent, MatMenuModule],
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss']  // styleUrl zu styleUrls geändert, wenn das notwendig ist
+  styleUrls: ['./chat.component.scss']  
 })
+
 export class ChatComponent implements OnInit{
+
   @ViewChild('messageInput') messageInput: any;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
   @Output() notify: EventEmitter<void> = new EventEmitter<void>();
   @Output() sendChatMessage: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
   channelId!: string;
-  // receivingUserId: string | null = "";
-  messages: any[] = [];
+  messages: string[] = [];
   messageIds: string[] = [];
   @Input() groupId: string | null = null;
   @Input() answerId: string | null = null; placeholderText: string = 'Nachricht an #Gruppenname';
@@ -44,66 +46,100 @@ export class ChatComponent implements OnInit{
   receivingUserId: string | null = null;
   private messagesSubscription: Subscription | null = null;
   private routeSubscription: Subscription | null = null;
-  userService: UserService; // Sicherstellen, dass userService in der Klasse deklariert ist
+  userService: UserService; 
   userName!: string;
   storage: Storage = inject(Storage);
-
+  selectUsers: User[] = []
   selectedFile: File | null = null;
   selectedImageUrl: string | null = null;
   @ViewChild('fileInput') fileInput!: ElementRef;
   showEmojiPicker = false;
   isImageSelected: boolean = false; 
 
-  constructor(private fireService: FirebaseService, private route: ActivatedRoute, userService: UserService, private firestore: Firestore) {
-    this.userService = userService; // Initialisiere userService
+  constructor(
+    private fireService: FirebaseService, 
+    private route: ActivatedRoute, 
+    userService: UserService, 
+    private firestore: Firestore,
+  private elementRef: ElementRef) {
+    this.userService = userService;
+
+    this.fireService.getUsersData().subscribe((list) => {
+      this.selectUsers = list.map(element => {
+        const data = element;
+        return new User(
+          data['name'] || '',
+          data['email'] || '',
+          data['id'] || '', 
+          data['img'] || '',
+          data['password'] || '',
+          data['channels'] || [],
+          data['chats'] || []
+        );
+      });
+    });
   }
+
+  @Output() clickOutside: EventEmitter<null> = new EventEmitter<null>();
+
+  @HostListener('document:click', ['$event.target'])
+  public onClick(targetElement: HTMLElement): void {
+    const clickedInside = this.elementRef.nativeElement.contains(targetElement);
+    // console.log(targetElement)
+    // console.log(clickedInside)
+    if (!clickedInside) {
+      if(this.showEmojiPicker){
+        this.showEmojiPicker = false;
+      }
+
+    }
+  }
+
+  addUserToInput(name: string){
+    const userName = '@'+ name;
+    const textarea = this.messageInput.nativeElement;
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+
+  this.messages.push(textarea.value.substring(0, startPos) + userName + textarea.value.substring(endPos));
+  const finalMessage = this.messages.join('');
+  textarea.value = finalMessage;
+  textarea.setSelectionRange(startPos + userName.length, startPos + userName.length);
+  this.messages = []
+  }
+
+
 
   toggleEmojiPicker(): void {
-    this.showEmojiPicker = !this.showEmojiPicker; // Zustand umschalten
-    console.log('Emoji Picker Status:', this.showEmojiPicker); // Debugging Log
-}
+    this.showEmojiPicker = !this.showEmojiPicker; 
+  }
+ 
+  addEmoji(event: any) {
+    const emoji = event.emoji.native; 
+    const textarea = this.messageInput.nativeElement;
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
 
- // Methode zum Hinzufügen eines Emojis in das Textarea
- addEmoji(event: any) {
-  const emoji = event.emoji.native; // Das ausgewählte Emoji
-  console.log(typeof(emoji))
-  console.log(typeof(String(emoji)) )
-
-  // Holen des aktuellen Textarea Elements
-  const textarea = this.messageInput.nativeElement;
-
-  // Einfügen des Emojis an der aktuellen Cursor-Position
-  const startPos = textarea.selectionStart;
-  const endPos = textarea.selectionEnd;
-
-  // Den aktuellen Text nehmen, das Emoji an der richtigen Stelle einfügen
-  this.messages= textarea.value.substring(0, startPos) + emoji + textarea.value.substring(endPos);
-
-  // Aktualisieren des Textarea-Wertes
-  textarea.value = this.messages;
-
-  // Setze den Cursor hinter das eingefügte Emoji
-  textarea.setSelectionRange(startPos + emoji.length, startPos + emoji.length);
-
-  // Schließe den Emoji-Picker
-  this.showEmojiPicker = false;
-}
+    this.messages= textarea.value.substring(0, startPos) + emoji + textarea.value.substring(endPos);
+    textarea.value = this.messages;
+    textarea.setSelectionRange(startPos + emoji.length, startPos + emoji.length);
+    this.showEmojiPicker = false;
+  }
 
   triggerFileInput(): void {
-    this.fileInput.nativeElement.click(); // Löst den Klick auf das versteckte File-Input aus
+    this.fileInput.nativeElement.click();
   }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0]; // Die Datei für den Upload speichern
-  
+      this.selectedFile = input.files[0]; 
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.selectedImageUrl = e.target?.result as string; // Base64 für die Anzeige speichern
-        this.isImageSelected = true; // Bild wurde ausgewählt
+        this.selectedImageUrl = e.target?.result as string; 
+        this.isImageSelected = true; 
       };
-  
-      reader.readAsDataURL(this.selectedFile); // Bild als Data URL lesen (nur für die Anzeige)
+      reader.readAsDataURL(this.selectedFile); 
     }
   }
 
@@ -114,24 +150,15 @@ export class ChatComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    // Beobachten Sie Änderungen in den URL-Parametern
-
     this.routeSubscription = this.route.params.subscribe(params => {
-      const id = params['id']; // ID aus der URL (z.B. Kanal- oder Benutzer-ID)
-      this.answerId = params['answerId']; // answerId aus der URL
-
-
-      // Sicherstellen, dass der Benutzer geladen wird
+      const id = params['id']; 
+      this.answerId = params['answerId']; 
       this.loadCurrentUser();
       
-      if (this.answerId) {
-        // Wenn eine answerId in der URL vorhanden ist, setze den Placeholder auf "Antworten"
+      if (this.answerId) { 
         this.placeholderText = 'Antworten';
       } else if (id) {
-        // Wenn keine answerId vorhanden ist, lade die Daten basierend auf der ID (z.B. Kanal oder Benutzer)
         this.channelId = id;
-
-        // Überprüfen, ob `channelId` richtig gesetzt ist
         if (this.channelId) {
           this.loadDataBasedOnId(id);
         } else {
@@ -141,8 +168,6 @@ export class ChatComponent implements OnInit{
     });
   }
 
-
-
   async loadCurrentUser() {
     try {
       const uid = await this.fireService.getCurrentUserUid();
@@ -150,15 +175,13 @@ export class ChatComponent implements OnInit{
         await this.userService.loadUserById(uid);
         this.user = this.userService.getUser();
         if (this.user) {
-          this.userName = this.user.name;  // Setze den Benutzernamen, falls erforderlich
+          this.userName = this.user.name;  
         }
-
       } else {
       }
     } catch (error) {
     }
   }
-
 
   private async loadDataBasedOnId(id: string): Promise<void> {
     try {
@@ -179,7 +202,7 @@ export class ChatComponent implements OnInit{
     if (!this.user) {
       return;
     }
-    const chatId = this.fireService.createChatId(this.user.id, receivingUserId); // Chat-ID erstellen
+    const chatId = this.fireService.createChatId(this.user.id, receivingUserId); 
     const message = {
       text: messageText,
       timestamp: Timestamp.now(),
@@ -190,11 +213,10 @@ export class ChatComponent implements OnInit{
       isRead: false,
       userImage: this.user.img
     };
-    // Nachricht in der Firestore-Collection für diesen Chat speichern
+
     if (chatId) {
       const chatDocRef = doc(this.firestore, 'chats', chatId);
       addDoc(collection(chatDocRef, 'messages'), message)
-        .then(() => console.log('Message sent successfully'))
         .catch(error => console.error('Error sending message:', error));
     } else {
     }
@@ -207,61 +229,51 @@ export class ChatComponent implements OnInit{
     const messagesCollectionRef = collection(this.firestore, 'channels', this.channelId, 'messages');
 
     collectionData(messagesCollectionRef, { idField: 'id' }).subscribe((messages: any[]) => {
-      this.messageIds = messages.map(message => message.id); // IDs in die Property speichern
+      this.messageIds = messages.map(message => message.id);
     }, (error: any) => {
     });
   }
 
 
   async sendMessage(messageText: string): Promise<void> {
-    this.sendChatMessage.emit()
-    console.log('Sende Nachricht:', messageText);
-    console.log('Bild URL:', this.selectedImageUrl);
-  
+    this.sendChatMessage.emit()  
     if (!this.user) {
-      console.log('Kein Benutzer vorhanden');
+      console.error('Kein Benutzer vorhanden');
       return;
     }
   
-    // Nachricht ist nur gültig, wenn entweder Text oder Bild vorhanden ist
+
     if (!this.isMessageValid(messageText) && !this.selectedFile) {
-      console.log('Nachricht oder Bild ist nicht gültig');
-      return; // Verhindere das Senden einer leeren Nachricht ohne Bild
+      console.error('Nachricht oder Bild ist nicht gültig');
+      return; 
     }
   
     const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId || this.receivingUserId;
     if (!receivingUserId) {
-      console.log('Empfänger-ID nicht vorhanden');
+      console.error('Empfänger-ID nicht vorhanden');
       return;
     }
    
-    // Bild hochladen, falls ausgewählt
+
     let imageUrl = null;
-    console.log('Ausgewählte Datei:', this.selectedFile);
     if (this.selectedFile) {
-      const filePath = `avatars/${this.user.id}/${this.selectedFile.name}`; // Benutze die User-ID für den Pfad
+      const filePath = `avatars/${this.user.id}/${this.selectedFile.name}`; 
       const fileRef = ref(this.storage, filePath);
       
       try {
-        await uploadBytes(fileRef, this.selectedFile); // Bild hochladen
-        imageUrl = await getDownloadURL(fileRef); // URL des hochgeladenen Bildes abrufen
-        console.log('Bild erfolgreich hochgeladen:', imageUrl);
+        await uploadBytes(fileRef, this.selectedFile); 
+        imageUrl = await getDownloadURL(fileRef); 
       } catch (error) {
         console.error('Fehler beim Hochladen des Bildes:', error);
-        return; // Beende die Funktion bei Fehler
+        return; 
       }
     }
-  
-    // Nachricht erstellen (mit Text und ggf. Bild)
-    const message = this.createMessage(messageText, receivingUserId, imageUrl);
-  
-    // Wenn eine answerId vorhanden ist, speichere die Nachricht auch dort
-    if (this.answerId) {
-      this.saveMessageToAnswers(this.answerId, message); // Speichert das gesamte message-Objekt
-      console.log('Message saved to answers');
-    }
     
-    this.sendMessageToUser(message.text, receivingUserId); // Nachricht-Objekt statt nur Text
+    const message = this.createMessage(messageText, receivingUserId, imageUrl);
+    if (this.answerId) {
+      this.saveMessageToAnswers(this.answerId, message); 
+    }
+    this.sendMessageToUser(message.text, receivingUserId); 
     this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
     this.notify.emit();
   }
@@ -273,14 +285,14 @@ export class ChatComponent implements OnInit{
     }
   
     return {
-      text: messageText || '',  // Nachrichtentext, falls vorhanden
+      text: messageText || '', 
       timestamp: Timestamp.now(),
       userName: this.userName || 'Gast',
       userId: this.user.id,
       receivingUserId: receivingUserId,
       time: new Date().toLocaleTimeString(),
       chats: [],
-      image: imageUrl,  // Bild-URL, falls vorhanden
+      image: imageUrl, 
       isRead: false,
       userImage: this.user.img,
     };
@@ -289,42 +301,34 @@ export class ChatComponent implements OnInit{
 
   private async saveMessageToAnswers(answerId: string, message: any): Promise<void> {
     try {
-      // Erstelle eine Referenz auf das Dokument `answerId` in der Subcollection `messages` der `channels` Sammlung
       const chatDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${answerId}`);
-      // Dokument aktualisieren, um die Nachricht im `chats` Array hinzuzufügen
       await updateDoc(chatDocRef, {
-        chats: arrayUnion(message)  // Füge das gesamte `message`-Objekt zum `chats` Array hinzu
+        chats: arrayUnion(message)  
       });
     } catch (error) {
     }
     this.clearMessageInputAndScroll(this.messageInputRef.nativeElement);
   }
 
-  // Überprüft, ob die channelId eine User-ID ist und speichert entsprechend
+
   private async checkIfUserAndSendMessage(message: any, messageInput: HTMLTextAreaElement): Promise<void> {
     try {
       if (!this.channelId) {
         throw new Error('channelId ist nicht definiert');
       }
-
       const userDocRef = doc(this.firestore, 'users', this.channelId);
-
       const userSnapshot = await getDoc(userDocRef);
-
       if (userSnapshot.exists()) {
-        // Die channelId ist eine User-ID, speichere die Nachricht in der users-Collection
-        // Füge hier den Code zum Speichern der Nachricht hinzu, wenn es sich um eine User-ID handelt
-        console.log('Benutzer existiert. Nachricht wird in der users-Collection gespeichert.');
+        // console.log('Benutzer existiert. Nachricht wird in der users-Collection gespeichert.');
       } else {
-        // Die channelId ist keine User-ID, speichere die Nachricht in der channels-Collection
         await this.saveMessageToChannels(message, messageInput);
       }
     } catch (error) {
-      // console.error('Fehler beim Überprüfen und Speichern der Nachricht:', error);
+      console.error(error)
     }
   }
 
-  // Speichert die Nachricht in der channels-Collection
+
   async saveMessageToChannels(message: any, messageInput: HTMLTextAreaElement): Promise<void> {
     const messagesRef = collection(this.firestore, `channels/${this.channelId}/messages`);
     addDoc(messagesRef, message)
@@ -335,59 +339,56 @@ export class ChatComponent implements OnInit{
       });
   }
 
-  // 2. Nachricht vorbereiten
+
   prepareMessage(messageText: string) {
     const now = new Date();
     const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     return {
       text: messageText,
-      userName: this.user?.name || 'Unknown User',  // Verwende this.user.name
-      userId: this.user?.id || 'Unknown UserId',    // Verwende this.user.id
+      userName: this.user?.name || 'Unknown User',  
+      userId: this.user?.id || 'Unknown UserId',    
       timestamp: Timestamp.fromDate(now),
       time: formattedTime,
-      receivinguserId: this.channelId,  // channelId als Empfangsuser verwenden
+      receivinguserId: this.channelId,  
     };
   }
 
   getReceivingUserId(): string | null {
-    const receivingUserId = this.route.snapshot.queryParams['receiverId']; // Oder 'params', je nach URL-Struktur
+    const receivingUserId = this.route.snapshot.queryParams['receiverId']; 
     if (receivingUserId) {
-      console.log('Empfänger-ID aus der URL:', receivingUserId);
       return receivingUserId;
     } else {
-      console.log('Keine Empfänger-ID in der URL gefunden.');
+      console.error('Keine Empfänger-ID in der URL gefunden.');
       return null;
     }
   }
 
   getReceivingUserIdFromUrl(): string | null {
-    const receivingUserId = this.route.snapshot.paramMap.get('id');  // Falls nötig, ändere 'id' auf den richtigen Parametername
+    const receivingUserId = this.route.snapshot.paramMap.get('id');  
     return receivingUserId;
   }
 
-  // 3. Nachricht an Firestore senden
+
   async sendMessageToFirestore(message: any): Promise<void> {
-    // console.log('Attempting to send message to channel:', this.channelId);
+  
     return this.fireService.addMessageToFirestore(this.channelId, message).then(() => {
-      console.log('confirmed success')
     }).catch((error) => {
-      console.log('failed to send message to firestore',error)
+      console.error('failed to send message to firestore',error)
     });
   }
 
-  // 4. Überprüfung der Nachrichteneingabe
+
   validateMessageInput(messageText: string): boolean {
     return messageText.trim() !== '' && !!this.channelId;
   }
 
   handleKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
-    if (event.key === 'Enter' && !event.shiftKey) {  // Prüfe, ob Enter gedrückt wurde (ohne Shift für Zeilenumbruch)
-      event.preventDefault();  // Verhindere das Standard-Enter-Verhalten (z. B. Zeilenumbruch)
+    if (event.key === 'Enter' && !event.shiftKey) {  
+      event.preventDefault();  
 
-      const messageText = messageInput.value.trim(); // Entferne Leerzeichen am Anfang und Ende
-      // this.clearMessageInputAndScroll(messageInput);
-      if (messageText.length > 0) {  // Sende nur, wenn die Nachricht nicht leer ist
+      const messageText = messageInput.value.trim(); 
+      if (messageText.length > 0) { 
         this.sendMessage(messageText);
       }
     }
@@ -399,21 +400,19 @@ export class ChatComponent implements OnInit{
     return trimmedMessageText.length > 0;
   }
 
-  // Leert das Nachrichtenfeld und scrollt nach unten
+ 
   private clearMessageInputAndScroll(messageInput: HTMLTextAreaElement): void {
-    messageInput.value = '';  // Textarea leeren
-    console.log('nachrichht solle gelöscht werden ');
+    messageInput.value = ''; 
     this.removeImage();
   }
 
   changeAdd(isHover: boolean, event?: MouseEvent): void {
     this.imgTextarea[0] = isHover ? 'assets/add-hover-blue.svg' : 'assets/add.svg';
   
-    // Wenn das `click`-Event übergeben wird, Datei-Upload auslösen
     if (event && event.type === 'click') {
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       if (fileInput) {
-        fileInput.click();  // Löst den Datei-Auswahldialog aus
+        fileInput.click();  
       }
     }
   }
@@ -430,7 +429,7 @@ export class ChatComponent implements OnInit{
 
 
   ngOnDestroy(): void {
-    // Abonnements aufheben, wenn die Komponente zerstört wird
+  
     if (this.messagesSubscription) {
       this.messagesSubscription.unsubscribe();
     }

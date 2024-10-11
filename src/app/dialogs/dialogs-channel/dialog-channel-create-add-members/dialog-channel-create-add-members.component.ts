@@ -88,7 +88,7 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
         return new User(
           data['name'] || '',
           data['email'] || '',
-          data['id'] || '', // Falls `id` ein optionales Feld ist
+          data['id'] || '', 
           data['img'] || '',
           data['password'] || '',
           data['channels'] || [],
@@ -108,10 +108,10 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
 
   async ngOnInit(): Promise<void> {
     try {
-      // UID des aktuell angemeldeten Benutzers abrufen
+   
       const uid = await this.fire.getCurrentUserUid();
       if (uid) {
-        // Benutzerdaten anhand der UID laden
+       
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){
@@ -130,21 +130,18 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
 
   async onAddChannel() {
     try {
-      // Add the new channel to the 'channels' collection and retrieve its ID
+     
       const newChannelRef = await this.fire.addChannel(this.newChannel);
       if (!newChannelRef) {
         throw new Error('Failed to get DocumentReference for the new channel.');
     }
       const newChannelId = newChannelRef.id;
-
-      console.log('New Channel ID:', newChannelId);
       if(this.selectedValue === "option1"){
         const batch = writeBatch(this.fire.getFirestore());
         this.allUsers.forEach(user => {
           if (user.id) {
             const userDocRef = this.fire.getUserDocRef(user.id);
   
-            // Add the new channel ID to the user's channels array
             batch.update(userDocRef, {
                 channels: arrayUnion(newChannelId)
             });
@@ -153,7 +150,7 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
         }
         });
   
-        // Commit the batch
+    
         await batch.commit();
   
       } else if(this.selectedValue === "option2"){
@@ -181,17 +178,15 @@ export class DialogChannelCreateAddMembersComponent implements OnInit{
       if (this.selectedValue === "option1") {
         const userIDs = this.allUsers
         .map(user => user.id)
-        .filter((id): id is string => id !== undefined);
-        console.log(userIDs)
-        
+        .filter((id): id is string => id !== undefined);        
         this.newChannel.users?.push(...userIDs);
         this.onAddChannel();
       } else if(this.selectedValue === 'option2'){
         const users: User[] = this.chipsAddMembersComponent.users();
         if (users.length > 0) {
-          const selectedUser = users[0]; // Access the first user
+          const selectedUser = users[0]; 
           if(selectedUser.id){
-            this.userId = selectedUser.id; // Access the ID property
+            this.userId = selectedUser.id; 
           }
         }
         

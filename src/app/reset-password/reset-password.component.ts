@@ -34,7 +34,6 @@ export class ResetPasswordComponent {
   }
 
 
-  // Methode zur Validierung des Formulars
   isFormValid(): boolean {
     return this.email.trim() !== '';
   }

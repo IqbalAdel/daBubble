@@ -1,5 +1,5 @@
 <div *ngIf="!isMobile" class="all">
-    <!-- <span>{{screenWidth}}</span> -->
+
     <div class="chat-group" [ngStyle]="threadOpen ? {'display': 'none'} : {}">
         <div class="chat-header-group">
             <div (click)="openChannelInfo()" class="name"
@@ -13,7 +13,6 @@
 
             </div>
             <div class="persons-group" *ngIf="filteredChannels$ | async as channels; else loading">
-                <!-- Iteriere über die gefilterten Kanäle -->
                 <div 
                 [ngStyle]="
                 screenWidth < 1220 && currentThreadStatus ? {'display': 'none'} :
@@ -30,7 +29,6 @@
                         }
                     </div>
 
-                    <!-- Zeige die Benutzeranzahl für den jeweiligen Kanal -->
                     <div>{{ channel.users?.length }}</div>
                 </div>
 
@@ -63,11 +61,10 @@
                                         <h2>{{ message.userName }}</h2>
                                         <p>{{ message.time }} Uhr</p>
                                     </div>
-                                    <!-- Bild in der Nachricht -->
+                                   
                                     <img *ngIf="message.image" [src]="message.image" alt="Nachricht Bild"
                                         class="message-image" (click)="openImageModal(message.image)">
 
-                                    <!-- Modal zum Vergrößern des Bildes -->
                                     <div class="modal" *ngIf="isImageModalOpen" (click)="closeImageModal()">
                                         <div class="modal-content">
                                             <img [src]="selectedImageForModal" alt="Vergrößertes Bild"
@@ -81,18 +78,17 @@
                                 </div>
                                 <div class="smiley-div">
                                     <div *ngFor="let smileyGroup of groupSmileys(message.smileys || [])" class="smiles">
-                                        <p (click)="saveSmileyToMessage(smileyGroup.smiley, message.id)">{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji anzeigen -->
-                                        <p>{{ smileyGroup.count }}</p> <!-- Zeige die Anzahl der Smileys an -->
+                                        <p (click)="saveSmileyToMessage(smileyGroup.smiley, message.id)">{{ smileyGroup.smiley }}</p>
+                                        <p>{{ smileyGroup.count }}</p> 
                                         <div class="hover-smiles">
-                                            <p >{{ smileyGroup.smiley }}</p> <!-- Das tatsächliche Emoji -->
+                                            <p >{{ smileyGroup.smiley }}</p>
                                             <p>{{ getFormattedNames(smileyGroup.clickedBy) }}</p>
-                                            <!-- Zeige die Benutzer an -->
+                                            
                                         </div>
                                     </div>
                                 </div>
                                 <div class="answer">
                                     <div class="answers" (click)="navigateToAnswers(message.id)">
-                                        <!-- Anzeige der Anzahl der Chats -->
                                         <ng-container *ngIf="message.chats.length === 0">Antworten</ng-container>
                                         <ng-container *ngIf="message.chats.length === 1">1 Antwort</ng-container>
                                         <ng-container *ngIf="message.chats.length > 1">
@@ -145,7 +141,6 @@
     </div>
     
     <div [ngClass]="threadOpen ? 'group-answer': ''">
-        <!-- Hier dein Chat-Layout -->
-        <router-outlet (activate)="onActivate($event)"></router-outlet> <!-- Dieser wird die Child-Komponente laden -->
+        <router-outlet (activate)="onActivate($event)"></router-outlet> 
     </div>
 </div>

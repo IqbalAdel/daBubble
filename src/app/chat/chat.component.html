@@ -2,14 +2,11 @@
 
 <div class="textarea"   #autoScrollTextarea>
    
-    <!-- Textarea für die Nachrichteneingabe -->
     <textarea #scrollContainer [class.expanded]="isImageSelected" #messageInput rows="2" cols="50" [placeholder]="placeholderText"
         (keydown)="handleKeyDown($event, messageInput)"></textarea>
     
-    <!-- Bildvorschau: Zeige das Bild, wenn es ausgewählt wurde -->
     <div *ngIf="selectedImageUrl" class="image-preview">
         <img [src]="selectedImageUrl" alt="Bildvorschau" />
-        <!-- Optional: Button zum Entfernen der Bildvorschau -->
         <button class="removeImage" (click)="removeImage()">x</button>
     </div>
 
@@ -28,14 +25,24 @@
               [src]="imgTextarea[1]" 
               alt="Smiley">
             
-            <img 
+            <img mat-button [matMenuTriggerFor]="aboveMenu"
               (mouseover)="addEmailContact(true)" 
               (mouseout)="addEmailContact(false)" 
               [src]="imgTextarea[2]" 
               alt="Email Icon">
+
+            <mat-menu #aboveMenu="matMenu" yPosition="above">
+                <div class="name-menu">
+                    @for (user of selectUsers; track user) {
+                        <button (click)="addUserToInput(user.name)" mat-menu-item>
+                            <img src="{{user.img}}" alt="">
+                            {{user.name}}
+                        </button>
+                    }
+                </div>
+            </mat-menu>
             
-            <!-- Emoji Picker, der nur angezeigt wird, wenn showEmojiPicker true ist -->
-            <div *ngIf="showEmojiPicker" class="emoji-picker">
+            <div  *ngIf="showEmojiPicker" class="emoji-picker">
                 <emoji-mart (emojiSelect)="addEmoji($event)" title="Pick your emoji…" emoji="point_up"></emoji-mart>
             </div>
         </div>

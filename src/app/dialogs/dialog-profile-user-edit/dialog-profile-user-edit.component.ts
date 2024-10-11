@@ -53,10 +53,10 @@ export class DialogProfileUserEditComponent implements OnInit{
 
   async ngOnInit(): Promise<void> {
     try {
-      // UID des aktuell angemeldeten Benutzers abrufen
+      
       const uid = await this.fire.getCurrentUserUid();
       if (uid) {
-        // Benutzerdaten anhand der UID laden
+        
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){
@@ -74,8 +74,6 @@ export class DialogProfileUserEditComponent implements OnInit{
       await this.fire.updateUserData(this.userID, this.name, this.email )
     }
 
-    // console.log(this.email)
-    // console.log(this.name)
     this.dialog.close();
 
   }

@@ -7,7 +7,7 @@ export class User {
     channels?: string[];
     chats?: string[];
     isBlinking?: boolean;
-    state: 'online' | 'offline';  // Default state is offline
+    state: 'online' | 'offline'; 
     lastChanged: number; 
 
     constructor(
@@ -22,7 +22,7 @@ export class User {
       lastChanged: number = Date.now(),
     ) {
       if (typeof nameOrUser === 'string' || nameOrUser === undefined) {
-        // Initialize with provided parameters or defaults
+
         this.name = nameOrUser || '';
         this.email = email;
         this.id = id;
@@ -34,7 +34,6 @@ export class User {
         this.lastChanged = lastChanged;
 
       } else {
-        // Initialize with a copy of another User instance
         this.name = nameOrUser.name;
         this.email = nameOrUser.email;
         this.id = nameOrUser.id;
@@ -59,30 +58,3 @@ export class User {
       }
   }
   }
-//     constructor(obj?: Partial<User>){
-//         if(obj){
-//             this.firstName = obj.firstName ?? "";
-//             this.lastName = obj.lastName ?? "";
-//             this.email = obj.email ?? "";
-//             this. birthDate = obj. birthDate ?? 0;
-//             this.street = obj.street ?? "";
-//             this.zipCode = obj.zipCode ?? 0;
-//             this.city = obj.city ?? "";
-//             this.id = obj.id ?? "";
-
-//         }
-//     }
-
-//     public toJSON(){
-//         return {
-//             firstName: this.firstName,
-//             lastName: this.lastName,
-//             email: this.email,
-//             birthDate:this.birthDate,
-//             street: this.street,
-//             zipCode:this.zipCode,
-//             city: this.city,
-//             id: this.id,
-//         }
-//     }
-// }

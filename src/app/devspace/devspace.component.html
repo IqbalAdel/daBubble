@@ -1,5 +1,4 @@
 <section [ngClass]="{'collapsed': !isDavspaceVisible}" [ngStyle]="isDavspaceVisible ? {'background-color': 'white'} : {}">
-    <!-- <app-search-bar *ngIf="screenWidth < 992"></app-search-bar> -->
     <div *ngIf="isDavspaceVisible" class="davspace">
         <div *ngIf="screenWidth >= 992" class="davspace-menu">
             <div class="davspace-picture">

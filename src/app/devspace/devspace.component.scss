@@ -40,13 +40,13 @@ button {
 section{
     margin-left: 30px;
     margin-top: 20px;
-    // background-color: white;
+
     border-radius: 30px;
     padding: 30px 10px 20px 0;
     transition: all 0.3s ease-in-out;
     width: 380px;
     height: calc(100vh - 131px);
-    // height: 86vh;
+
 
 
     @media(width < 992px){
@@ -57,7 +57,7 @@ section{
         width: 100%;
     }
     &.collapsed {
-        width: 0; // Setze die Breite auf 0
+        width: 0; 
         padding-left: 0;
         padding-right: 0;
     
@@ -66,11 +66,7 @@ section{
 
 .davspace {
     height: calc(100vh - 180px);
-    // width: 366px;
 
-    // @media(width >= 992px){
-    //     width: 336px;
-    // }
     @media(width < 992px){
         width: 100%;
         height: calc(100vh - 63px);
@@ -125,7 +121,7 @@ section{
         align-items: center;
         justify-content: space-between;
         margin: 10px 30px;
-        // padding-top: 10px;
+
 
         .icon {
             cursor: pointer;
@@ -188,24 +184,7 @@ section{
             align-items: center;
             gap: 10px;
 
-            // &::before {
-            //     content: '';
-            //     width: 20px;
-            //     height: 20px;
-            //     background-image: url('/assets/workspaces.svg');
-            //     background-size: cover;
-            //     background-position: center;
-            // }
-
-            // &:hover {
-            //     &::before {
-            //         width: 20px;
-            //         height: 20px;
-            //         background-image: url('/assets/workspaces_blue.svg');
-            //         background-size: cover;
-            //         background-position: center;
-            //     }
-            // }
+    
         }
 
         .add {
@@ -215,9 +194,6 @@ section{
             width: 30px;
             display: flex;
 
-            // &:hover {
-            //     background-color: rgba(236, 238, 254, 1);
-            // }
         }
     }
 
@@ -281,8 +257,8 @@ section{
         }
       
         &.selected {
-          background-color: rgba(236, 238, 254, 1); // Hintergrundfarbe für ausgewählten Chat
-          color: blue; // Optional: Textfarbe für bessere Lesbarkeit
+          background-color: rgba(236, 238, 254, 1); 
+          color: blue; 
           font-weight: 600;
         }
       
@@ -304,7 +280,7 @@ section{
         cursor: pointer;
         position: relative;
         height: 40px;
-        // margin: 10px 0px;
+    
 
 
         &:active{
@@ -318,25 +294,9 @@ section{
             margin-right: 6px;
         }
 
-        // &::before {
-        //     content: '';
-        //     position: absolute;
-        //     left: 70px;
-        //     top: 6px;
-        //     bottom: 0;
-        //     width: 25px;
-        //     height: 25px;
-        //     background-image: url('/assets/img/add_circle.svg');
-        //     background-size: cover;
-        //     background-position: center;
-        // }
 
         &:hover {
             color: blue;
-
-            // &::before {
-            //     background-image: url('/assets/add_circle_blue.svg');
-            // }
         }
     }
 }

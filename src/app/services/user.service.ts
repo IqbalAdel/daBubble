@@ -14,18 +14,14 @@ export class UserService {
   userStatus: { [key: string]: boolean } = {};
   userStatusFetched: { [userId: string]: boolean } = {};
   retryCount: { [userId: string]: number } = {};
-  maxRetries = 5; // Maximum number of retries
-  retryDelay = 1000; // 1 second delay between retries
+  maxRetries = 5;
+  retryDelay = 1000;
   private _threadOpenStatus: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   threadOpenStatus$ = this._threadOpenStatus.asObservable();
 
 
 
   public _user: User | null = null;
-
-  // private selectedUserIdSource = new BehaviorSubject<string | null>(null);
-  // selectedUserId$: Observable<string | null> = this.selectedUserIdSource.asObservable();
-
   private selectedChannelNameSource = new BehaviorSubject<string | null>(null);
   selectedChannelName$ = this.selectedChannelNameSource.asObservable();
 
@@ -46,7 +42,7 @@ export class UserService {
   }
 
   getUserProfilePicture(): string {
-    return this._user?.img || 'assets/img/default-avatar.png'; // Standardbild, falls kein Profilbild vorhanden ist
+    return this._user?.img || 'assets/img/default-avatar.png'; 
   }
 
   getUser(): User | null {
@@ -54,12 +50,11 @@ export class UserService {
   }
 
   selectUser(userId: string) {
-    this.selectedUserIdSubject.next(userId); // Sofort aktualisieren
+    this.selectedUserIdSubject.next(userId);
   }
 
   async loadUserById(uid: string): Promise<void> {
     try {
-      // console.log(uid)
       const docRef = doc(this.firestore, 'users', uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -75,7 +70,6 @@ export class UserService {
               userData.chats || []
           );
           this.setUser(user);
-          // this.selectedUserIdSubject.next(uid);
         }
       } else {
         console.warn('Benutzerdokument nicht gefunden!');
@@ -117,31 +111,23 @@ export class UserService {
 
   getUserStatus(userId: string): boolean {
     if (!(userId in this.userStatusFetched)) {
-      // Mark as being fetched
       this.userStatusFetched[userId] = true;
-
-      this.retryCount[userId] = 0; // Initialize retry counter
-    
-      // Fetch the status with retries
+      this.retryCount[userId] = 0; 
       this.fetchUserStatusWithRetries(userId)
-  
-    // Return stored status or false if not yet determined
   }
   return this.userStatus[userId] !== undefined ? this.userStatus[userId] : false;
 }
 
   fetchUserStatusWithRetries(userId: string) {
-    // Try fetching the status
+
     this.firebaseservice.getUserStatus(userId).subscribe(status => {
       if (status && status.state && status.state == 'online') {
-        // If we have a valid status, store it and stop retrying
         this.userStatus[userId] = status.state === 'online';
       } else if (this.retryCount[userId] < this.maxRetries) {
-        // If the status is null/undefined and retry limit not reached, retry
         this.retryCount[userId]++;
         setTimeout(() => this.fetchUserStatusWithRetries(userId), this.retryDelay);
       } else {
-        // If max retries reached, assume offline
+
         this.userStatus[userId] = false;
       }
     });
