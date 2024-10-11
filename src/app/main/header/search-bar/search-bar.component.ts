@@ -63,19 +63,19 @@ export class SearchBarComponent implements OnInit{
   filterOpen = false;
 
 
-  filterGroups: FilterGroup[] = []; // To store the filter group results
-  filterGroupOptions: Observable<FilterGroup[]> = new Observable(); // Observable to hold filtered data
+  filterGroups: FilterGroup[] = [];
+  filterGroupOptions: Observable<FilterGroup[]> = new Observable();
 
-  users$: Observable<User[]> = new Observable(); // Users from Firebase
-  channels$: Observable<Channel[]> = new Observable(); // Channels from Firebase
+  users$: Observable<User[]> = new Observable(); 
+  channels$: Observable<Channel[]> = new Observable();
 
   private _formBuilder = inject(FormBuilder);
  
   stateForm = this._formBuilder.group({
-    searchField: '', // Use searchField for the input field
+    searchField: '',
   });
 
-   // Getter for the 'searchField' form control
+
    get searchFieldControl(): FormControl {
     return this.stateForm.get('searchField') as FormControl;
   }
@@ -92,55 +92,38 @@ export class SearchBarComponent implements OnInit{
   }
 
   async ngOnInit(): Promise<void> {
-    // await this.getActiveUser();
-    
-    // const uid = await this.firebaseService.getCurrentUserUid();
-    // if (uid) {
-    //   const userDocRef = doc(this.firebaseService.firestore, 'users', uid);
-      
-    //   // Set up the real-time listener
-    //   onSnapshot(userDocRef, async (docSnapshot) => {
-    //     if (docSnapshot.exists()) {
-    //       console.log('User data changed, reloading user...');
-    //       await this.getActiveUser(); // Reload the user data when a change is detected
-    //     }
-    //   });
-    // }
-
-      // Fetch users and channels from Firestore
       this.users$ = this.firebaseService.getUsers();
       this.channels$ = this.firebaseService.getChannels();
   
       this.filterGroupOptions = this.searchFieldControl.valueChanges.pipe(
-        startWith(''), // Ensure an initial empty value to show all options at the start
-        debounceTime(300), // Add debounce to reduce frequent API calls or filtering
-        distinctUntilChanged(), // Avoid re-filtering if the input hasn't changed
-        switchMap(value => this._filterData(value || '')) // Call filter function
+        startWith(''), 
+        debounceTime(300), 
+        distinctUntilChanged(), 
+        switchMap(value => this._filterData(value || ''))
       );
   
       this.searchFieldControl.valueChanges.subscribe(selectedId => {
         if (typeof selectedId === 'string') {
         this.filterOpen = true;
           console.log('Selected ID:', selectedId);
-          // Handle the selected ID as needed
         }
       });
 
   }
 
-  // Filter function to handle both Users and Channels
+
   private _filterData(value: string): Observable<FilterGroup[]> {
     const filterValue = (value || '').trim().toLowerCase();
   
     return combineLatest([this.users$, this.channels$]).pipe(
       map(([users, channels]) => {
         const filteredUsers = users
-          .filter(user => user.name.toLowerCase().includes(filterValue)) // Filter users
-          .filter(user => !!user.id); // Ensure only users with an ID are included
+          .filter(user => user.name.toLowerCase().includes(filterValue)) 
+          .filter(user => !!user.id); 
   
         const filteredChannels = channels
-          .filter(channel => channel.name.toLowerCase().includes(filterValue)) // Filter channels
-          .filter(channel => !!channel.id); // Ensure only channels with an ID are included
+          .filter(channel => channel.name.toLowerCase().includes(filterValue)) 
+          .filter(channel => !!channel.id); 
   
         return [
           {
@@ -168,10 +151,10 @@ export class SearchBarComponent implements OnInit{
 
 
   onOptionSelected(event: any) {
-    const selectedItem = event.option.value;  // Get the selected item object
+    const selectedItem = event.option.value; 
     	
-    const selectedName = selectedItem.name;   // Extract the name
-    const selectedId = selectedItem.id;       // Extract the ID
+    const selectedName = selectedItem.name;   
+    const selectedId = selectedItem.id;     
 
     this.searchFieldControl.setValue(selectedName, { emitEvent: false });
     this.routeToSelectedItem(selectedItem)
@@ -195,21 +178,16 @@ export class SearchBarComponent implements OnInit{
   }
 
   clearInputField() {
-    // Clear the input field by setting it to an empty string
     this.searchFieldControl.setValue('', { emitEvent: false });
   
-    // Blur (remove focus) from the input field
     if (this.searchInput) {
       this.searchInput.nativeElement.blur();
     }
   }
 
   onFocus(): void {
-
-    // Check if there's a value in the search field
     const currentValue = this.searchFieldControl.value;
     
-    // If the input is focused, trigger the valueChanges to show the autocomplete options
     this.searchFieldControl.setValue(currentValue || '', { emitEvent: true });
   }
 

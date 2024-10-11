@@ -17,22 +17,21 @@ export class AuthService {
 
   constructor() { }
 
- // Überprüfen, ob die E-Mail bereits existiert
  async checkEmailExists(email: string): Promise<boolean> {
   try {
-    // Überprüfen in Firestore
+
     const usersCollectionRef = collection(this.firestore, 'users');
     const q = query(usersCollectionRef, where('email', '==', email));
     const querySnapshot = await getDocs(q);
 
-    return !querySnapshot.empty; // E-Mail existiert in Firestore
+    return !querySnapshot.empty; 
   } catch (error) {
     console.error('Fehler beim Überprüfen der E-Mail:', error);
-    throw error; // Fehler weiterwerfen, um ihn im aufrufenden Code abzufangen
+    throw error; 
   }
 }
 
-// Passwort-Reset E-Mail senden
+
 sendPasswordReset(email: string): Promise < void> {
   return sendPasswordResetEmail(this.auth, email)
     .then(() => {
@@ -44,7 +43,7 @@ sendPasswordReset(email: string): Promise < void> {
     });
 }
 
-// Methode umbenennen oder sicherstellen, dass sie korrekt funktioniert
+
 newPassword(oobCode: string, newPassword: string): Promise < void> {
   return firebaseConfirmPasswordReset(this.auth, oobCode, newPassword)
     .then(() => {
@@ -63,7 +62,7 @@ async googleSignIn(): Promise < void> {
     const user = result.user;
 
     if(user) {
-      // Benutzerdaten in Firestore speichern
+
       const userRef = doc(this.firestore, `users/${user.uid}`);
       const userData = {
         id: user.uid,
@@ -74,18 +73,16 @@ async googleSignIn(): Promise < void> {
         chats: []
       };
 
-      await setDoc(userRef, userData, { merge: true }); // merge: true falls du vorhandene Daten aktualisieren möchtest
+      await setDoc(userRef, userData, { merge: true }); 
       console.log('User successfully signed in and stored in Firestore:', user);
       
     }
   } catch(error) {
     console.error('Google Sign-In failed:', error);
-    throw error; // Optional: Fehler weiterwerfen, falls du sie im aufrufenden Code abfangen möchtest
+    throw error; 
   }
 }
 
-
-// Sign-Out
 googleSignOut() {
   return signOut(this.auth)
     .then(() => {
@@ -99,8 +96,7 @@ googleSignOut() {
 
 resetPassword(email: string): Promise < void> {
   const actionCodeSettings: ActionCodeSettings = {
-    url: 'http://localhost:4200/', // Die URL, zu der der Benutzer nach dem Zurücksetzen des Passworts weitergeleitet wird
-    handleCodeInApp: true,
+    url: 'http://localhost:4200/',
   };
 
   return firebaseSendPasswordResetEmail(this.auth, email, actionCodeSettings)
@@ -114,35 +110,35 @@ resetPassword(email: string): Promise < void> {
 }
   async signUp(email: string, password: string, userData: any): Promise < UserCredential | null > {
   try {
-    // Benutzer in Firebase Authentication erstellen
+
     const userCredential: UserCredential = await createUserWithEmailAndPassword(this.auth, email, password);
     console.log('User signed up:', userCredential.user);
 
-    // UID des neu erstellten Benutzers abrufen
+
     const uid = userCredential.user.uid;
 
-    // Benutzerdaten in Firestore speichern
+
     const cleanedUserData = { ...userData, uid: uid };
     const docRef = doc(this.firestore, 'users', uid);
     await setDoc(docRef, cleanedUserData);
 
-      return userCredential; // Rückgabe des UserCredential-Objekts bei Erfolg
+      return userCredential;
   } catch(error) {
     console.error('Error signing up:', error);
-    return null; // Rückgabe von null im Fehlerfall
+    return null; 
   }
 }
 
   async signIn(email: string, password: string): Promise < UserCredential | null > {
   try {
-    // Benutzer anmelden
+
     const userCredential: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
     console.log('User signed in:', userCredential.user);
 
-    return userCredential; // Rückgabe des UserCredential-Objekts bei Erfolg
+    return userCredential; 
   } catch(error) {
     console.error('Error signing in:', error);
-    return null; // Rückgabe von null im Fehlerfall
+    return null; 
   }
 }
 

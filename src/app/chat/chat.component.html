@@ -2,14 +2,11 @@
 
 <div class="textarea"   #autoScrollTextarea>
    
-    <!-- Textarea für die Nachrichteneingabe -->
     <textarea #scrollContainer [class.expanded]="isImageSelected" #messageInput rows="2" cols="50" [placeholder]="placeholderText"
         (keydown)="handleKeyDown($event, messageInput)"></textarea>
     
-    <!-- Bildvorschau: Zeige das Bild, wenn es ausgewählt wurde -->
     <div *ngIf="selectedImageUrl" class="image-preview">
         <img [src]="selectedImageUrl" alt="Bildvorschau" />
-        <!-- Optional: Button zum Entfernen der Bildvorschau -->
         <button class="removeImage" (click)="removeImage()">x</button>
     </div>
 
@@ -34,7 +31,6 @@
               [src]="imgTextarea[2]" 
               alt="Email Icon">
             
-            <!-- Emoji Picker, der nur angezeigt wird, wenn showEmojiPicker true ist -->
             <div *ngIf="showEmojiPicker" class="emoji-picker">
                 <emoji-mart (emojiSelect)="addEmoji($event)" title="Pick your emoji…" emoji="point_up"></emoji-mart>
             </div>

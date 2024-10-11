@@ -5,14 +5,14 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Firestore, doc, getDoc, DocumentData } from '@angular/fire/firestore';
-import { UserCredential } from 'firebase/auth'; // Prüfe die korrekte Import-Quelle
+import { UserCredential } from 'firebase/auth'; 
 import { UserService } from '../services/user.service';
 @Component({
   selector: 'app-login-section',
   standalone: true,
   imports: [MatCardModule, CommonModule, FormsModule, RouterModule],
   templateUrl: './login-section.component.html',
-  styleUrls: ['./login-section.component.scss'] // Beachte den richtigen Namen: styleUrls
+  styleUrls: ['./login-section.component.scss'] 
 })
 export class LoginSectionComponent {
   email: string = '';
@@ -29,11 +29,9 @@ export class LoginSectionComponent {
 
         if (userCredential) {
           const uid = userCredential.user.uid;
-          
-          // Lade Benutzerdaten und speichere im UserService
+
           await this.userService.loadUserById(uid);
 
-          // Navigiere zur Hauptseite
           this.router.navigate(['/main']);
         } else {
           this.errorMessage = 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.';
@@ -51,7 +49,6 @@ export class LoginSectionComponent {
     this.authService.googleSignIn()
       .then(() => {
         console.log('Successfully signed in with Google and user data stored in Firestore');
-        // Optional: Weiterleitung oder andere Aktionen
         this.router.navigate(['/main']);
       })
       .catch((error) => {

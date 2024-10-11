@@ -21,7 +21,7 @@ import { SearchBarComponent } from '../main/header/search-bar/search-bar.compone
   standalone: true,
   imports: [MatSidenavModule, CommonModule, HeaderComponent, GroupChatComponent, RouterModule, RouterLink, HttpClientModule, SearchBarComponent],
   templateUrl: './devspace.component.html',
-  styleUrls: ['./devspace.component.scss'] // corrected styleUrl to styleUrls
+  styleUrls: ['./devspace.component.scss'] 
 })
 export class DevspaceComponent implements OnInit{
   firestore: Firestore = inject(Firestore);
@@ -65,7 +65,7 @@ export class DevspaceComponent implements OnInit{
   imgAccountCircle2 = "assets/account_circle.svg";
   imgSendMsgBttn = "assets/sendMessage_default.svg";
 
-  selectedUserId: string | null = null; // Variable to track the selected user
+  selectedUserId: string | null = null; 
   userStatus: { [key: string]: boolean } = {};
   userStatusFetched: { [userId: string]: boolean } = {};
 
@@ -93,7 +93,6 @@ export class DevspaceComponent implements OnInit{
     );
 
     this.loadUsers();
-    // this.selectUser;
     this.loggedInUser();
 
   }
@@ -103,12 +102,12 @@ export class DevspaceComponent implements OnInit{
     const fireUsers = collection(this.firestore, 'users');
     this.users$ =  collectionData(fireUsers).pipe(
       map(users => {
-        // Sortiere so, dass der eingeloggte Benutzer oben steht und die anderen alphabetisch sortiert werden
+
         return users.sort((a, b) => {
-          if (a['name'] === this.loggedInUserName) return -1; // Zeigt den eingeloggten User als ersten an
+          if (a['name'] === this.loggedInUserName) return -1; 
           if (b['name'] === this.loggedInUserName) return 1;
 
-          // Fallunabhängige alphabetische Sortierung der restlichen Benutzer
+   
           return a['name'].toLowerCase().localeCompare(b['name'].toLowerCase());
         });
       })
@@ -130,7 +129,6 @@ export class DevspaceComponent implements OnInit{
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     this.screenWidth = window.innerWidth;
-    // console.log('Window resized:', this.screenWidth);
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if(window.innerWidth <= 992){
       this.isMobile.emit();
@@ -147,7 +145,7 @@ export class DevspaceComponent implements OnInit{
         await this.userService.loadUserById(uid);
         this.user = this.userService.getUser();
         if (this.user) {
-          this.loggedInUserName = this.user.name; // Setze den Namen des eingeloggten Benutzers
+          this.loggedInUserName = this.user.name; 
           
           
         }
@@ -190,7 +188,7 @@ export class DevspaceComponent implements OnInit{
 
   selectUser(userId: string): void {
     this.selectedUserId = userId;
-    this.userService.setSelectedUserId(userId); // Set the selected user ID in the service
+    this.userService.setSelectedUserId(userId); 
     this.router.navigate(['/main/chat', userId]);
     if(this.supportsTouch || window.innerWidth <= 992){
       this.navigateToDirectChat.emit();
@@ -202,8 +200,8 @@ export class DevspaceComponent implements OnInit{
 
   selectChannel(channel: any) {
     this.selectedChannelId = channel.id;
-    this.userServes.setSelectedChannelName(channel.name); // Setze den Channel-Namen im Service
-    this.openGroupChat(channel); // Öffnet den Gruppenchat für den ausgewählten Channel
+    this.userServes.setSelectedChannelName(channel.name); 
+    this.openGroupChat(channel); 
     this.selectedUserId = null;
     this.userService.showGroupAnswer = false;
     
@@ -243,20 +241,20 @@ export class DevspaceComponent implements OnInit{
 
 
   loadUsers() {
-    const usersRef = this.firebaseService.getUsersRef();  // Holt die Referenz der Benutzer-Sammlung
+    const usersRef = this.firebaseService.getUsersRef();  
     collectionData(usersRef).subscribe((users: DocumentData[]) => {
       users.forEach(user => {
-        // console.log('User Name:', user['name']);  // Logge den Namen jedes Benutzers
+   
       });
     });
   }
 
   async getActiveUser(){
     try {
-      // UID des aktuell angemeldeten Benutzers abrufen
+
       const uid = await this.firebaseService.getCurrentUserUid();
       if (uid) {
-        // Benutzerdaten anhand der UID laden
+
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){

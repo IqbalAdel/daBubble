@@ -25,18 +25,18 @@ import { FirebaseService } from '../../services/firebase.service';
   ],
   templateUrl: './chips-add-members.component.html',
   styleUrl: './chips-add-members.component.scss',
-  // encapsulation: ViewEncapsulation.None
+ 
 })
 export class ChipsAddMembersComponent{
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   readonly currentUser = signal('');
-  readonly users = signal<User[]>([]);  // Change to hold User objects instead of strings
-  allUsers: User[] = [];  // Changed from string[] to User[]
+  readonly users = signal<User[]>([]);  
+  allUsers: User[] = [];  
   selectUsers: User[] = [];
   userInputControl = new FormControl('');
   @Input() test: string = '';
 
-  filteredUsers = signal<User[]>([]); // Use signal for reactivity with User objects
+  filteredUsers = signal<User[]>([]); 
 
   constructor(
     private fire: FirebaseService,
@@ -47,18 +47,16 @@ export class ChipsAddMembersComponent{
         return new User(
           data['name'] || '',
           data['email'] || '',
-          data['id'] || '', // Falls `id` ein optionales Feld ist
+          data['id'] || '', 
           data['img'] || '',
           data['password'] || '',
           data['channels'] || [],
           data['chats'] || []
         );
       });
-      this.allUsers = this.selectUsers; // Store the full User objects
+      this.allUsers = this.selectUsers; 
       this.updateFilteredUsers();
       
-      // console.log('now',this.allUsers)
-      // console.log('received', this.filteredUsers)
     });
   }
   readonly announcer = inject(LiveAnnouncer);
@@ -75,18 +73,18 @@ export class ChipsAddMembersComponent{
       ? this.allUsers.filter(user => user.name.toLowerCase().includes(currentUserName))
       : this.allUsers.slice();
 
-    this.filteredUsers.set(filtered); // Update the signal
+    this.filteredUsers.set(filtered); 
   }
 
   getUserNames(): string[] {
     return this.selectUsers.map(user => user.name);
   }
 
-  // Handle input changes and update filtered users
+  
   onInputChange(event: Event): void {
     const input = (event.target as HTMLInputElement).value;
     this.currentUser.set(input);
-    this.updateFilteredUsers(); // Re-filter based on input
+    this.updateFilteredUsers(); 
   }
 
   add(event: MatChipInputEvent): void {
@@ -103,12 +101,12 @@ export class ChipsAddMembersComponent{
       this.userInput.nativeElement.value = '';
     }
 
-    // Clear the input value
+  
     this.currentUser.set('');
-    this.updateFilteredUsers(); // Re-filter after addition
+    this.updateFilteredUsers(); 
   }
 
-    // Check if the user is valid
+    
     isValidUser(userName: string): boolean {
       return this.filteredUsers().some(user => user.name === userName);
     }
@@ -126,7 +124,7 @@ export class ChipsAddMembersComponent{
     });
     this.inputDisabled = false;
     this.currentUser.set('');
-    this.updateFilteredUsers(); // Re-filter after addition
+    this.updateFilteredUsers();
 
   }
 
@@ -143,14 +141,13 @@ export class ChipsAddMembersComponent{
       this.userInput.nativeElement.value = '';
     }
     
-    // Deselect the option
+
     event.option.deselect();
     this.inputDisabled = true;
-    this.updateFilteredUsers(); // Re-filter after addition
+    this.updateFilteredUsers(); 
   }
 
   shouldShowPlaceholder(): boolean {
-    // Show placeholder if there are no items or input is not disabled
     return this.users().length === 0 && !this.inputDisabled;
   }
 
@@ -158,11 +155,6 @@ export class ChipsAddMembersComponent{
     if (this.users().length === 0) {
       return;
     }
-    // 1.Lade alle User in allUsers --- Done
-    // 2.Auwahl von allUsers --- Done
-    // 3.selectedUser wird mit ID abgestimmt (console) -- Done
-    // 4. Nutzer wird über ID in channel und User collection geaddet
-
     console.log('Form submitted with users:', this.users());
   }
 

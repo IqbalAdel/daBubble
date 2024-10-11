@@ -25,7 +25,6 @@ export class NewPasswordComponent implements OnInit {
     isNewPasswordFocused: boolean = false;
 
     ngOnInit() {
-      // Der oobCode wird aus der URL abgerufen
       this.route.queryParams.subscribe(params => {
         this.oobCode = params['oobCode'];
       });
@@ -38,7 +37,7 @@ export class NewPasswordComponent implements OnInit {
           .then(() => {
             this.message = 'Passwort erfolgreich zurückgesetzt.';
             console.log('passwort neu gespeichert')
-            this.router.navigate(['login']); // Weiterleitung zur Login-Seite nach erfolgreichem Zurücksetzen
+            this.router.navigate(['login']); 
           })
           .catch(error => {
             this.message = `Fehler beim Zurücksetzen des Passworts: ${error.message}`;

@@ -87,7 +87,7 @@ export class DialogChannelCreateAddMemberMobileComponent {
         return new User(
           data['name'] || '',
           data['email'] || '',
-          data['id'] || '', // Falls `id` ein optionales Feld ist
+          data['id'] || '', 
           data['img'] || '',
           data['password'] || '',
           data['channels'] || [],
@@ -99,10 +99,10 @@ export class DialogChannelCreateAddMemberMobileComponent {
 
   async ngOnInit(): Promise<void> {
     try {
-      // UID des aktuell angemeldeten Benutzers abrufen
+      
       const uid = await this.fire.getCurrentUserUid();
       if (uid) {
-        // Benutzerdaten anhand der UID laden
+     
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){
@@ -121,7 +121,7 @@ export class DialogChannelCreateAddMemberMobileComponent {
 
   async onAddChannel() {
     try {
-      // Add the new channel to the 'channels' collection and retrieve its ID
+
       const newChannelRef = await this.fire.addChannel(this.newChannel);
       if (!newChannelRef) {
         throw new Error('Failed to get DocumentReference for the new channel.');
@@ -135,7 +135,6 @@ export class DialogChannelCreateAddMemberMobileComponent {
           if (user.id) {
             const userDocRef = this.fire.getUserDocRef(user.id);
   
-            // Add the new channel ID to the user's channels array
             batch.update(userDocRef, {
                 channels: arrayUnion(newChannelId)
             });
@@ -144,7 +143,6 @@ export class DialogChannelCreateAddMemberMobileComponent {
         }
         });
   
-        // Commit the batch
         await batch.commit();
   
       } else if(this.selectedValue === "option2"){
@@ -176,9 +174,9 @@ export class DialogChannelCreateAddMemberMobileComponent {
       } else if(this.selectedValue === 'option2'){
         const users: User[] = this.chipsAddMembersComponent.users();
         if (users.length > 0) {
-          const selectedUser = users[0]; // Access the first user
+          const selectedUser = users[0]; 
           if(selectedUser.id){
-            this.userId = selectedUser.id; // Access the ID property
+            this.userId = selectedUser.id; 
           }
         }
         

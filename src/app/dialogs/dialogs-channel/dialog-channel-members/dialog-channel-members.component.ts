@@ -30,7 +30,6 @@ export class DialogChannelMembersComponent{
   channelID: string = "";
   hideButton: boolean = false;
 
-  // dialogRefAddMember: MatDialogRef<DialogChannelAddMembersComponent>;
 
 
   constructor( 
@@ -62,7 +61,6 @@ export class DialogChannelMembersComponent{
         }).catch(error => {
           console.error('error fetching users', error)
         })
-        // console.log(this.allUsers);
         
       } else {
         console.error('No users found in this channel or channel not found.');
@@ -94,8 +92,6 @@ export class DialogChannelMembersComponent{
     this.dialogRefAddMember.close();
     let dialogRef = this.dialogProfile.open(DialogProfileUserCenterComponent, {
       panelClass: 'border-30-right',
-      // width: '400px',
-      // height: '450px',
       data: {
         username: user.name,
         email: user.email,

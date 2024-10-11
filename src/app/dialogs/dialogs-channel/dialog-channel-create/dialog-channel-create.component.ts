@@ -61,7 +61,6 @@ export class DialogChannelCreateComponent {
     let dialogRef = this.dialogAddMembers.open(DialogChannelCreateAddMembersComponent, {
       panelClass: 'border-30',
       width: '600px',
-      // height: '250px',
       data: {
         name: this.name,
         description: this.description,

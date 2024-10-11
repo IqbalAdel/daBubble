@@ -24,7 +24,7 @@
         outline: none;
     }
     input[autofocus] {
-        /* Disables autofocus */
+
         outline: none;
       }
 }
@@ -48,16 +48,14 @@ mat-icon{
 
   
   mat-chip-row {
-    // margin-top: -25px;  /* Adjust this value to control the overlap */
-    // margin-left: 10px;  /* Adjust this value to control the overlap */
     position: absolute;
-    z-index: 2;  /* Ensure chips appear above the input field */
+    z-index: 2; 
   }
   
   input{
     position: relative;
-    z-index: 1;  /* Ensure input field appears below chips */
-    background: transparent;  /* Make sure the background is transparent */
+    z-index: 1;  
+    background: transparent;  
   }
 
 

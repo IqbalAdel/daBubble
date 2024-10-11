@@ -51,7 +51,7 @@ export class DialogChannelAddMembersComponent{
         return new User(
           data['name'] || '',
           data['email'] || '',
-          data['id'] || '', // Falls `id` ein optionales Feld ist
+          data['id'] || '',
           data['img'] || '',
           data['password'] || '',
           data['channels'] || [],
@@ -88,15 +88,15 @@ export class DialogChannelAddMembersComponent{
   async onSubmit(): Promise<void> {
     const users: User[] = this.chipsAddMembersComponent.users();
       if (users.length > 0) {
-        const selectedUser = users[0]; // Access the first user
+        const selectedUser = users[0]; 
         if(selectedUser.id){
-          this.userId = selectedUser.id; // Access the ID property
+          this.userId = selectedUser.id; 
         }
         console.log('User ID:', this.userId);
       }
       await this.addChannelToUser();
       await this.addUserToChannel();
-      this.dialog.close(); // Close dialog and indicate success
+      this.dialog.close(); 
   }
   
   async addChannelToUser(){

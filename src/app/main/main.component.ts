@@ -51,22 +51,19 @@ ngOnInit(): void {
       this.checkForGroupAnswerComponent(this.route);
     })
 
-    // Update any other component logic that depends on groupId or groupName
     this.isMobile = false;
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
-    // this.screenWidth = window.innerWidth;
-    // console.log('Window resized:', this.screenWidth);
-    // this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
     if (window.innerWidth <= 992) {   
-      if (!this.hasMobileTriggered) { // Only trigger once
+      if (!this.hasMobileTriggered) { 
         this.isMobile = true;
         if(this.chatBoxHasLoaded)
-        // this.chat.isMobile = true;
+
         this.closeDevSpace(true)
-        this.hasMobileTriggered = true; // Set flag to true
+        this.hasMobileTriggered = true; 
       }
     } else if (window.innerWidth > 992) {
       this.closeDevSpace(false)
@@ -82,20 +79,19 @@ ngOnInit(): void {
       this.isMobile = false;
       if(this.chatBoxHasLoaded){
         this.chat.isMobile = false;
-        // console.log(this.chat, window.innerWidth)
-        // console.log(this.chat.isMobile, window)
+
       }
-      this.hasMobileTriggered = false; // Reset flag once screen width exceeds 992
+      this.hasMobileTriggered = false; 
     }
   
   }
 
   checkForGroupAnswerComponent(route: ActivatedRoute) {
-    // Check the current route and its child routes
+
     let activeRoute = route;
     while (activeRoute.firstChild) {
       activeRoute = activeRoute.firstChild;
-      // Check if the current component is GroupAnswerComponent
+
       if (activeRoute.component === GroupAnswerComponent) {
         if(this.chatBoxHasLoaded && this.groupChatComponent && ( window.innerWidth <= 992) ){
           this.groupChatComponent.threadOpen = true;
@@ -104,11 +100,10 @@ ngOnInit(): void {
         }
         console.log('GroupAnswerComponent is activated');
       }
-      // console.log(activeRoute.component);
-      // console.log(activeRoute);
+
       
     }
-    // console.log(activeRoute);
+
   }
 
   
@@ -132,7 +127,7 @@ ngOnInit(): void {
         }
       }, 100);
     } else if(!this.userEnteredChannel && this.chatBoxHasLoaded){
-      // console.log('userhas Not entered Channel')
+
       this.userEnteredChannel = false
       if (this.chat instanceof GroupChatComponent) {
         this.chat.isMobile = true;

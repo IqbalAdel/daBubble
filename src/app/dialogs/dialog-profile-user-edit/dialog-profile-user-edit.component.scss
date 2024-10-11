@@ -3,7 +3,7 @@
 .user-profile{
     padding: 30px 25px 30px 25px;
     height: 100%;
-    // @include d-flex($dir: column);
+
     input{
         border-radius: 30px;
         margin-bottom: 10px;
@@ -85,7 +85,6 @@
             background-color: white;
             margin-right: 15px;
             transition: background-color 125ms ease-in;
-            // transition: color 125ms ease-in-out;
 
             &:hover{
                 background-color: #444DF2;
@@ -106,7 +105,7 @@
 }
 
 ::ng-deep .mat-mdc-dialog-container {
-    box-shadow: none !important;/* Removes the box shadow */
+    box-shadow: none !important;
     --mdc-dialog-container-shape: 30px;
   }
 
@@ -167,9 +166,6 @@
         input{
             font-size: 20px;
             padding: 10px 0px 10px 15px;
-            // &:focus::placeholder{
-            //     transform: translateY(3px);
-            // }
             &::placeholder {
                 font-size: 20px;
                 transition: transform 0.3s ease;

@@ -25,10 +25,6 @@ export class DialogProfileMenuComponent {
   openDialog(){
     let dialogRef = this.dialogUser.open(DialogProfileUserComponent, {
       backdropClass: 'custom-backdrop',
-      // panelClass: 'upper-right-round',
-      // width: '350px',
-      // height: '400px',
-      // position: {top: '90px', right: '15px'},
 
     });
   }

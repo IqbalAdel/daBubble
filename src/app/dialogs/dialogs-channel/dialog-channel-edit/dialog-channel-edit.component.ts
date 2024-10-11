@@ -1,7 +1,6 @@
 import { Component, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FirebaseService } from '../../../services/firebase.service';
@@ -77,14 +76,12 @@ export class DialogChannelEditComponent implements OnInit{
       channelDescription: string; 
        }
   ) {
-    // this.addMembersMobile.channelID = data.channelID;
     this.channelID = data.channelID;
     this.channelName = data.channelName;
     this.channelDescription = data.channelDescription;
     this.name = data.channelName;
     this.description = data.channelDescription;
     
-    // this.channel = this.fire.getChannelById(this.channelID);
   }
 
   async ngOnInit(): Promise<void> {
@@ -106,10 +103,9 @@ export class DialogChannelEditComponent implements OnInit{
 
   async getActiveUser(){
     try {
-      // UID des aktuell angemeldeten Benutzers abrufen
       const uid = await this.fire.getCurrentUserUid();
       if (uid) {
-        // Benutzerdaten anhand der UID laden
+
         await this.userService.loadUserById(uid);
         const user = this.userService.getUser();
         if(user){
@@ -171,10 +167,6 @@ export class DialogChannelEditComponent implements OnInit{
     if(this.name.length > 0 || this.description.length >0 && this.channelID){
       await this.fire.updateChannelData(this.channelID, editField, this.name, this.description )
     }
-
-    console.log(this.description)
-    console.log(this.name)
-    // this.dialog.close();
 
   }
 

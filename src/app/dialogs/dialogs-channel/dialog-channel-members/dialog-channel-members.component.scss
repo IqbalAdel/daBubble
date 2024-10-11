@@ -5,14 +5,6 @@
     @media(width >992){
         height: 100%;
     }
-
-    // .member-list{
-    //     &:first-child{
-    //         padding-top: 270px;
-
-    //     }
-    // }
-    // @include d-flex($dir: column);
    
 }
 .profile-aot{
@@ -33,19 +25,12 @@
 }
 
 .member-list{
-    // &:first-child{
-    //     padding-top: 270px;
-    // }
-    // @include d-flex($dir: column, $ai: flex-start);
+
     display: block;
     margin-top: 20px;
     max-height: 300px;
     height: fit-content;
     overflow-y: scroll;
-    // &::-webkit-scrollbar{
-    //     display: none;
-    //     width: 0;
-    // }
 
     &::-webkit-scrollbar {
         width: 4px;
@@ -61,9 +46,6 @@
     }
 }
 
-// .member-list:first-child {
-//     padding-top: 270px;
-// }
 
 .member{
     cursor: pointer;
@@ -141,7 +123,7 @@
 
 
 ::ng-deep .border-radius .mat-mdc-dialog-container {
-    box-shadow: none !important;/* Removes the box shadow */
+    box-shadow: none !important;
     --mdc-dialog-container-shape: 30px;
   }
 
@@ -163,26 +145,13 @@
 @media(width < 992px){
     .mat-mdc-card {
         border-radius: 20px ;
-        // border: 1px solid rgba(121, 126, 243, 1 );
         box-shadow: none ; 
     }
-
-    // mat-card{
-    //     border-radius: 20px !important;
-    //     border: 1px solid rgba(121, 126, 243, 1)!important;
-    //     box-shadow: none !important;     
-    // }
 
     
 }
 
-// ::ng-deep .mat-mdc-card {
-//     @media(width < 992px){
-//         border-radius: 20px !important;
-//         border: 1px solid rgba(121, 126, 243, 1 )!important;
-//         box-shadow: none !important; 
-//     }
-// }
+
 
 .member-list-container{
     height: 100%;
