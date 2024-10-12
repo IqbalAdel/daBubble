@@ -26,30 +26,40 @@
       <ng-container *ngIf="answerChats.length > 1"> Antworten </ng-container>
       <div class="line-two"></div>
     </div>
-    <div *ngFor="let chat of answerChats"
-      [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
-      <img src="assets/img/avatar-1.png" alt="">
-      <div class="messages">
-        <div class="name-and-time">
-          <div class="name">{{ chat.userName || 'Unbekannter Benutzer' }}</div>
-          <div class="time">{{ chat.time }} Uhr</div>
+    <div *ngFor="let chat of answerChats; let chatIndex = index">
+      <div [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
+        <img src="assets/img/avatar-1.png" alt="">
+        <div class="messages">
+          <div class="name-and-time">
+            <div class="name">{{ chat.userName || 'Unbekannter Benutzer' }}</div>
+            <div class="time">{{ chat.time }} Uhr</div>
+          </div>
+          <div class="massage">{{ chat.text }}</div>
         </div>
-        <div class="massage">{{ chat.text }}</div>
-      </div>
-      <div class="hover-container">
-        <div class="img-hover">
-          <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)" [src]="imgSrc[0]" alt=""
-            (click)="openSmiley()">
+        <div class="hover-container">
+          <div class="img-hover">
+            <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)" [src]="imgSrc[0]" alt=""
+              (click)="openSmiley(chatIndex)"> <!-- Hier chatIndex übergeben -->
+          </div>
+          <div class="img-hover" *ngIf="chat.userName === loggedInUserName">
+            <img (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)" [src]="imgSrc[3]">
+          </div>
+          
+          <emoji-mart *ngIf="emojiPickerVisible && activeChatIndex === chatIndex" 
+          (emojiSelect)="addEmoji($event, chatIndex)" 
+          title="Pick your emoji" 
+          [style.position]="'absolute'" 
+          [style.zIndex]="1000" 
+          [style.top.px]="30" 
+          [style.left.px]="0">
+      </emoji-mart>
+      
         </div>
-        <div class="img-hover" *ngIf="chat.userName === loggedInUserName">
-          <img (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)" [src]="imgSrc[3]">
-        </div>
-        <emoji-mart *ngIf="emojiPickerVisible"  (emojiSelect)="addEmoji($event, chat.messageId, chatIndex)" title="Pick your emoji"
-          [style.position]="'absolute'" [style.zIndex]="1000" [style.top.px]="30" [style.left.px]="0">
-        </emoji-mart>
-
       </div>
     </div>
+    
+    
+    
   </div>
   <app-chat [groupId]="groupId" [answerId]="answerId"></app-chat>
 </div>

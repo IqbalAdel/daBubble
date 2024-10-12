@@ -50,7 +50,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
     messageId: '12345',  // Beispielhafte Nachricht-ID, dies muss dynamisch gesetzt werden
     userName: 'JohnDoe'
   };
-  
+  activeChatIndex: number | null = null; // Stellen Sie sicher, dass activeChatIndex definiert ist
 
   constructor(private route: ActivatedRoute, public userService: UserService,  private firebaseService: FirebaseService, private router: Router) {
     const channelsCollection = collection(this.firestore, 'channels');
@@ -292,37 +292,62 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
     this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.svg' : 'assets/img/smiley/add_reaction.svg';
   }
 
-  openSmiley() {
-    this.emojiPickerVisible = !this.emojiPickerVisible; // Emoji-Picker umschalten
+  openSmiley(chatIndex: number) {
+    // Wenn der Emoji-Picker bereits sichtbar ist und der aktuelle Chat-Index übereinstimmt, schließen
+    if (this.emojiPickerVisible && this.activeChatIndex === chatIndex) {
+      this.emojiPickerVisible = false; // Emoji-Picker ausblenden
+    } else {
+      this.activeChatIndex = chatIndex; // Setze den aktiven Chat-Index
+      this.emojiPickerVisible = true; // Emoji-Picker sichtbar machen
+    }
   }
 
-  async addEmoji(event: any, messageId: string, chatIndex: number) {
+  async addEmoji(event: any, chatIndex: number) {
     const emoji = event.emoji.native;  // Das ausgewählte Emoji
     const groupId = this.groupId; // Die ID des Channels oder der Gruppe
 
-    try {
-        // Referenz auf das spezifische Dokument in der Firebase-Datenbank
-        const messageDocRef = doc(this.firestore, `channels/${groupId}/messages/${messageId}`);
+    // Protokolliere, auf welchen chatIndex geklickt wurde
+    console.log('Klick auf chatIndex:', chatIndex); 
     
+    try {
+        // Holen Sie das chat-Objekt aus answerChats
+        const chat = this.answerChats[chatIndex]; // Zugriff auf den entsprechenden Chat
+        // Protokollieren Sie das chat-Objekt
+        console.log('Chat-Objekt:', chat);
+        
+        // Überprüfen Sie, ob der Chat existiert
+        if (!chat) {
+            console.error('Chat mit Index', chatIndex, 'existiert nicht.');
+            return; // Beenden Sie die Funktion, wenn der Chat nicht existiert
+        }
+
+        // Referenz auf das spezifische Dokument in der Firebase-Datenbank
+        const messageDocRef = doc(this.firestore, `channels/${groupId}/messages/${chat.messageId}`);
+
         // Hole das Dokument (Nachricht) aus Firebase
         const messageDocSnapshot = await getDoc(messageDocRef);
-    
+
         if (messageDocSnapshot.exists()) {
             const messageData = messageDocSnapshot.data();
-            console.log('Nachrichtendaten:', messageData); // Debugging: Zeige die abgerufenen Daten an
-            
             const chatsArray = messageData['chats'] || [];
-    
+
+            // Sicherstellen, dass das entsprechende chat-Objekt existiert
             if (chatsArray[chatIndex]) {
                 const chat = chatsArray[chatIndex];
-                const smileysArray = chat['smileys'] || [];
-    
+                // Hier sicherstellen, dass smileysArray existiert, wenn nicht, erstelle es
+                let smileysArray = chat['smileys'] || []; // Hier wird das smileysArray abgerufen
+                
+                // Protokollieren Sie den Inhalt des smileysArray
+                console.log('Aktuelles smileysArray:', smileysArray);
+
+                // Suche nach dem bestehenden Smiley
                 const existingSmileyIndex = smileysArray.findIndex((s: { smiley: string }) => s.smiley === emoji);
-    
+
+                // Logik zum Hinzufügen oder Entfernen des Smileys
                 if (existingSmileyIndex > -1) {
                     const clickedByArray = smileysArray[existingSmileyIndex].clickedBy;
                     const userIndex = clickedByArray.indexOf(this.loggedInUserName);
-    
+
                     if (userIndex > -1) {
                         clickedByArray.splice(userIndex, 1);
                         if (clickedByArray.length === 0) {
@@ -337,31 +362,29 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
                         clickedBy: [this.loggedInUserName],
                     });
                 }
-    
+
+                // Aktualisiere das chatsArray mit dem aktuellen smileysArray
                 chatsArray[chatIndex]['smileys'] = smileysArray;
-    
+
                 // Aktualisiere das Dokument in Firebase mit dem neuen `chats`-Array
                 await updateDoc(messageDocRef, {
                     chats: chatsArray,
                 });
-    
+
                 console.log('Smiley erfolgreich im Chat aktualisiert:', smileysArray);
             } else {
                 console.error('Chat mit Index', chatIndex, 'nicht gefunden.');
             }
         } else {
-            console.error('Nachricht nicht gefunden:', messageId);
+            console.error('Nachricht nicht gefunden für Chat:', chat);
         }
     } catch (error) {
         console.error('Fehler beim Aktualisieren des Smileys:', error);
     }
-  
+
     // Emoji-Picker schließen nach Auswahl
     this.emojiPickerVisible = false;
 }
-
-
-  
   
 
 }
