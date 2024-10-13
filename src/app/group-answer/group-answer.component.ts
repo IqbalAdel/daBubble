@@ -302,56 +302,37 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
     const emoji = event.emoji.native;  // Das ausgewählte Emoji
     const answerId = this.answerId;    // Verwende die Antwort-ID (answerId) für die Gruppenantwort
     const loggedInUserName = this.loggedInUserName; // Der Benutzername des angemeldeten Nutzers
-
-    // Protokolliere, auf welchen chatIndex geklickt wurde
-    console.log('Klick auf chatIndex:', chatIndex);
-
     try {
-        // Greife auf den entsprechenden Chat zu
         const chat = this.answerChats[chatIndex];
         console.log('Chat-Objekt:', chat); // Protokolliere das Chat-Objekt
 
-        // Sicherstellen, dass der Chat existiert
         if (!chat) {
             console.error('Kein Chat-Objekt gefunden für den Index', chatIndex);
             return; // Beende die Funktion, wenn kein Chat vorhanden ist
         }
 
-        // Hole das smileysArray des spezifischen Chats oder initialisiere es, wenn es nicht existiert
         let smileysArray: Smiley[] = chat['smileys'] || []; // Hier speichern wir direkt im Chat-Objekt
 
-        // Suche nach dem Smiley im smileysArray
         const existingSmileyIndex = smileysArray.findIndex((s: Smiley) => s.smiley === emoji);
 
         if (existingSmileyIndex !== -1) {
-            // Wenn der Smiley bereits existiert, füge den Benutzernamen hinzu, falls nicht bereits vorhanden
             const clickedByUsers = smileysArray[existingSmileyIndex].clickedBy.split(',').map(user => user.trim());
 
-            // Überprüfe, ob der Benutzername bereits vorhanden ist
             if (!clickedByUsers.includes(loggedInUserName)) {
-                // Füge den neuen Benutzernamen hinzu
                 clickedByUsers.push(loggedInUserName);
-                console.log('Benutzer hinzugefügt:', loggedInUserName);
             } else {
-                // Wenn der Benutzer bereits reagiert hat, entferne den Benutzer
                 const newClickedByUsers = clickedByUsers.filter(user => user !== loggedInUserName);
                 smileysArray[existingSmileyIndex].clickedBy = newClickedByUsers.join(', '); // Aktualisiere die Benutzer
-                console.log('Benutzer entfernt:', loggedInUserName);
 
-                // Überprüfen, ob es keine Benutzer mehr gibt, die auf den Smiley reagieren
                 if (newClickedByUsers.length === 0) {
-                    // Lösche den Smiley, wenn keine Benutzer mehr darauf reagieren
                     smileysArray.splice(existingSmileyIndex, 1);
-                    console.log('Smiley gelöscht, keine Reaktionen mehr:', emoji);
                 }
             }
         } else {
-            // Füge den Smiley und den Benutzernamen in das smileysArray ein
             smileysArray.push({
                 smiley: emoji,
                 clickedBy: loggedInUserName // Starte mit dem aktuellen Benutzer
             });
-            console.log('Smiley hinzugefügt:', emoji);
         }
 
         // Aktualisiere das Chat-Objekt mit dem neuen `smileysArray`
@@ -364,8 +345,6 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
         await updateDoc(messageDocRef, {
             chats: this.answerChats, // Hier bleibt das chats-Array unverändert, wir aktualisieren nur das spezifische Chat-Objekt
         });
-
-        console.log('Smiley erfolgreich in Firebase aktualisiert:', smileysArray);
 
     } catch (error) {
         console.error('Fehler beim Hinzufügen des Smileys:', error);
@@ -408,49 +387,96 @@ hasSmileys(chat: any): boolean {
   return chat.smileys && chat.smileys.some((s: Smiley) => s.smiley);
 }
 
-toggleSmiley(chatIndex: number, smiley: Smiley) {
-  const chat = this.answerChats[chatIndex]; // Hole den aktuellen Chat
-  let smileysArray: Smiley[] = chat.smileys || []; // Hole oder initialisiere das Smiley-Array
+async toggleSmiley(chatIndex: number, smiley: Smiley) {
+  try {
+      const chat = this.getChatByIndex(chatIndex);
+      if (!chat) return;
 
-  const existingSmileyIndex = smileysArray.findIndex((s: Smiley) => s.smiley === smiley.smiley);
+      let smileysArray = this.getSmileysArray(chat);
+      const existingSmileyIndex = this.findSmileyIndex(smileysArray, smiley.smiley);
 
-  if (existingSmileyIndex !== -1) {
-      // Smiley existiert bereits, also entfernen wir ihn
-      const clickedByUsers = smileysArray[existingSmileyIndex].clickedBy.split(',').map(user => user.trim());
-
-      // Wenn der aktuelle Benutzer im clickedBy vorhanden ist, entferne ihn
-      if (clickedByUsers.includes(this.loggedInUserName)) {
-          const newClickedByUsers = clickedByUsers.filter(user => user !== this.loggedInUserName);
-          smileysArray[existingSmileyIndex].clickedBy = newClickedByUsers.join(', '); // Aktualisiere die Benutzer
-
-          // Überprüfe, ob keine Benutzer mehr vorhanden sind
-          if (newClickedByUsers.length === 0) {
-              // Wenn keine Benutzer mehr vorhanden sind, entferne den Smiley aus dem Array
-              smileysArray.splice(existingSmileyIndex, 1);
-              console.log('Smiley entfernt:', smiley.smiley, 'da keine Benutzer mehr vorhanden sind.');
-          } else {
-              console.log('Benutzer entfernt:', this.loggedInUserName);
-          }
+      if (existingSmileyIndex !== -1) {
+          this.updateExistingSmiley(smileysArray, existingSmileyIndex, smiley.smiley);
       } else {
-          // Ansonsten füge den aktuellen Benutzer hinzu
-          smileysArray[existingSmileyIndex].clickedBy += `, ${this.loggedInUserName}`;
-          console.log('Benutzer hinzugefügt:', this.loggedInUserName);
+          this.addNewSmiley(smileysArray, smiley.smiley);
       }
+
+      chat['smileys'] = smileysArray;
+      await this.updateFirebase(chatIndex);
+
+  } catch (error) {
+      console.error('Fehler beim Aktualisieren des Smileys:', error);
+  }
+}
+getChatByIndex(chatIndex: number) {
+  const chat = this.answerChats[chatIndex];
+  console.log('Chat-Objekt:', chat);
+  if (!chat) {
+      console.error('Kein Chat-Objekt gefunden für den Index', chatIndex);
+  }
+  return chat;
+}
+getSmileysArray(chat: any): Smiley[] {
+  return chat['smileys'] || [];
+}
+findSmileyIndex(smileysArray: Smiley[], smiley: string): number {
+  return smileysArray.findIndex((s: Smiley) => s.smiley === smiley);
+}
+
+updateExistingSmiley(smileysArray: Smiley[], smileyIndex: number, smiley: string) {
+  const clickedByUsers = smileysArray[smileyIndex].clickedBy.split(',').map(user => user.trim());
+
+  if (!clickedByUsers.includes(this.loggedInUserName)) {
+      clickedByUsers.push(this.loggedInUserName);
+      smileysArray[smileyIndex].clickedBy = clickedByUsers.join(', ');
   } else {
-      // Smiley existiert nicht, also füge ihn hinzu
-      smileysArray.push({
-          smiley: smiley.smiley,
-          clickedBy: this.loggedInUserName // Starte mit dem aktuellen Benutzer
-      });
-      console.log('Smiley hinzugefügt:', smiley.smiley);
+      const newClickedByUsers = clickedByUsers.filter(user => user !== this.loggedInUserName);
+      smileysArray[smileyIndex].clickedBy = newClickedByUsers.join(', ');
+
+      if (newClickedByUsers.length === 0) {
+          smileysArray.splice(smileyIndex, 1);
+      }
+  }
+}
+addNewSmiley(smileysArray: Smiley[], smiley: string) {
+  smileysArray.push({
+      smiley: smiley,
+      clickedBy: this.loggedInUserName // Starte mit dem aktuellen Benutzer
+  });
+}
+
+async updateFirebase(chatIndex: number) {
+  const answerId = this.answerId;
+  const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${answerId}`);
+
+  await updateDoc(messageDocRef, {
+      chats: this.answerChats, // Aktualisiere das gesamte `chats`-Array
+  });
+}
+
+generateReactionText(smiley: Smiley): string {
+  const clickedByUsers = smiley.clickedBy.split(',').map(user => user.trim());
+  const otherUsers = clickedByUsers.filter(user => user !== this.loggedInUserName);
+
+  // Wenn niemand außer dem aktuellen Benutzer reagiert hat
+  if (otherUsers.length === 0 && clickedByUsers.includes(this.loggedInUserName)) {
+    return 'Du hast reagiert';
   }
 
-  // Aktualisiere das Smiley-Array im Chat
-  chat.smileys = smileysArray;
+  // Wenn genau eine weitere Person neben dem aktuellen Benutzer reagiert hat
+  if (otherUsers.length === 1 && clickedByUsers.includes(this.loggedInUserName)) {
+    return `${otherUsers[0]} und Du haben reagiert`;
+  }
 
-  // Hier solltest du auch die Logik zum Aktualisieren in Firebase hinzufügen
-  // updateFirebase(chatIndex, chat);
+  // Wenn mehrere Personen reagiert haben
+  if (otherUsers.length > 1 && clickedByUsers.includes(this.loggedInUserName)) {
+    return `${otherUsers.slice(0, -1).join(', ')}, ${otherUsers[otherUsers.length - 1]} und Du haben reagiert`;
+  }
+
+  // Wenn der eingeloggte Benutzer nicht reagiert hat
+  return `${clickedByUsers.join(', ')} haben reagiert`;
 }
+
 
 }
 

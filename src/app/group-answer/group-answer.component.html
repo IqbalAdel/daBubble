@@ -20,10 +20,9 @@
       </div>
     </div>
     <div class="answers-and-line">
-      <!-- <div > {{ answerChats.length }} Antworten</div> -->
       <ng-container *ngIf="answerChats.length === 0">Antworten</ng-container>
       <ng-container *ngIf="answerChats.length === 1">1 Antwort</ng-container>
-      <ng-container *ngIf="answerChats.length > 1"> Antworten </ng-container>
+      <ng-container *ngIf="answerChats.length > 1"> {{ answerChats.length }} Antworten </ng-container>
       <div class="line-two"></div>
     </div>
     <div *ngFor="let chat of answerChats; let chatIndex = index">
@@ -38,20 +37,19 @@
           <div class="massage">{{ chat.text }}</div>
           <div>
             <div class="smileys">
-              <div *ngFor="let smiley of chat.smileys">
+              <div *ngFor="let smiley of chat.smileys" class="hover-smileys">
                   <div class="smiley" (click)="toggleSmiley(chatIndex, smiley)"> <!-- Hier wird die Methode aufgerufen -->
                       <div *ngIf="smiley.smiley">{{ smiley.smiley }}</div>
                       <span *ngIf="smiley.clickedBy">{{ countReactions(smiley.clickedBy) }}</span>
                   </div>
+                  <div class="hover-smiley">
+                    <div *ngIf="smiley.smiley">{{ smiley.smiley }}</div>
+                    <span>{{ generateReactionText(smiley) }}</span>
+
+                  </div>
               </div>
         
-
-              <!-- Bild wird nur angezeigt, wenn mindestens ein Smiley vorhanden ist -->
-              <!-- <img *ngIf="hasSmileys(chat)" (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
-                [src]="imgSrc[0]" alt="" (click)="openSmiley(chatIndex)"> -->
             </div>
-
-
           </div>
 
         </div>
