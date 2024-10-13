@@ -263,3 +263,32 @@ img {
     align-items: center;
     border-radius: 10px;
 }
+
+.smileys{
+display: flex;
+align-items: center;
+flex-wrap: wrap;
+img{
+    height: 24px;
+}
+}
+.smiley{
+    background-color: white;
+    padding: 10px;
+    width: min-content;
+    border-radius: 50px;
+    border: 1px solid rgb(173, 176, 217);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 34px;
+    margin: 10px;
+    img{
+        height: 24px;
+
+    }
+    span{
+        font-size: 16px;
+    }
+}

@@ -534,7 +534,7 @@ closeImageModal(): void {
 
         return `${hours}:${minutes}`;
       } else {
-        console.error('Invalid chat time format:', timeString);
+        // console.error('Invalid chat time format:', timeString);
         return null; 
       }
     }
