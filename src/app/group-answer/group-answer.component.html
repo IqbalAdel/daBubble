@@ -34,21 +34,39 @@
             <div class="name">{{ chat.userName || 'Unbekannter Benutzer' }}</div>
             <div class="time">{{ chat.time }} Uhr</div>
           </div>
-          <div class="massage">{{ chat.text }}</div>
+
+          <div *ngIf="editModeIndex === chatIndex; else viewMode">
+            <!-- Bearbeitungsmodus -->
+             <div class="input-completely">
+              <input [(ngModel)]="editedText" type="text" class="edit-input" placeholder="Text bearbeiten...">
+              <div class="buttons">
+                <button class="cancelEdit" (click)="cancelEdit()">Abbrechen</button>
+                <button class="saveEdit" (click)="saveEdit(chatIndex)">Speichern</button>
+              </div>
+            
+             </div>
+          
+
+          </div>
+
+          <!-- Normaler Textmodus -->
+          <ng-template #viewMode>
+            <div class="massage">{{ chat.text }}</div>
+          </ng-template>
           <div>
             <div class="smileys">
               <div *ngFor="let smiley of chat.smileys" class="hover-smileys">
-                  <div class="smiley" (click)="toggleSmiley(chatIndex, smiley)"> <!-- Hier wird die Methode aufgerufen -->
-                      <div *ngIf="smiley.smiley">{{ smiley.smiley }}</div>
-                      <span *ngIf="smiley.clickedBy">{{ countReactions(smiley.clickedBy) }}</span>
-                  </div>
-                  <div class="hover-smiley">
-                    <div *ngIf="smiley.smiley">{{ smiley.smiley }}</div>
-                    <span>{{ generateReactionText(smiley) }}</span>
+                <div class="smiley" (click)="toggleSmiley(chatIndex, smiley)"> <!-- Hier wird die Methode aufgerufen -->
+                  <div *ngIf="smiley.smiley">{{ smiley.smiley }}</div>
+                  <span *ngIf="smiley.clickedBy">{{ countReactions(smiley.clickedBy) }}</span>
+                </div>
+                <div class="hover-smiley">
+                  <div *ngIf="smiley.smiley">{{ smiley.smiley }}</div>
+                  <span>{{ generateReactionText(smiley) }}</span>
 
-                  </div>
+                </div>
               </div>
-        
+
             </div>
           </div>
 
@@ -59,7 +77,8 @@
               (click)="openSmiley(chatIndex)"> <!-- Hier chatIndex übergeben -->
           </div>
           <div class="img-hover" *ngIf="chat.userName === loggedInUserName">
-            <img (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)" [src]="imgSrc[3]">
+            <img (click)="enableEditMode(chatIndex)" (mouseover)="changeImageMoreVert(true)"
+              (mouseout)="changeImageMoreVert(false)" [src]="imgSrc[3]" alt="Edit">
           </div>
 
           <emoji-mart *ngIf="emojiPickerVisible && activeChatIndex === chatIndex"
@@ -68,6 +87,7 @@
           </emoji-mart>
 
         </div>
+
       </div>
     </div>
 

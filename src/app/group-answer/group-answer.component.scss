@@ -1,6 +1,7 @@
 .main {
     height: calc(100vh - 131px);
     width: 400px;
+    overflow-x: hidden;
 
     @media(width < 1100px) {
         width: 100%;
@@ -334,3 +335,54 @@ img {
         /* Stellt sicher, dass das Hover-Element über anderen Elementen liegt */
     }
 }
+
+.saveEdit{
+    background-color: rgba(68, 77,242,1);
+    color: white;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    height: 50px;
+    width: 135px;
+    border: none;
+    cursor: pointer;
+    &:hover{
+        background-color: rgba(173,176,217,1);
+    }
+}
+.cancelEdit{
+    background-color: white;
+    color: rgba(68, 77,242,1);
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    height: 50px;
+    width: 135px;
+    border: 1px solid rgba(68, 77,242,1);
+    cursor: pointer;
+    &:hover{
+        background-color:rgba(68, 77,242,1) ;
+        color: white;
+    }
+}
+.input-completely{
+        background-color: white;
+        width: auto;
+        padding: 10px;
+        border: 1px solid rgba(173,176,217,1);
+        border-radius: 20px;
+
+        input{
+            border: none;
+            outline: none;
+            font-size: 18px;
+        }
+
+        .buttons{
+            display: flex;
+            gap: 8px;
+        }
+
+    }
+    
+
