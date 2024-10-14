@@ -53,13 +53,7 @@
 
 .centered-avatar-wrapper {
     display: flex;
-<<<<<<< HEAD
-    /* Macht Flexbox-Layout möglich */
-    justify-content: center;
-    /* Zentriert den Inhalt horizontal */
-=======
     justify-content: center; 
->>>>>>> c3256d92292e6dee47a5170e793f7dd2ca2d431c
 }
 
 
@@ -92,23 +86,11 @@
     display: flex;
     align-items: center;
     background-color: #797EF3;
-<<<<<<< HEAD
-    width: 120px;
-    /* Größe des Containers festlegen */
-    height: 120px;
-    /* Größe des Containers festlegen */
-    border-radius: 50%;
-    transition: box-shadow 0.3s ease;
-    overflow: hidden;
-
-    /* Verhindert, dass das Bild über die Grenzen hinausgeht */
-=======
     width: 120px; 
     height: 120px; 
     border-radius: 50%;
     transition: box-shadow 0.3s ease;
     overflow: hidden; 
->>>>>>> c3256d92292e6dee47a5170e793f7dd2ca2d431c
     &:hover {
         outline: 6px solid lightgray;
         cursor: pointer;
@@ -120,14 +102,8 @@
     align-items: center;
     width: 60%;
     height: 60%;
-<<<<<<< HEAD
-    object-fit: cover;
-    /* Passt das Bild an, damit es vollständig angezeigt wird */
-
-=======
     object-fit: cover; 
    
->>>>>>> c3256d92292e6dee47a5170e793f7dd2ca2d431c
 }
 
 .select-avatar {
@@ -197,23 +173,6 @@ span {
 }
 
 input[type="file"] {
-<<<<<<< HEAD
-    display: none;
-    /* Versteckt das Datei-Input-Element */
-}
-
-button:disabled {
-    background-color: #cccccc;
-    /* Ein helleres Grau für den deaktivierten Zustand */
-    color: #666666;
-    /* Angepasste Textfarbe */
-    cursor: not-allowed;
-    /* Verhindert den Cursor-Hover-Effekt */
-    opacity: 0.6;
-    /* Reduziert die Opazität, um einen "graueren" Look zu erzeugen */
-    border-color: #999999;
-    /* Optional: Passe die Rahmenfarbe an */
-=======
     display: none; 
 }
 
@@ -229,7 +188,6 @@ button:disabled {
     background-color: #cccccc; 
     color: #666666; 
     border-color: #999999; 
->>>>>>> c3256d92292e6dee47a5170e793f7dd2ca2d431c
 }
 
 .button:disabled:hover {

@@ -1,18 +1,28 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, inject, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, inject, OnInit, Output, ViewChild } from '@angular/core';
 import { ChatComponent } from '../chat/chat.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
 import { Firestore } from '@angular/fire/firestore';
 import { from, map, Observable, tap } from 'rxjs';
-import { collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
 import { User } from '../../models/user.class';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+interface Chat {
+  messageId: string;
+  smileys?: Smiley[];
+}
+
+interface Smiley {
+  smiley: string;
+  clickedBy: string;
+}
 
 @Component({
   selector: 'app-group-answer',
   standalone: true,
-  imports: [ChatComponent, CommonModule],
+  imports: [ChatComponent, CommonModule, PickerModule],
   templateUrl: './group-answer.component.html',
   styleUrl: './group-answer.component.scss'
 })
@@ -34,8 +44,13 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   @ViewChild('scrollerContainer', { static: false }) scrollContainer: ElementRef | undefined;
   @Output() threadClosed: EventEmitter<void> = new EventEmitter<void>();
   imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
-
-
+  emojiPickerVisible: boolean = false; // Variable zum Anzeigen/Ausblenden des Emoji-Pickers
+  chatIndex: number = 0;
+  chat = {
+    messageId: '12345',  // Beispielhafte Nachricht-ID, dies muss dynamisch gesetzt werden
+    userName: 'JohnDoe'
+  };
+  activeChatIndex: number | null = null; // Stellen Sie sicher, dass activeChatIndex definiert ist
 
   constructor(private route: ActivatedRoute, public userService: UserService,  private firebaseService: FirebaseService, private router: Router) {
     const channelsCollection = collection(this.firestore, 'channels');
@@ -70,7 +85,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
       console.log('loggedInUserName:', this.loggedInUserName);
       console.log('start vom answer')
     });
-
+    document.addEventListener('click', this.handleOutsideClick);
 
   }
 
@@ -78,6 +93,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
     if (this.unsubscribeFromAnswerChats) {
       this.unsubscribeFromAnswerChats();
     }
+    document.removeEventListener('click', this.handleOutsideClick);
   }
 
   formatTime(time: string): string {
@@ -277,4 +293,192 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
     this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.svg' : 'assets/img/smiley/add_reaction.svg';
   }
 
+  openSmiley(chatIndex: number): void {
+    this.activeChatIndex = chatIndex;
+    this.emojiPickerVisible = true; // Emoji-Picker anzeigen
+  }
+
+  async addEmoji(event: any, chatIndex: number) {
+    const emoji = event.emoji.native;  // Das ausgewählte Emoji
+    const answerId = this.answerId;    // Verwende die Antwort-ID (answerId) für die Gruppenantwort
+    const loggedInUserName = this.loggedInUserName; // Der Benutzername des angemeldeten Nutzers
+    try {
+        const chat = this.answerChats[chatIndex];
+        console.log('Chat-Objekt:', chat); // Protokolliere das Chat-Objekt
+
+        if (!chat) {
+            console.error('Kein Chat-Objekt gefunden für den Index', chatIndex);
+            return; // Beende die Funktion, wenn kein Chat vorhanden ist
+        }
+
+        let smileysArray: Smiley[] = chat['smileys'] || []; // Hier speichern wir direkt im Chat-Objekt
+
+        const existingSmileyIndex = smileysArray.findIndex((s: Smiley) => s.smiley === emoji);
+
+        if (existingSmileyIndex !== -1) {
+            const clickedByUsers = smileysArray[existingSmileyIndex].clickedBy.split(',').map(user => user.trim());
+
+            if (!clickedByUsers.includes(loggedInUserName)) {
+                clickedByUsers.push(loggedInUserName);
+            } else {
+                const newClickedByUsers = clickedByUsers.filter(user => user !== loggedInUserName);
+                smileysArray[existingSmileyIndex].clickedBy = newClickedByUsers.join(', '); // Aktualisiere die Benutzer
+
+                if (newClickedByUsers.length === 0) {
+                    smileysArray.splice(existingSmileyIndex, 1);
+                }
+            }
+        } else {
+            smileysArray.push({
+                smiley: emoji,
+                clickedBy: loggedInUserName // Starte mit dem aktuellen Benutzer
+            });
+        }
+
+        // Aktualisiere das Chat-Objekt mit dem neuen `smileysArray`
+        chat['smileys'] = smileysArray;
+
+        // Firebase: Referenz auf das spezifische Dokument in der Firebase-Datenbank
+        const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${answerId}`);
+
+        // Aktualisiere das Dokument in Firebase mit dem aktualisierten Chat-Objekt
+        await updateDoc(messageDocRef, {
+            chats: this.answerChats, // Hier bleibt das chats-Array unverändert, wir aktualisieren nur das spezifische Chat-Objekt
+        });
+
+    } catch (error) {
+        console.error('Fehler beim Hinzufügen des Smileys:', error);
+    }
+
+    // Emoji-Picker schließen nach Auswahl
+    this.emojiPickerVisible = false;
 }
+
+
+
+handleOutsideClick = (event: MouseEvent) => {
+  const emojiPicker = document.querySelector('.emoji-picker');
+  if (emojiPicker && !emojiPicker.contains(event.target as Node)) {
+    this.emojiPickerVisible = false;
+  }
+};
+
+ // HostListener, um Klicks außerhalb des Emoji-Pickers zu erkennen
+ @HostListener('document:click', ['$event'])
+ onDocumentClick(event: MouseEvent): void {
+   const target = event.target as HTMLElement;
+   
+   // Prüfen, ob der Klick nicht auf den Emoji-Picker oder ein verwandtes Element erfolgt
+   if (!target.closest('.emoji-mart') && !target.closest('.img-hover')) {
+     this.emojiPickerVisible = false; // Emoji-Picker schließen
+   }
+ }
+ countReactions(clickedBy: string): number {
+  // Wenn clickedBy leer ist, dann gibt es keine Reaktionen
+  if (!clickedBy) return 0;
+
+  // Teile den String in ein Array, indem du nach Kommas aufteilst
+  const users = clickedBy.split(',');
+
+  // Entferne leere Einträge und gib die Länge des Arrays zurück
+  return users.filter(user => user.trim() !== '').length;
+}
+hasSmileys(chat: any): boolean {
+  return chat.smileys && chat.smileys.some((s: Smiley) => s.smiley);
+}
+
+async toggleSmiley(chatIndex: number, smiley: Smiley) {
+  try {
+      const chat = this.getChatByIndex(chatIndex);
+      if (!chat) return;
+
+      let smileysArray = this.getSmileysArray(chat);
+      const existingSmileyIndex = this.findSmileyIndex(smileysArray, smiley.smiley);
+
+      if (existingSmileyIndex !== -1) {
+          this.updateExistingSmiley(smileysArray, existingSmileyIndex, smiley.smiley);
+      } else {
+          this.addNewSmiley(smileysArray, smiley.smiley);
+      }
+
+      chat['smileys'] = smileysArray;
+      await this.updateFirebase(chatIndex);
+
+  } catch (error) {
+      console.error('Fehler beim Aktualisieren des Smileys:', error);
+  }
+}
+getChatByIndex(chatIndex: number) {
+  const chat = this.answerChats[chatIndex];
+  console.log('Chat-Objekt:', chat);
+  if (!chat) {
+      console.error('Kein Chat-Objekt gefunden für den Index', chatIndex);
+  }
+  return chat;
+}
+getSmileysArray(chat: any): Smiley[] {
+  return chat['smileys'] || [];
+}
+findSmileyIndex(smileysArray: Smiley[], smiley: string): number {
+  return smileysArray.findIndex((s: Smiley) => s.smiley === smiley);
+}
+
+updateExistingSmiley(smileysArray: Smiley[], smileyIndex: number, smiley: string) {
+  const clickedByUsers = smileysArray[smileyIndex].clickedBy.split(',').map(user => user.trim());
+
+  if (!clickedByUsers.includes(this.loggedInUserName)) {
+      clickedByUsers.push(this.loggedInUserName);
+      smileysArray[smileyIndex].clickedBy = clickedByUsers.join(', ');
+  } else {
+      const newClickedByUsers = clickedByUsers.filter(user => user !== this.loggedInUserName);
+      smileysArray[smileyIndex].clickedBy = newClickedByUsers.join(', ');
+
+      if (newClickedByUsers.length === 0) {
+          smileysArray.splice(smileyIndex, 1);
+      }
+  }
+}
+addNewSmiley(smileysArray: Smiley[], smiley: string) {
+  smileysArray.push({
+      smiley: smiley,
+      clickedBy: this.loggedInUserName // Starte mit dem aktuellen Benutzer
+  });
+}
+
+async updateFirebase(chatIndex: number) {
+  const answerId = this.answerId;
+  const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${answerId}`);
+
+  await updateDoc(messageDocRef, {
+      chats: this.answerChats, // Aktualisiere das gesamte `chats`-Array
+  });
+}
+
+generateReactionText(smiley: Smiley): string {
+  const clickedByUsers = smiley.clickedBy.split(',').map(user => user.trim());
+  const otherUsers = clickedByUsers.filter(user => user !== this.loggedInUserName);
+
+  // Wenn niemand außer dem aktuellen Benutzer reagiert hat
+  if (otherUsers.length === 0 && clickedByUsers.includes(this.loggedInUserName)) {
+    return 'Du hast reagiert';
+  }
+
+  // Wenn genau eine weitere Person neben dem aktuellen Benutzer reagiert hat
+  if (otherUsers.length === 1 && clickedByUsers.includes(this.loggedInUserName)) {
+    return `${otherUsers[0]} und Du haben reagiert`;
+  }
+
+  // Wenn mehrere Personen reagiert haben
+  if (otherUsers.length > 1 && clickedByUsers.includes(this.loggedInUserName)) {
+    return `${otherUsers.slice(0, -1).join(', ')}, ${otherUsers[otherUsers.length - 1]} und Du haben reagiert`;
+  }
+
+  // Wenn der eingeloggte Benutzer nicht reagiert hat
+  return `${clickedByUsers.join(', ')} haben reagiert`;
+}
+
+
+}
+
+
+
