@@ -1,6 +1,5 @@
 <div *ngIf="!isMobile" class="solo-group">
   <div class="chat-header-group">
-    <!-- Einmalige asynchrone Abfrage für den Benutzer -->
     <ng-container *ngIf="user$ | async as user">
       <div (click)="openDialogMemberProfile(user)" class="name">
         <img [src]="user.img" alt="">
@@ -22,7 +21,6 @@
       </ng-container>
     </div>
 
-    <!-- Bedingte Anzeige basierend auf der User-Vergleich -->
     <ng-container *ngIf="user$ | async as user">
       <div *ngIf="user.name === loggedInUserName; else notLoggedIn">
         <div class="chat padding20">
@@ -38,32 +36,42 @@
       </ng-template>
     </ng-container>
 
-    <div *ngFor="let chat of chats"  [ngClass]="{'blink': isChatBlinking}">
-      <!-- Nachricht nur anzeigen, wenn der eingeloggte Benutzer entweder der Sender oder der Empfänger ist -->
+    <div *ngFor="let chat of chats; let i = index" [ngClass]="{'blink': isChatBlinking}">
       <div *ngIf="loggedInUserId === chat.userId || loggedInUserId === chat.receivingUserId">
-        <div class="line-date">
+
+        <div *ngIf="i === 0 || chat.timestamp !== chats[i - 1].timestamp" class="line-date">
           <div class="line-two"></div>
-          <!-- Anzeige des formatierten Datums -->
-          <span class="date">{{ chat.timestamp  }}</span>
+          <span class="date">{{ chat.timestamp }}</span>
           <div class="line-two"></div>
         </div>
-    
-        <!-- Unterscheidung, ob der eingeloggte Benutzer der Sender der Nachricht ist -->
-        <div [ngClass]="{'my-message': chat.userId === loggedInUserId, 'nachrichten': chat.userId !== loggedInUserId}">
+
+        <div *ngFor="let chat of chats; let chatIndex = index"
+          [ngClass]="{'my-message': chat.userId === loggedInUserId, 'nachrichten': chat.userId !== loggedInUserId}">
           <img [src]="user?.img" alt="User Image">
+
           <div class="solo-chat-completely">
             <div class="nameAndTime">
               <p>{{ chat.userName }}</p>
-              <!-- Anzeige der formatierten Uhrzeit -->
               <p>{{ chat.time }} Uhr</p>
             </div>
-            <span>
-              {{ chat.text }}
-            </span>
+            <span>{{ chat.text }}</span>
           </div>
+
+          <div class="insert-smiley">
+            <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)" [src]="imgSrc[0]"
+              (click)="openSmiley(chatIndex)"> <!-- Öffne den Emoji-Picker nur für diese Nachricht -->
+          </div>
+
+          <!-- Emoji-Picker nur anzeigen, wenn die Nachricht ausgewählt ist -->
+          <emoji-mart *ngIf="activeChatIndex === chatIndex" (emojiSelect)="addSmiley($event, chatIndex)"
+            [style.position]="'absolute'" [style.left.px]="20" [style.zIndex]="1000"[style.top.px]="20">
+          </emoji-mart>
         </div>
+
+
       </div>
     </div>
+
 
 
   </div>

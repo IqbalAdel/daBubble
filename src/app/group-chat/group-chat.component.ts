@@ -506,8 +506,9 @@ closeImageModal(): void {
   }
 
   saveText(messageId: string) {
-    this.isEditing[messageId] = false; 
-    const newText = this.messages.find(msg => msg.id === messageId)?.text;  
+    this.isEditing[messageId] = false;  // Bearbeitungsmodus verlassen
+    const newText = this.messages.find(msg => msg.id === messageId)?.text;  // Finde die Nachricht
+
     if (newText) {
       this.firebaseService.updateMessage(this.groupId, messageId, newText)
         .then(() => {
@@ -519,7 +520,17 @@ closeImageModal(): void {
     } else {
       console.log('Keine Änderungen im Text, nichts zu speichern.');
     }
-  }
+}
+
+// Abbrechen der Bearbeitung
+cancelEdit(messageId: string) {
+    const originalText = this.editedMessageText[messageId];  // Den ursprünglichen Text wiederherstellen
+    const message = this.messages.find(msg => msg.id === messageId);  // Nachricht finden
+    if (message) {
+        message.text = originalText;  // Setze den ursprünglichen Text zurück
+    }
+    this.isEditing[messageId] = false;  // Bearbeitungsmodus verlassen
+}
 
   getLastChatTime(message: any): string | null {
     if (message.chats && message.chats.length > 0) {

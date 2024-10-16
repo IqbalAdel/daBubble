@@ -195,7 +195,7 @@ img {
     position: relative;
     height: auto;
     width: auto;
-    // color: white;
+    overflow-x: clip;
 
     &:hover {
         cursor: pointer;
@@ -209,7 +209,8 @@ img {
     .messages {
         display: flex;
         flex-direction: column;
-    align-items: flex-end;
+        align-items: flex-end;
+
         .massage {
             padding: 10px;
             background-color: rgb(121, 126, 243);
@@ -220,7 +221,7 @@ img {
             transition: background-color 0.3s ease;
             font-size: 18px;
             color: white;
-            
+
         }
     }
 }
@@ -336,8 +337,8 @@ img {
     }
 }
 
-.saveEdit{
-    background-color: rgba(68, 77,242,1);
+.saveEdit {
+    background-color: rgba(68, 77, 242, 1);
     color: white;
     border-radius: 50px;
     font-size: 18px;
@@ -346,43 +347,45 @@ img {
     width: 135px;
     border: none;
     cursor: pointer;
-    &:hover{
-        background-color: rgba(173,176,217,1);
+
+    &:hover {
+        background-color: rgba(173, 176, 217, 1);
     }
 }
-.cancelEdit{
+
+.cancelEdit {
     background-color: white;
-    color: rgba(68, 77,242,1);
+    color: rgba(68, 77, 242, 1);
     border-radius: 50px;
     font-size: 18px;
     font-weight: 700;
     height: 50px;
     width: 135px;
-    border: 1px solid rgba(68, 77,242,1);
+    border: 1px solid rgba(68, 77, 242, 1);
     cursor: pointer;
-    &:hover{
-        background-color:rgba(68, 77,242,1) ;
+
+    &:hover {
+        background-color: rgba(68, 77, 242, 1);
         color: white;
     }
 }
-.input-completely{
-        background-color: white;
-        width: auto;
-        padding: 10px;
-        border: 1px solid rgba(173,176,217,1);
-        border-radius: 20px;
 
-        input{
-            border: none;
-            outline: none;
-            font-size: 18px;
-        }
+.input-completely {
+    background-color: white;
+    width: auto;
+    padding: 10px;
+    border: 1px solid rgba(173, 176, 217, 1);
+    border-radius: 20px;
 
-        .buttons{
-            display: flex;
-            gap: 8px;
-        }
-
+    input {
+        border: none;
+        outline: none;
+        font-size: 18px;
     }
-    
 
+    .buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+}

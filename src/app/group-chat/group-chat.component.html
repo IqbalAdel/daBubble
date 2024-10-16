@@ -13,15 +13,13 @@
 
             </div>
             <div class="persons-group" *ngIf="filteredChannels$ | async as channels; else loading">
-                <div 
-                [ngStyle]="
+                <div [ngStyle]="
                 screenWidth < 1220 && currentThreadStatus ? {'display': 'none'} :
                 screenWidth < 1270 && currentThreadStatus ? {'max-width': '150px'} : 
                 screenWidth < 1370 && currentThreadStatus ? {'max-width': '200px'} : 
                 screenWidth < 1470 && currentThreadStatus ? {'max-width': '300px'} :
                 screenWidth < 1470 && currentThreadStatus ? {'max-width': '400px'} : 
-                {}"
-                *ngFor="let channel of channels" (click)="openDialogMemberList()"
+                {}" *ngFor="let channel of channels" (click)="openDialogMemberList()"
                     class="display-flex header-group-img">
                     <div *ngIf="dataLoaded" class="member-images">
                         @for(userImage of userImages; track userImage){
@@ -61,7 +59,7 @@
                                         <h2>{{ message.userName }}</h2>
                                         <p>{{ message.time }} Uhr</p>
                                     </div>
-                                   
+
                                     <img *ngIf="message.image" [src]="message.image" alt="Nachricht Bild"
                                         class="message-image" (click)="openImageModal(message.image)">
 
@@ -73,17 +71,31 @@
                                     </div>
 
                                     <span *ngIf="!isEditing[message.id]">{{ message.text }}</span>
-                                    <input *ngIf="isEditing[message.id]" [(ngModel)]="message.text"
-                                        (blur)="saveText(message.id)" />
+
+                                    <div *ngIf="isEditing[message.id]" class="input-completely">
+                                        <!-- Input-Feld für die Bearbeitung -->
+                                        <input [(ngModel)]="message.text" />
+                                    
+                                        <!-- Container für die Buttons -->
+                                        <div class="save-and-cancel">
+                                            <!-- Abbrechen-Button -->
+                                            <button (click)="cancelEdit(message.id)" class="cancelEdit">Abbrechen</button>
+                                    
+                                            <!-- Speichern-Button -->
+                                            <button (click)="saveText(message.id)" class="saveEdit">Speichern</button>
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <div class="smiley-div">
                                     <div *ngFor="let smileyGroup of groupSmileys(message.smileys || [])" class="smiles">
-                                        <p (click)="saveSmileyToMessage(smileyGroup.smiley, message.id)">{{ smileyGroup.smiley }}</p>
-                                        <p>{{ smileyGroup.count }}</p> 
+                                        <p (click)="saveSmileyToMessage(smileyGroup.smiley, message.id)">{{
+                                            smileyGroup.smiley }}</p>
+                                        <p>{{ smileyGroup.count }}</p>
                                         <div class="hover-smiles">
-                                            <p >{{ smileyGroup.smiley }}</p>
+                                            <p>{{ smileyGroup.smiley }}</p>
                                             <p>{{ getFormattedNames(smileyGroup.clickedBy) }}</p>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -122,7 +134,7 @@
                                         [src]="imgSrc[3]" (click)="editText(message.id)" alt="">
                                     <div class="edit-text" (click)="editText(message.id)">
                                         <p>Nachricht bearbeiten</p>
-                                    
+
                                     </div>
                                 </div>
 
@@ -139,8 +151,8 @@
         </div>
 
     </div>
-    
+
     <div [ngClass]="threadOpen ? 'group-answer': ''">
-        <router-outlet (activate)="onActivate($event)"></router-outlet> 
+        <router-outlet (activate)="onActivate($event)"></router-outlet>
     </div>
 </div>

@@ -190,6 +190,7 @@
     flex-direction: row-reverse;
     gap: 10px;
     padding: 20px;
+    position: relative;
     cursor: pointer;
 
     &:hover {
@@ -197,6 +198,10 @@
 
         span {
             background-color: white;
+        }
+
+        .insert-smiley{
+            display: flex;
         }
     }
 
@@ -221,4 +226,25 @@
       @keyframes blinker {
         50% { opacity: 0; }
       }
+}
+
+.insert-smiley{
+    position: absolute;
+    top: -20px;
+    left: 0px;
+    background-color: white;
+    height: 50px;
+    width: fit-content;
+    border: 1px solid rgb(173, 176, 217);
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    border-top-right-radius: 30px;
+    gap: 10px;
+    margin-left: 10px;
+    display: none;
+    img{
+        height: 25px;
+    }
 }

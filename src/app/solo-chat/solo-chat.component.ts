@@ -14,6 +14,8 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogProfileUserCenterComponent } from '../dialogs/dialog-profile-user-center/dialog-profile-user-center.component';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+
 
 interface Chat {
   text: string;
@@ -29,7 +31,7 @@ interface Chat {
 @Component({
   selector: 'app-solo-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule, ChatComponent, HttpClientModule],
+  imports: [CommonModule, FormsModule, ChatComponent, HttpClientModule,PickerModule],
   templateUrl: './solo-chat.component.html',
   styleUrls: ['./solo-chat.component.scss'],
   providers: [DatePipe]
@@ -47,9 +49,11 @@ export class SoloChatComponent implements OnInit, OnDestroy, AfterViewInit {
   channelId = 'pEylXqZMW1zKPIC0VDXL'
   supportsTouch: boolean = false;
   isMobile: boolean = false;
-
+  imgSrc = ['assets/img/smiley/add_reaction.svg', 'assets/img/smiley/comment.svg', 'assets/person_add.svg', 'assets/more_vert.svg'];
+  showSmileyPicker = false;
   private chatsSubscription: Subscription | null = null;
   private chatListenerUnsubscribe: (() => void) | null = null;
+  activeChatIndex: number | null = null;
 
   constructor(
     private firestore: Firestore,
@@ -317,6 +321,25 @@ listenToChats(userId: string): void {
       }
 
     });
+  }
+
+  changeImageSmiley(isHover: boolean) {
+    this.imgSrc[0] = isHover ? 'assets/img/smiley/add_reaction-blue.svg' : 'assets/img/smiley/add_reaction.svg';
+  }
+
+  openSmiley(chatIndex: number) {
+    // Zeige den Emoji-Picker nur für die Nachricht mit dem Index `chatIndex`
+    if (this.activeChatIndex === chatIndex) {
+      this.activeChatIndex = null;  // Picker schließen, wenn bereits geöffnet
+    } else {
+      this.activeChatIndex = chatIndex;  // Emoji-Picker öffnen
+    }
+  }
+
+  addSmiley(event: any, chatIndex: number) {
+    const selectedEmoji = event.emoji.native;
+    console.log('Ausgewähltes Emoji für Nachricht', chatIndex, ':', selectedEmoji);
+    // Hier könntest du das Emoji z.B. zu dem Text der Nachricht hinzufügen
   }
 
 }

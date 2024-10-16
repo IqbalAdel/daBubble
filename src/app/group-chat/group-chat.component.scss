@@ -392,11 +392,11 @@
             background-color: rgba(0, 0, 255, 0.5);
         }
 
-        button {
-            position: absolute;
-            bottom: 200px;
-            left: 50px;
-        }
+        // button {
+        //     position: absolute;
+        //     bottom: 200px;
+        //     left: 50px;
+        // }
     }
 }
 
@@ -584,4 +584,64 @@ h2 {
     @media(width < 993px) {
         width: 100%;
     }
+}
+
+.cancelEdit {
+    background-color: white;
+    color: rgba(68, 77, 242, 1);
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    height: 50px;
+    width: 135px;
+    border: 1px solid rgba(68, 77, 242, 1);
+    cursor: pointer;
+    position: relative;
+
+
+    &:hover {
+        background-color: rgba(68, 77, 242, 1);
+        color: white;
+    }
+}
+
+.saveEdit {
+    background-color: rgba(68, 77, 242, 1);
+    color: white;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    height: 50px;
+    width: 135px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+
+    &:hover {
+        background-color: rgba(173, 176, 217, 1);
+    }
+}
+.input-completely {
+    background-color: white;
+    width: auto;
+    padding: 10px;
+    border: 1px solid rgba(173, 176, 217, 1);
+    border-radius: 20px;
+
+    input {
+        border: none;
+        outline: none;
+        font-size: 18px;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+}
+
+.save-and-cancel{
+display: flex;
+gap: 8px;
 }
