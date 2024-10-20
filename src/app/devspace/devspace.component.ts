@@ -51,6 +51,8 @@ export class DevspaceComponent implements OnInit{
   showFiller = false;
   openEmployees = true;
   openChannels = true;
+  openChats = false;
+  closedChannel = false;
   isDavspaceVisible = true;
   showGroupChat = true;
   imgSrc = ['assets/GroupClose.svg', 'assets/Hide-navigation.svg'];
@@ -145,11 +147,31 @@ export class DevspaceComponent implements OnInit{
   }
 
   closeDirectMessages() {
-    this.openEmployees = !this.openEmployees;
+    if(!this.openChats){
+      this.openChats = !this.openChats;
+      setTimeout(() => {
+        this.openEmployees = !this.openEmployees;
+      }, 225);
+    } else{
+      setTimeout(() => {
+        this.openEmployees = !this.openEmployees;
+      }, 125);
+      this.openChats = !this.openChats;
+    }
   }
 
   closeChannels() {
-    this.openChannels = !this.openChannels;
+    if(!this.closedChannel){
+      this.closedChannel = !this.closedChannel;
+      setTimeout(() => {
+        this.openChannels = !this.openChannels;
+      }, 225);
+    } else{
+      setTimeout(() => {
+        this.openChannels = !this.openChannels;
+      }, 125);
+      this.closedChannel = !this.closedChannel;
+    }
   }
 
   changeImage(isHover: boolean) {
