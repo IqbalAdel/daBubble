@@ -37,7 +37,7 @@ export class ChatComponent implements OnInit{
   @Output() notify: EventEmitter<void> = new EventEmitter<void>();
   @Output() sendChatMessage: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
-  channelId!: string;
+  channelId: string ='';
   messages: string[] = [];
   messageIds: string[] = [];
   @Input() groupId: string | null = null;

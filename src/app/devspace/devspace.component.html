@@ -41,14 +41,23 @@
             </div>
         </div>
 
-        <ng-container *ngIf="openChannels">
-            <div *ngFor="let channel of channels$ | async" class="group-chat"
-                [ngClass]="selectedChannelId === channel.id ? 'selected' : ''"
-                (click)="selectChannel(channel); navigateRouteChannel(channel.id)">
-                <span>#</span> 
-                {{ channel.name }}
-            </div>
-        </ng-container>
+        <div class="list" [ngClass]="{'fade': closedChannel}">
+            <ng-container >
+                <div [ngStyle]="!openChannels ? {'display': 'none'} : {}" *ngFor="let channel of channels$ | async" class="group-chat"
+                    [ngClass]="selectedChannelId === channel.id ? 'selected' : ''"
+                    (click)="selectChannel(channel); navigateRouteChannel(channel.id)">
+                    <span>#</span> 
+                    {{ channel.name }}
+                </div>
+            </ng-container>
+            <div [ngStyle]="!openChannels ? {'display': 'none'} : {}" (click)="createChannel()" class="new-channel"
+            (mouseover)="imgAdd='assets/add_circle_blue.svg'"
+            (mouseleave)="imgAdd='assets/img/add_circle.svg'"
+            (mousedown)="imgAdd='assets/add_circle-click.svg'">
+                <img [src]="imgAdd" alt="">
+                <span>Channel hinzufügen</span>
+            </div>  
+        </div>
 
         <!-- <ng-container *ngIf="openChannels">
             <div *ngFor="let channel of currentUserChannels" class="group-chat"
@@ -58,13 +67,7 @@
             </div>
         </ng-container> -->
 
-        <div (click)="createChannel()" class="new-channel"
-            (mouseover)="imgAdd='assets/add_circle_blue.svg'"
-            (mouseleave)="imgAdd='assets/img/add_circle.svg'"
-            (mousedown)="imgAdd='assets/add_circle-click.svg'">
-            <img [src]="imgAdd" alt="">
-            <span>Channel hinzufügen</span>
-        </div>
+        
 
         <div (click)="closeDirectMessages()" class="direct-messages"
         (mouseover)="imgDropDown2 ='assets/arrow_drop_down-blue.svg'"
@@ -83,19 +86,20 @@
             </div>
         </div>
 
-
-        <div class="solo-chat" *ngIf="openEmployees">
-            <div class="solo-employees" *ngFor="let user of users$ | async" (click)="selectUser(user.id)"
-                [ngClass]="{'selected': user.id === selectedUserId, 'chat-blinking': user.isBlinking}">
-                @if(user.img){
-                    <img [src]="user.img" alt="User Image">
-                }
-                @else {
-                    <img src="assets/img/profiles/man-user.png" alt="User Image">
-                }
-                <!-- <img class="online-offline" src="assets/img/Online.png" alt="Online Status"> -->
-                <div class="online-status" [ngClass]="!userServes.getUserStatus(user.id) ? 'offline' : 'online'"></div>
-                {{ user.name }}<span *ngIf="user.name === loggedInUserName">(Du)</span>
+        <div class="list" [ngClass]="{'fade': openChats}">
+            <div class="solo-chat" >
+                <div [ngStyle]="!openEmployees ? {'display': 'none'} : {}" class="solo-employees" *ngFor="let user of users$ | async" (click)="selectUser(user.id)"
+                    [ngClass]="{'selected': user.id === selectedUserId, 'chat-blinking': user.isBlinking}">
+                    @if(user.img){
+                        <img [src]="user.img" alt="User Image">
+                    }
+                    @else {
+                        <img src="assets/img/profiles/man-user.png" alt="User Image">
+                    }
+                    <!-- <img class="online-offline" src="assets/img/Online.png" alt="Online Status"> -->
+                    <div class="online-status" [ngClass]="!userServes.getUserStatus(user.id) ? 'offline' : 'online'"></div>
+                    {{ user.name }}<span *ngIf="user.name === loggedInUserName">(Du)</span>
+                </div>
             </div>
         </div>
         <div *ngIf="screenWidth < 992" class="send-message" (click)="navigateRouteToNewMessage()"

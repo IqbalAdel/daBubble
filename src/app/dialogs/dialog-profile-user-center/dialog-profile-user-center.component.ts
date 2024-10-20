@@ -6,6 +6,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { User } from '../../../models/user.class';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dialog-profile-user-center',
@@ -31,6 +32,7 @@ export class DialogProfileUserCenterComponent {
   constructor(
     public dialog: MatDialogRef<DialogProfileUserCenterComponent>,
     public userService: UserService,
+    private router: Router,
     @Inject(MAT_DIALOG_DATA) public data: { 
       username: string; email: string; image: string; user: User; status: boolean }
   ) {
@@ -44,5 +46,10 @@ export class DialogProfileUserCenterComponent {
 
   closeDialog(){
     this.dialog.close();
+  }
+
+  sendMessageToUser(uid: string){
+    this.dialog.close();
+    this.router.navigate(['/main/chat', uid]);
   }
 }
