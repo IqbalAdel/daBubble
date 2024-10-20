@@ -1,9 +1,9 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild,inject } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
 import { User } from '../../models/user.class';
-import { UserService } from '../services/user.service'; 
+import { UserService } from '../services/user.service';
 import { addDoc, arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { collectionData, Firestore } from '@angular/fire/firestore';
 import { GroupChatComponent } from '../group-chat/group-chat.component';
@@ -27,10 +27,10 @@ export interface ChatMessage {
   standalone: true,
   imports: [CommonModule, PickerComponent, MatMenuModule],
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss']  
+  styleUrls: ['./chat.component.scss']
 })
 
-export class ChatComponent implements OnInit{
+export class ChatComponent implements OnInit {
 
   @ViewChild('messageInput') messageInput: any;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
@@ -40,13 +40,14 @@ export class ChatComponent implements OnInit{
   channelId!: string;
   messages: string[] = [];
   messageIds: string[] = [];
+  smileys: { emoji: string; userName: string }[] = [];
   @Input() groupId: string | null = null;
   @Input() answerId: string | null = null; placeholderText: string = 'Nachricht an #Gruppenname';
   user: User | null = null;
   receivingUserId: string | null = null;
   private messagesSubscription: Subscription | null = null;
   private routeSubscription: Subscription | null = null;
-  userService: UserService; 
+  userService: UserService;
   userName!: string;
   storage: Storage = inject(Storage);
   selectUsers: User[] = []
@@ -54,14 +55,14 @@ export class ChatComponent implements OnInit{
   selectedImageUrl: string | null = null;
   @ViewChild('fileInput') fileInput!: ElementRef;
   showEmojiPicker = false;
-  isImageSelected: boolean = false; 
+  isImageSelected: boolean = false;
 
   constructor(
-    private fireService: FirebaseService, 
-    private route: ActivatedRoute, 
-    userService: UserService, 
+    private fireService: FirebaseService,
+    private route: ActivatedRoute,
+    userService: UserService,
     private firestore: Firestore,
-  private elementRef: ElementRef) {
+    private elementRef: ElementRef) {
     this.userService = userService;
 
     this.fireService.getUsersData().subscribe((list) => {
@@ -70,7 +71,7 @@ export class ChatComponent implements OnInit{
         return new User(
           data['name'] || '',
           data['email'] || '',
-          data['id'] || '', 
+          data['id'] || '',
           data['img'] || '',
           data['password'] || '',
           data['channels'] || [],
@@ -88,39 +89,39 @@ export class ChatComponent implements OnInit{
     // console.log(targetElement)
     // console.log(clickedInside)
     if (!clickedInside) {
-      if(this.showEmojiPicker){
+      if (this.showEmojiPicker) {
         this.showEmojiPicker = false;
       }
 
     }
   }
 
-  addUserToInput(name: string){
-    const userName = '@'+ name;
+  addUserToInput(name: string) {
+    const userName = '@' + name;
     const textarea = this.messageInput.nativeElement;
     const startPos = textarea.selectionStart;
     const endPos = textarea.selectionEnd;
 
-  this.messages.push(textarea.value.substring(0, startPos) + userName + textarea.value.substring(endPos));
-  const finalMessage = this.messages.join('');
-  textarea.value = finalMessage;
-  textarea.setSelectionRange(startPos + userName.length, startPos + userName.length);
-  this.messages = []
+    this.messages.push(textarea.value.substring(0, startPos) + userName + textarea.value.substring(endPos));
+    const finalMessage = this.messages.join('');
+    textarea.value = finalMessage;
+    textarea.setSelectionRange(startPos + userName.length, startPos + userName.length);
+    this.messages = []
   }
 
 
 
   toggleEmojiPicker(): void {
-    this.showEmojiPicker = !this.showEmojiPicker; 
+    this.showEmojiPicker = !this.showEmojiPicker;
   }
- 
+
   addEmoji(event: any) {
-    const emoji = event.emoji.native; 
+    const emoji = event.emoji.native;
     const textarea = this.messageInput.nativeElement;
     const startPos = textarea.selectionStart;
     const endPos = textarea.selectionEnd;
 
-    this.messages= textarea.value.substring(0, startPos) + emoji + textarea.value.substring(endPos);
+    this.messages = textarea.value.substring(0, startPos) + emoji + textarea.value.substring(endPos);
     textarea.value = this.messages;
     textarea.setSelectionRange(startPos + emoji.length, startPos + emoji.length);
     this.showEmojiPicker = false;
@@ -133,13 +134,13 @@ export class ChatComponent implements OnInit{
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0]; 
+      this.selectedFile = input.files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.selectedImageUrl = e.target?.result as string; 
-        this.isImageSelected = true; 
+        this.selectedImageUrl = e.target?.result as string;
+        this.isImageSelected = true;
       };
-      reader.readAsDataURL(this.selectedFile); 
+      reader.readAsDataURL(this.selectedFile);
     }
   }
 
@@ -151,11 +152,11 @@ export class ChatComponent implements OnInit{
 
   ngOnInit(): void {
     this.routeSubscription = this.route.params.subscribe(params => {
-      const id = params['id']; 
-      this.answerId = params['answerId']; 
+      const id = params['id'];
+      this.answerId = params['answerId'];
       this.loadCurrentUser();
-      
-      if (this.answerId) { 
+
+      if (this.answerId) {
         this.placeholderText = 'Antworten';
       } else if (id) {
         this.channelId = id;
@@ -175,7 +176,7 @@ export class ChatComponent implements OnInit{
         await this.userService.loadUserById(uid);
         this.user = this.userService.getUser();
         if (this.user) {
-          this.userName = this.user.name;  
+          this.userName = this.user.name;
         }
       } else {
       }
@@ -198,11 +199,15 @@ export class ChatComponent implements OnInit{
     }
   }
 
-  sendMessageToUser(messageText: string, receivingUserId: string): void {
+  sendMessageToUser(messageText: string, receivingUserId: string, smileys: { emoji: string; userName: string }[]): void {
     if (!this.user) {
+      console.warn('Benutzer nicht verfügbar.');
       return;
     }
-    const chatId = this.fireService.createChatId(this.user.id, receivingUserId); 
+  
+    const chatId = this.fireService.createChatId(this.user.id, receivingUserId);
+  
+    // Das Message-Objekt wird hier erstellt
     const message = {
       text: messageText,
       timestamp: Timestamp.now(),
@@ -211,17 +216,28 @@ export class ChatComponent implements OnInit{
       receivingUserId: receivingUserId,
       time: new Date().toLocaleTimeString(),
       isRead: false,
-      userImage: this.user.img
+      userImage: this.user.img,
+      smileys: smileys // Hier werden die Smileys hinzugefügt
     };
-
+  
     if (chatId) {
       const chatDocRef = doc(this.firestore, 'chats', chatId);
-      addDoc(collection(chatDocRef, 'messages'), message)
-        .catch(error => console.error('Error sending message:', error));
+      
+      // Sicherstellen, dass das Chat-Dokument existiert
+      setDoc(chatDocRef, { messages: [] }, { merge: true })
+        .then(() => {
+          // Füge die Nachricht zur Sammlung hinzu
+          addDoc(collection(chatDocRef, 'messages'), message)
+            .then(() => console.log('Message sent successfully'))
+            .catch(error => console.error('Error sending message:', error));
+        })
+        .catch(error => console.error('Error creating chat document:', error));
     } else {
+      console.warn('Ungültige Chat-ID.');
     }
-    this.clearMessageInputAndScroll(this.messageInputRef.nativeElement);
   }
+  
+
 
 
 
@@ -236,74 +252,72 @@ export class ChatComponent implements OnInit{
 
 
   async sendMessage(messageText: string): Promise<void> {
-    this.sendChatMessage.emit()  
+    this.sendChatMessage.emit()
     if (!this.user) {
       console.error('Kein Benutzer vorhanden');
       return;
     }
-  
 
     if (!this.isMessageValid(messageText) && !this.selectedFile) {
       console.error('Nachricht oder Bild ist nicht gültig');
-      return; 
+      return;
     }
-  
+
     const receivingUserId = this.getReceivingUserIdFromUrl() || this.answerId || this.receivingUserId;
     if (!receivingUserId) {
       console.error('Empfänger-ID nicht vorhanden');
       return;
     }
-   
 
     let imageUrl = null;
     if (this.selectedFile) {
-      const filePath = `avatars/${this.user.id}/${this.selectedFile.name}`; 
+      const filePath = `avatars/${this.user.id}/${this.selectedFile.name}`;
       const fileRef = ref(this.storage, filePath);
-      
+
       try {
-        await uploadBytes(fileRef, this.selectedFile); 
-        imageUrl = await getDownloadURL(fileRef); 
+        await uploadBytes(fileRef, this.selectedFile);
+        imageUrl = await getDownloadURL(fileRef);
       } catch (error) {
         console.error('Fehler beim Hochladen des Bildes:', error);
-        return; 
+        return;
       }
     }
-    
+
     const message = this.createMessage(messageText, receivingUserId, imageUrl);
     if (this.answerId) {
-      this.saveMessageToAnswers(this.answerId, message); 
+      this.saveMessageToAnswers(this.answerId, message);
     }
-    this.sendMessageToUser(message.text, receivingUserId); 
+    this.sendMessageToUser(message.text, receivingUserId, this.smileys);
     this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
     this.notify.emit();
   }
-  
+
   private createMessage(messageText: string, receivingUserId: string, imageUrl: string | null): any {
     if (!this.user) {
       console.error('User is not defined');
       return null;
     }
-  
+
     return {
-      text: messageText || '', 
+      text: messageText || '',
       timestamp: Timestamp.now(),
       userName: this.userName || 'Gast',
       userId: this.user.id,
       receivingUserId: receivingUserId,
       time: new Date().toLocaleTimeString(),
       chats: [],
-      image: imageUrl, 
+      image: imageUrl,
       isRead: false,
       userImage: this.user.img,
     };
   }
-  
+
 
   private async saveMessageToAnswers(answerId: string, message: any): Promise<void> {
     try {
       const chatDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${answerId}`);
       await updateDoc(chatDocRef, {
-        chats: arrayUnion(message)  
+        chats: arrayUnion(message)
       });
     } catch (error) {
     }
@@ -346,16 +360,16 @@ export class ChatComponent implements OnInit{
 
     return {
       text: messageText,
-      userName: this.user?.name || 'Unknown User',  
-      userId: this.user?.id || 'Unknown UserId',    
+      userName: this.user?.name || 'Unknown User',
+      userId: this.user?.id || 'Unknown UserId',
       timestamp: Timestamp.fromDate(now),
       time: formattedTime,
-      receivinguserId: this.channelId,  
+      receivinguserId: this.channelId,
     };
   }
 
   getReceivingUserId(): string | null {
-    const receivingUserId = this.route.snapshot.queryParams['receiverId']; 
+    const receivingUserId = this.route.snapshot.queryParams['receiverId'];
     if (receivingUserId) {
       return receivingUserId;
     } else {
@@ -365,16 +379,16 @@ export class ChatComponent implements OnInit{
   }
 
   getReceivingUserIdFromUrl(): string | null {
-    const receivingUserId = this.route.snapshot.paramMap.get('id');  
+    const receivingUserId = this.route.snapshot.paramMap.get('id');
     return receivingUserId;
   }
 
 
   async sendMessageToFirestore(message: any): Promise<void> {
-  
+
     return this.fireService.addMessageToFirestore(this.channelId, message).then(() => {
     }).catch((error) => {
-      console.error('failed to send message to firestore',error)
+      console.error('failed to send message to firestore', error)
     });
   }
 
@@ -384,11 +398,11 @@ export class ChatComponent implements OnInit{
   }
 
   handleKeyDown(event: KeyboardEvent, messageInput: HTMLTextAreaElement): void {
-    if (event.key === 'Enter' && !event.shiftKey) {  
-      event.preventDefault();  
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
 
-      const messageText = messageInput.value.trim(); 
-      if (messageText.length > 0) { 
+      const messageText = messageInput.value.trim();
+      if (messageText.length > 0) {
         this.sendMessage(messageText);
       }
     }
@@ -400,19 +414,19 @@ export class ChatComponent implements OnInit{
     return trimmedMessageText.length > 0;
   }
 
- 
+
   private clearMessageInputAndScroll(messageInput: HTMLTextAreaElement): void {
-    messageInput.value = ''; 
+    messageInput.value = '';
     this.removeImage();
   }
 
   changeAdd(isHover: boolean, event?: MouseEvent): void {
     this.imgTextarea[0] = isHover ? 'assets/add-hover-blue.svg' : 'assets/add.svg';
-  
+
     if (event && event.type === 'click') {
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       if (fileInput) {
-        fileInput.click();  
+        fileInput.click();
       }
     }
   }
@@ -429,7 +443,7 @@ export class ChatComponent implements OnInit{
 
 
   ngOnDestroy(): void {
-  
+
     if (this.messagesSubscription) {
       this.messagesSubscription.unsubscribe();
     }

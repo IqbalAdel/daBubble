@@ -356,18 +356,9 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
   }
 
 
-  createChatId(userId1: string, userId2: string): string | null {
-    const isValidUserId = (id: string) => id.startsWith('user_') || id.length === 28;
-    
-   
-    if (isValidUserId(userId1) && isValidUserId(userId2)) {
-      const sortedIds = [userId1, userId2].sort(); 
-      console.log('User IDs for chat creation:', userId1, userId2); 
-      return sortedIds.join('_'); 
-    } else {
-      console.warn('One or both IDs are not valid user IDs:', userId1, userId2);
-      return null; 
-    }
+  createChatId(userId1: string, userId2: string): string {
+    const sortedIds = [userId1, userId2].sort();  // IDs alphabetisch sortieren
+    return sortedIds.join('_');  // Kombiniere die sortierten IDs
   }
 
 

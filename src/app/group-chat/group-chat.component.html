@@ -132,7 +132,7 @@
                                 <div class="smiley-div edit"><img *ngIf="message.userName === loggedInUserName"
                                         (mouseover)="changeImageMoreVert(true)" (mouseout)="changeImageMoreVert(false)"
                                         [src]="imgSrc[3]" (click)="editText(message.id)" alt="">
-                                    <div class="edit-text" (click)="editText(message.id)">
+                                    <div class="edit-text" (click)="editText(message.id)" *ngIf="message.userName === loggedInUserName">
                                         <p>Nachricht bearbeiten</p>
 
                                     </div>

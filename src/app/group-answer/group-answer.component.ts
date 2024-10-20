@@ -84,10 +84,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
         await this.fetchChannelsAndMessages();
         await this.fetchAnswerChats(this.answerId);
       }
-  
-      // Protokolliere den Benutzernamen für Debugging
-      console.log('loggedInUserName:', this.loggedInUserName);
-      console.log('start vom answer')
+
     });
     document.addEventListener('click', this.handleOutsideClick);
 
@@ -144,9 +141,6 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
             time: this.formatTime(chat.time)
           }));
           
-          console.log('Antworten geladen:', this.answerChats);
-        } else {
-          console.log('Keine Antworten gefunden für answerId:', answerId);
         }
       });
     } catch (error) {
@@ -169,10 +163,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
             }
           }
         }
-        console.log('Keine passende Nachricht gefunden.');
-      } else {
-        console.log('Keine Kanäle gefunden.');
-      }
+      } 
     } catch (error) {
       console.error('Fehler beim Abrufen der Kanäle oder Nachrichten:', error);
     }
@@ -208,8 +199,6 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
 
   // Nachricht verarbeiten und Daten setzen
   processMatchingMessage(matchingMessage: any, channel: any) {
-    console.log('Nachricht gefunden:', matchingMessage);
-
     const timeParts = matchingMessage.time.split(':');
     this.time = `${timeParts[0].padStart(2, '0')}:${timeParts[1].padStart(2, '0')}`;
 
@@ -223,32 +212,26 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   giveGroupIdAndAnswerID() {
     // GroupId von der Elternroute holen
     this.route.parent?.paramMap.subscribe(parentParams => {
-      this.groupId = parentParams.get('id'); // Gruppen-ID aus der Elternroute
-      console.log('Group ID:', this.groupId);
-      
-      // Wenn GroupId verfügbar ist, Channels und Messages abrufen
+      this.groupId = parentParams.get('id'); // Gruppen-ID aus der Elternroute      
       if (this.groupId) {
         this.fetchChannelsAndMessages();
       }
     });
 
-    // AnswerId aus der aktuellen Route holen
     this.route.paramMap.subscribe(params => {
       this.answerId = params.get('answerId'); // Antwort-ID aus der aktuellen Route
-      // console.log('Answer ID:', this.answerId);
     });
   }
 
-  getAnswersForChannel(channelId: string): Observable<any[]> {
-    const messagesCollection = collection(this.firestore, `channels/${channelId}/messages`);
-    return from(getDocs(messagesCollection)).pipe(
-      map((snapshot) => snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))),
-      tap((messages) => {
-        // Hier wird das Ergebnis geloggt
-        console.log('Abgerufene Nachrichten für Channel:', channelId, messages);
-      })
-    );
-  }
+  // getAnswersForChannel(channelId: string): Observable<any[]> {
+  //   const messagesCollection = collection(this.firestore, `channels/${channelId}/messages`);
+  //   return from(getDocs(messagesCollection)).pipe(
+  //     map((snapshot) => snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))),
+  //     tap((messages) => {
+        
+  //     })
+  //   );
+  // }
 
   scrollToBottom(): void {
     if(this.scrollContainer){
@@ -258,9 +241,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
         console.error('Scroll error:', err);
       }
     }
-    else{
-      console.log('fail')
-    }
+    
   }
 
   ngAfterViewInit(): void {
@@ -275,9 +256,6 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
       });
   
       observer.observe(this.scrollContainer.nativeElement, config);
-    }
-    else{
-      console.log('no container')
     }
   }
 
@@ -454,6 +432,10 @@ generateReactionText(smiley: Smiley): string {
     return 'Du hast reagiert';
   }
 
+  if (otherUsers.length === 1 && !clickedByUsers.includes(this.loggedInUserName)) {
+    return `${otherUsers[0]} hat reagiert`; // Hier wird nur der andere Benutzer angezeigt
+  }
+
   if (otherUsers.length === 1 && clickedByUsers.includes(this.loggedInUserName)) {
     return `${otherUsers[0]} und Du haben reagiert`;
   }
@@ -464,6 +446,7 @@ generateReactionText(smiley: Smiley): string {
 
   return `${clickedByUsers.join(', ')} haben reagiert`;
 }
+
 
 enableEditMode(chatIndex: number) {
   this.editModeIndex = chatIndex;

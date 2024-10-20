@@ -172,7 +172,6 @@ closeImageModal(): void {
 
   disconnectGroupChat() {
     if (this.groupChatObserver) {
-      console.log(this.groupChatObserver, 'observer off')
       this.groupChatObserver.disconnect(); 
     }
 
@@ -200,12 +199,8 @@ closeImageModal(): void {
     this.router.events
     .pipe(filter(event => event instanceof NavigationEnd))
     .subscribe(() => {
-      console.log('thread closed?')
       if(this.checkIfBackToMainGroupChat()){
         this.threadOpen = false;
-      }
-      else{
-        console.log('something went wrong')
       }
     })
   }
@@ -257,7 +252,6 @@ closeImageModal(): void {
       this.firebaseService.getChannelsMessages(this.groupId).subscribe(
         (channelData: any[]) => {
           this.messages = this.formatMessages(channelData); 
-          console.log("Geladene Nachrichten mit Smileys:", this.messages);
         },
         (error: any) => {
           console.error('Fehler beim Abrufen der Nachrichten:', error);
@@ -512,13 +506,11 @@ closeImageModal(): void {
     if (newText) {
       this.firebaseService.updateMessage(this.groupId, messageId, newText)
         .then(() => {
-          console.log('Nachricht erfolgreich gespeichert:', newText);
         })
         .catch(error => {
           console.error('Fehler beim Speichern der Nachricht:', error);
         });
     } else {
-      console.log('Keine Änderungen im Text, nichts zu speichern.');
     }
 }
 
@@ -582,7 +574,6 @@ cancelEdit(messageId: string) {
 
     try {
         await updateDoc(messageDocRef, { smileys: smileysArray });
-        console.log('Smiley erfolgreich aktualisiert:', smileysArray);
     } catch (error) {
         console.error('Fehler beim Aktualisieren des Smileys:', error);
     }
@@ -591,14 +582,12 @@ cancelEdit(messageId: string) {
 
   async loadSmileysForMessage(messageId: string) {
     const messageDocRef = doc(this.firestore, `channels/${this.groupId}/messages/${messageId}`);
-    console.log('Lade Smiley für Nachricht:', messageId, 'in Gruppe:', this.groupId);
     try {
       const messageDocSnapshot = await getDoc(messageDocRef);
 
       if (messageDocSnapshot.exists()) {
         const messageData = messageDocSnapshot.data();
         this.smileysData = messageData?.['smileys'] || [];
-        console.log("Smileys geladen:", this.smileysData);
       } else {
       }
     } catch (error) {
@@ -667,11 +656,8 @@ cancelEdit(messageId: string) {
 
   addEmoji(event: any, messageId: string) {
     const emoji = event.emoji.native;
-    console.log("Selected Emoji:", emoji, "for message:", messageId);
-
     this.saveSmileyToMessage(emoji, messageId);
     this.closeEmojiSelection();
-
   }
 
   closeEmojiSelection() {
@@ -686,7 +672,6 @@ cancelEdit(messageId: string) {
     if (componentRef instanceof GroupAnswerComponent) {
       this.groupAnswerComponent = componentRef;
       this.chat = componentRef;
-      console.log('group has answered the call')
     }
   }
 

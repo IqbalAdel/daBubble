@@ -1,11 +1,13 @@
 .solo-group {
     background-color: white;
     height: calc(100vh - 131px);
-    @media(width < 992px){
+
+    @media(width < 992px) {
         height: calc(100vh - 63px);
         border-radius: 0;
         margin: 0;
     }
+
     width: 100%;
     border-radius: 30px;
     margin: 20px 30px;
@@ -144,6 +146,11 @@
     gap: 10px;
     padding: 20px;
     cursor: pointer;
+    position: relative;
+
+    .solo-chat-completely{
+        align-items: flex-start;
+    }
 
     img {
         height: 65px;
@@ -154,10 +161,11 @@
     span {
         background-color: rgba(236, 238, 254, 1);
         padding: 10px;
-        width: 100%;
+        width: min-content;
         border-top-right-radius: 50px;
         border-bottom-right-radius: 50px;
         border-bottom-left-radius: 50px;
+
     }
 
     &:hover {
@@ -165,6 +173,10 @@
 
         span {
             background-color: white;
+        }
+
+        .insert-smiley {
+            display: flex;
         }
     }
 }
@@ -178,6 +190,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items: flex-end;
 }
 
 .padding20 {
@@ -200,7 +213,7 @@
             background-color: white;
         }
 
-        .insert-smiley{
+        .insert-smiley {
             display: flex;
         }
     }
@@ -211,6 +224,8 @@
         border-top-left-radius: 50px;
         border-bottom-left-radius: 50px;
         border-bottom-right-radius: 50px;
+        width: min-content;
+
     }
 
     img {
@@ -221,14 +236,16 @@
 
     .blink {
         animation: blinker 1s linear infinite;
-      }
-      
-      @keyframes blinker {
-        50% { opacity: 0; }
-      }
+    }
+
+    @keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
 }
 
-.insert-smiley{
+.insert-smiley {
     position: absolute;
     top: -20px;
     left: 0px;
@@ -244,7 +261,53 @@
     gap: 10px;
     margin-left: 10px;
     display: none;
-    img{
+
+    img {
         height: 25px;
+    }
+}
+
+.smileys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    
+}
+
+.smiley {
+    height: 30px;
+    padding: 10px;
+    width: max-content;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 30px;
+    border: 1px solid rgb(173, 176, 217);
+    position: relative;
+
+    &:hover{
+        .smiley-hover{
+            display: block;
+        }
+    }
+
+}
+
+.smiley-hover{
+    background-color: rgb(43, 43, 209);
+    padding: 10px;
+    height: auto;
+    width: 130px;
+    border-radius: 30px;
+    border-bottom-left-radius: 0px;
+    text-align: center;
+    color: white;
+    position: absolute;
+    bottom: 25px;
+    left: 20px;
+    display: none;
+        p{
+        margin-top: 10px;
     }
 }
