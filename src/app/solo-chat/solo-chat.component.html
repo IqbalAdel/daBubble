@@ -46,8 +46,7 @@
           <div class="line-two"></div>
         </div>
 
-        <div
-          [ngClass]="{'my-message': chat?.userId === loggedInUserId, 'nachrichten': chat?.userId !== loggedInUserId}">
+        <div [ngClass]="{'my-message': chat?.userId === loggedInUserId, 'nachrichten': chat?.userId !== loggedInUserId}">
           <img [src]="user?.img" alt="User Image">
 
           <div class="solo-chat-completely">
@@ -75,14 +74,7 @@
               </div>
             </div>
 
-
-
-
-
           </div>
-
-
-
 
           <div class="insert-smiley">
             <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)"
@@ -90,16 +82,11 @@
             <!-- Öffne den Emoji-Picker nur für diese Nachricht -->
           </div>
 
-
           <!-- Emoji-Picker nur anzeigen, wenn die Nachricht ausgewählt ist -->
           <emoji-mart *ngIf="activeChatIndex === i" (emojiSelect)="addSmiley($event)" [style.position]="'absolute'"
             [style.left.px]="20" [style.zIndex]="1000" [style.top.px]="20">
           </emoji-mart>
         </div>
-
-
-
-
 
       </div>
     </div>

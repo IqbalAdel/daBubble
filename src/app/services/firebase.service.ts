@@ -357,9 +357,11 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
 
 
   createChatId(userId1: string, userId2: string): string {
-    const sortedIds = [userId1, userId2].sort();  // IDs alphabetisch sortieren
-    return sortedIds.join('_');  // Kombiniere die sortierten IDs
-  }
+    const ids = [userId1, userId2];
+    ids.sort(); // Sortiere die IDs, um eine konsistente Reihenfolge zu garantieren
+    return ids.join('_'); // Kombiniere die sortierten IDs
+}
+
 
 
 }
