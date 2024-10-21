@@ -67,7 +67,7 @@ export class NewMessageComponent implements OnInit {
 
     this.searchFieldControl.valueChanges.subscribe(selectedId => {
       if (typeof selectedId === 'string') {
-        console.log('Selected ID:', selectedId);
+        // console.log('Selected ID:', selectedId);
 
       }
     });
@@ -120,11 +120,15 @@ export class NewMessageComponent implements OnInit {
 
     this.searchFieldControl.setValue(selectedName, { emitEvent: false });
 
-    console.log('Selected ID:', selectedId);
+    // console.log('Selected ID:', selectedId);
     this.chatComponent.channelId = selectedId;
     this.chatComponent.receivingUserId = selectedId;
-    console.log('send to receiver:',this.chatComponent.receivingUserId)
-    console.log('send to channel:',this.chatComponent.channelId)
+    // console.log('send to receiver:',this.chatComponent.receivingUserId)
+    // console.log('send to channel:',this.chatComponent.channelId)
   }
 
+
+  clearReceiverField(){
+    this.searchFieldControl.setValue('');
+  }
 }

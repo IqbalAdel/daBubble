@@ -56,6 +56,9 @@ nav {
     justify-content: space-around;
     align-items: end;
     padding-top: 24px;
+    @media(width>992px){
+        display: none;
+    }
 
     >.info-text {
         font-size: 20px;

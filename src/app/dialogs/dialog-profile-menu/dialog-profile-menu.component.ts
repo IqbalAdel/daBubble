@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { DialogProfileUserComponent } from '../dialog-profile-user/dialog-profile-user.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dialog-profile-menu',
@@ -16,9 +17,12 @@ import { DialogProfileUserComponent } from '../dialog-profile-user/dialog-profil
 })
 export class DialogProfileMenuComponent {
 
+  @Output() closeMenu: EventEmitter<void> = new EventEmitter<void>();
+
   constructor( 
     public dialog: MatDialogRef<DialogProfileMenuComponent>, 
-    public dialogUser: MatDialog
+    public dialogUser: MatDialog,
+    private router: Router
   ) {    
   }
 
@@ -28,4 +32,8 @@ export class DialogProfileMenuComponent {
     });
   }
 
+  logOut(){
+    this.router.navigate(['/login']);
+    this.dialog.close()
+  }
 }

@@ -69,8 +69,9 @@
                                                 class="modal-image">
                                         </div>
                                     </div>
-
-                                    <span *ngIf="!isEditing[message.id]">{{ message.text }}</span>
+                                    @if (message.text) {
+                                        <span *ngIf="!isEditing[message.id]">{{ message.text }}</span>
+                                    }
 
                                     <div *ngIf="isEditing[message.id]" class="input-completely">
                                         <!-- Input-Feld für die Bearbeitung -->

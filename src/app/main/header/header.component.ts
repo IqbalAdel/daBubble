@@ -97,7 +97,7 @@ export class HeaderComponent implements OnInit{
       
       onSnapshot(userDocRef, async (docSnapshot) => {
         if (docSnapshot.exists()) {
-          console.log('User data changed, reloading user...');
+          // console.log('User data changed, reloading user...');
           await this.getActiveUser();
         }
       });
@@ -129,7 +129,7 @@ export class HeaderComponent implements OnInit{
 
   openProfileMenu(){
     if(window.innerWidth < 992){
-      console.log('mobile')
+      // console.log('mobile')
       this.openDialogMobile();
     } else{
       this.openDialog();

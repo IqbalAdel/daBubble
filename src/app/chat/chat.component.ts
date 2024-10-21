@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 import { MatMenuModule } from '@angular/material/menu';
+import { FormsModule } from '@angular/forms';
 
 export interface ChatMessage {
   text: string;
@@ -25,7 +26,7 @@ export interface ChatMessage {
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, PickerComponent, MatMenuModule],
+  imports: [CommonModule, PickerComponent, MatMenuModule, FormsModule],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
@@ -40,6 +41,7 @@ export class ChatComponent implements OnInit {
   channelId: string ='';
   messages: string[] = [];
   messageIds: string[] = [];
+  messageContent = "";
   smileys: { emoji: string; userName: string }[] = [];
   @Input() groupId: string | null = null;
   @Input() answerId: string | null = null; placeholderText: string = 'Nachricht an #Gruppenname';
@@ -228,7 +230,7 @@ export class ChatComponent implements OnInit {
         .then(() => {
           // Füge die Nachricht zur Sammlung hinzu
           addDoc(collection(chatDocRef, 'messages'), message)
-            .then(() => console.log('Message sent successfully'))
+            // .then(() => console.log('Message sent successfully'))
             .catch(error => console.error('Error sending message:', error));
         })
         .catch(error => console.error('Error creating chat document:', error));
@@ -290,6 +292,8 @@ export class ChatComponent implements OnInit {
     this.sendMessageToUser(message.text, receivingUserId, this.smileys);
     this.checkIfUserAndSendMessage(message, this.messageInputRef.nativeElement);
     this.notify.emit();
+    this.messageContent = "";
+
   }
 
   private createMessage(messageText: string, receivingUserId: string, imageUrl: string | null): any {

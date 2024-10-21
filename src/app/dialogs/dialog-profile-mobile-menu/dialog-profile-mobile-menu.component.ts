@@ -7,6 +7,7 @@ import { UserService } from '../../services/user.service';
 import { User } from '../../../models/user.class';
 import { CommonModule } from '@angular/common';
 import { DialogProfileUserComponent } from '../dialog-profile-user/dialog-profile-user.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dialog-profile-mobile-menu',
@@ -43,6 +44,7 @@ export class DialogProfileMobileMenuComponent implements OnInit{
     public dialogUser: MatDialog,
     private firebaseservice: FirebaseService,
     private userService: UserService,
+    private router: Router,
 
   ) {  
 
@@ -94,4 +96,9 @@ export class DialogProfileMobileMenuComponent implements OnInit{
     this.closeMenu.emit()
   }
 
+
+  logOut(){
+    this.router.navigate(['/login']);
+    this.close();
+  }
 }

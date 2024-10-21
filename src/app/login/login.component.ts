@@ -18,7 +18,7 @@ export class LoginComponent {
   ngOnInit() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        if (this.router.url === '/') {  
+        if (this.router.url === '/' || this.router.url === '/login') {  
           this.isVisible = true;
         } else {
           this.isVisible = false;

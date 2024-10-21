@@ -28,7 +28,7 @@
     <div *ngFor="let chat of answerChats; let chatIndex = index">
       <div
         [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
-        <img src="assets/img/avatar-1.png" alt="">
+        <img [src]="chat.userImage" alt="">
         <div class="messages">
           <div class="name-and-time">
             <div class="name">{{ chat.userName || 'Unbekannter Benutzer' }}</div>

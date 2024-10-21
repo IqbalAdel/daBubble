@@ -2,7 +2,7 @@
 
 <div class="textarea"   #autoScrollTextarea>
    
-    <textarea #scrollContainer [class.expanded]="isImageSelected" #messageInput rows="2" cols="50" [placeholder]="placeholderText"
+    <textarea [(ngModel)]="messageContent" #scrollContainer [class.expanded]="isImageSelected" #messageInput rows="2" cols="50" [placeholder]="placeholderText"
         (keydown)="handleKeyDown($event, messageInput)"></textarea>
     
     <div *ngIf="selectedImageUrl" class="image-preview">
