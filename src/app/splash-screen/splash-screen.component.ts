@@ -36,7 +36,8 @@ export class SplashScreenComponent {
 
   ngOnInit() {
     setTimeout(() => {
-      this.showSplash = false;
+      document.getElementById('splash-screen')?.classList.add('splash-hidden');
+     
     }, 4112);  // 5 Sekunden Verzögerung für die Splash-Animation
   }
 }

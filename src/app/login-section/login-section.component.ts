@@ -50,6 +50,32 @@ export class LoginSectionComponent {
     } 
   }
 
+  async onGuestLogin(): Promise<void> {
+    try {
+      // Gast-Benutzerdaten (kannst du anpassen)
+      const guestEmail = 'Max@Mustermann.de';
+      const guestPassword = 'mustermuster';
+  
+      // Anmeldung des Gast-Users mit E-Mail und Passwort
+      const userCredential = await this.authService.signIn(guestEmail, guestPassword);
+  
+      if (userCredential) {
+        const uid = userCredential.user.uid;
+  
+        // Benutzerinformationen laden (basierend auf der ID des Gast-Users)
+        await this.userService.loadUserById(uid);
+  
+        // Navigation zu /main
+        this.router.navigate(['/main']);
+      } else {
+        this.errorMessage = 'Gast-Anmeldung fehlgeschlagen.';
+      }
+    } catch (error) {
+      this.errorMessage = 'Gast-Anmeldung fehlgeschlagen.';
+      console.error('Fehler bei der Gast-Anmeldung:', error);
+    }
+  }
+
   signInWithGoogle() {
     this.authService.googleSignIn()
       .then(() => {

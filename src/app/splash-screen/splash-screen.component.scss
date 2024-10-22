@@ -73,6 +73,14 @@ h1 {
   /* Animation für das gesamte Wort */
 }
 
+.splash {
+  opacity: 1;
+  transition: opacity 1s ease-in-out; /* Übergang dauert 1 Sekunde */
+}
+
+.splash-hidden {
+  opacity: 0; /* Splash-Screen wird unsichtbar */
+}
 
 @media screen and (max-width: 650px){
   h1{
