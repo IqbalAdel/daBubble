@@ -16,15 +16,19 @@
 @keyframes containerMove {
   from {
     opacity: 1;
-    transform: translate(0, 0); /* Start: in der Mitte */
+    transform: translate(0, 0);
+    /* Start: in der Mitte */
   }
+
   to {
     opacity: 1;
-    transform: translate(-35vw, -35vh) scale(0.5); /* Bewege zur oberen linken Ecke, skaliere auf 50% */
+    transform: translate(-35vw, -35vh) scale(0.5);
+    /* Bewege zur oberen linken Ecke, skaliere auf 50% */
   }
 }
 
 .splash-container {
+
   width: 100vw;
   height: 100vh;
   background: linear-gradient(to bottom, #6368cd, #363FE5);
@@ -65,7 +69,7 @@ h1 {
   font-size: 48px;
   margin: 0;
   color: white;
-  
+
   /* Damit es sich relativ zum Container bewegt */
   white-space: nowrap;
   /* Verhindert Umbruch des Textes */
@@ -75,30 +79,51 @@ h1 {
 
 .splash {
   opacity: 1;
-  transition: opacity 1s ease-in-out; /* Übergang dauert 1 Sekunde */
+  transition: opacity 1s ease-in-out;
+  /* Übergang dauert 1 Sekunde */
 }
 
 .splash-hidden {
-  opacity: 0; /* Splash-Screen wird unsichtbar */
+  opacity: 0;
+  /* Splash-Screen wird unsichtbar */
 }
 
-@media screen and (max-width: 650px){
-  h1{
+@media screen and (max-width: 992px) {
+  .logo-text-container {
+    animation: containerMoveMobile 1s ease-in forwards;
+    animation-delay: 3s;
+  }
+
+  @keyframes containerMoveMobile {
+    from {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, -40vh) ;
+      /* Nur nach oben, nicht zur Seite */
+    }
+  }
+}
+
+@media screen and (max-width: 650px) {
+  h1 {
     font-size: 40px;
   }
 
-  .logo{
+  .logo {
     height: 100px;
   }
 }
 
 
-@media screen and (max-width: 500px){
-  h1{
+@media screen and (max-width: 500px) {
+  h1 {
     font-size: 28px;
   }
 
-  .logo{
+  .logo {
     height: 70px;
   }
 

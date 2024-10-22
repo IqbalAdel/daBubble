@@ -22,7 +22,7 @@ export class LoginComponent {
 
     setTimeout(() => {
       this.showSplash = false;  // Splashscreen nach 5 Sekunden ausblenden
-    }, 4800);  // 5000 ms = 5 Sekunden
+    }, 4700);  // 5000 ms = 5 Sekunden
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
