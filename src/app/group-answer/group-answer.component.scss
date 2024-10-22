@@ -171,7 +171,7 @@ img {
     display: flex;
     padding: 20px;
     position: relative;
-    overflow-x: hidden;
+    // overflow-x: hidden;
 
     &:hover {
         background-color: rgba(236, 238, 254, 1);
@@ -191,7 +191,6 @@ img {
 .my-message {
     display: flex;
     flex-direction: row-reverse;
-    justify-content: flex-end;
     padding: 20px;
     position: relative;
     height: auto;
@@ -391,4 +390,9 @@ img {
         gap: 8px;
     }
 
+}
+
+.pictures{
+    height: 80px;
+    border-radius: 10px;
 }

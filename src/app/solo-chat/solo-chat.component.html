@@ -58,21 +58,22 @@
 
             <div class="smileys">
               <div *ngFor="let smiley of chat?.smileys">
-                <div class="smiley">
-                  <div (click)="toggleSmiley(smiley)">
-                    {{ smiley.emoji }}
-                    {{ smiley.userNames.length }} <!-- Verwende userNames -->
+                  <div class="smiley">
+                      <div (click)="toggleSmiley(smiley, chat)">
+                          {{ smiley.emoji }}
+                          {{ smiley.userNames.length }}
+                      </div>
+          
+                      <div class="smiley-hover">
+                          {{ smiley.emoji }}
+                          <p *ngIf="smiley.userNames.length > 0">
+                              {{ isUserReacted(smiley) }}
+                          </p>
+                      </div>
                   </div>
-
-                  <div class="smiley-hover">
-                    {{ smiley.emoji }}
-                    <p *ngIf="smiley.userNames.length > 0">
-                      {{ isUserReacted(smiley) }}
-                    </p>
-                  </div>
-                </div>
               </div>
-            </div>
+          </div>
+          
 
           </div>
 

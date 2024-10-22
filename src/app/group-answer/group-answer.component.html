@@ -10,13 +10,15 @@
   <div class="line"></div>
   <div class="commplet-chat" #scrollerContainer>
     <div [ngClass]="{'my-message': userName === loggedInUserName, 'complete-container': userName !== loggedInUserName}">
-      <img src="assets/img/avatar-1.png" alt="">
+      <!-- Bild dynamisch machen -->
+      <img [src]="userProfilePicture" alt="Benutzerbild">
       <div class="messages">
         <div class="name-and-time">
           <div class="name">{{ userName }}</div>
           <div class="time">{{ time }} Uhr</div>
         </div>
-        <div class="massage">{{ messageText }}</div>
+        <div class="massage" *ngIf="messageText">{{ messageText }}</div>
+        <img *ngIf="!messageText && image" [src]="image" alt="Bild" class="pictures">
       </div>
     </div>
     <div class="answers-and-line">
@@ -28,6 +30,7 @@
     <div *ngFor="let chat of answerChats; let chatIndex = index">
       <div
         [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
+        <!-- Spätere Bilder ebenfalls dynamisch -->
         <img [src]="chat.userImage" alt="">
         <div class="messages">
           <div class="name-and-time">
@@ -35,38 +38,35 @@
             <div class="time">{{ chat.time }} Uhr</div>
           </div>
 
+          <!-- Weitere Inhalte bleiben gleich -->
           <div *ngIf="editModeIndex === chatIndex; else viewMode">
             <!-- Bearbeitungsmodus -->
-             <div class="input-completely">
+            <div class="input-completely">
               <input [(ngModel)]="editedText" type="text" class="edit-input" placeholder="Text bearbeiten...">
               <div class="buttons">
                 <button class="cancelEdit" (click)="cancelEdit()">Abbrechen</button>
                 <button class="saveEdit" (click)="saveEdit(chatIndex)">Speichern</button>
               </div>
-            
-             </div>
-          
-
+            </div>
           </div>
 
           <!-- Normaler Textmodus -->
           <ng-template #viewMode>
-            <div class="massage">{{ chat.text }}</div>
+            <div class="massage" *ngIf="chat.text">{{ chat.text }}</div>
+            <img *ngIf="chat.image" [src]="chat.image" alt="Bild" class="pictures">
           </ng-template>
           <div>
             <div class="smileys">
               <div *ngFor="let smiley of chat.smileys" class="hover-smileys">
-                <div class="smiley" (click)="toggleSmiley(chatIndex, smiley)"> <!-- Hier wird die Methode aufgerufen -->
+                <div class="smiley" (click)="toggleSmiley(chatIndex, smiley)">
                   <div *ngIf="smiley.smiley">{{ smiley.smiley }}</div>
                   <span *ngIf="smiley.clickedBy">{{ countReactions(smiley.clickedBy) }}</span>
                 </div>
                 <div class="hover-smiley">
                   <div *ngIf="smiley.smiley">{{ smiley.smiley }}</div>
                   <span>{{ generateReactionText(smiley) }}</span>
-
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -74,25 +74,20 @@
         <div class="hover-container">
           <div class="img-hover">
             <img (mouseover)="changeImageSmiley(true)" (mouseout)="changeImageSmiley(false)" [src]="imgSrc[0]" alt=""
-              (click)="openSmiley(chatIndex)"> <!-- Hier chatIndex übergeben -->
+              (click)="openSmiley(chatIndex)">
           </div>
           <div class="img-hover" *ngIf="chat.userName === loggedInUserName">
             <img (click)="enableEditMode(chatIndex)" (mouseover)="changeImageMoreVert(true)"
               (mouseout)="changeImageMoreVert(false)" [src]="imgSrc[3]" alt="Edit">
           </div>
-
           <emoji-mart *ngIf="emojiPickerVisible && activeChatIndex === chatIndex"
             (emojiSelect)="addEmoji($event, chatIndex)" title="Pick your emoji" [style.position]="'absolute'"
             [style.zIndex]="1000" [style.top.px]="30" [style.left.px]="0">
           </emoji-mart>
-
         </div>
-
       </div>
     </div>
-
-
-
   </div>
+
   <app-chat [groupId]="groupId" [answerId]="answerId"></app-chat>
 </div>

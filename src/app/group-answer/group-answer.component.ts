@@ -31,6 +31,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   groupId: string | null = null;
   answerId: string | null = null;
   userProfilePicture: string = 'assets/img/default-avatar.png'; // Standardbild
+  image: string = '';
   user: User | null = null;
   messageText: string = ''; // Nachrichtentext
   groupName: string = ''; // Gruppenname
@@ -140,6 +141,9 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
             ...chat,
             time: this.formatTime(chat.time)
           }));
+          if (answerData['image']) {
+            this.image = answerData['image'];  // Speichere die Bild-URL
+          }
           
         }
       });
