@@ -25,6 +25,8 @@
     }
 }
 
+
+
 .go-back-container {
     background-color: transparent;
     position: absolute;
@@ -62,15 +64,42 @@
     left: 15%;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(100px); /* Optional: Ein leichter Aufwärtsbewegungseffekt */
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.info-for-user {
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    font-size: 24px;
+    border-radius: 25px 25px 0 25px; /* Runde obere und linke Ecken */
+    padding: 8px;
+    background-color: #444DF2;
+    color: white;
+    z-index: 1; /* Damit die Sprechblase über anderen Elementen liegt */
+    opacity: 1; /* Immer sichtbar */
+    animation: fadeIn 1s ease-in; /* Füge die FadeIn-Animation hinzu */
+}
+
+
+
 
 
 .button {
     position: absolute;
     right: 5%;
     bottom: 0;
-    font-size: 24px;
+    font-size: 20px;
     border-radius: 25px;
-    padding: 12px;
+    padding: 8px;
     background-color: #444DF2;
     color: white;
     border: none;
@@ -179,7 +208,7 @@ input[type="file"] {
 button:disabled {
     background-color: #cccccc; 
     color: #666666; 
-    cursor: not-allowed; 
+    cursor: not-allowed!important; 
     opacity: 0.6; 
     border-color: #999999; 
 }

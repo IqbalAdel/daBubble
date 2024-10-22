@@ -121,9 +121,9 @@ input::placeholder {
     position: absolute;
     right: 0;
     bottom: 0;
-    font-size: 24px;
+    font-size: 18px;
     border-radius: 25px;
-    padding: 12px;
+    padding: 8px;
     background-color: #444DF2;
     color: white;
     border: none;
@@ -137,7 +137,7 @@ input::placeholder {
 button:disabled {
     background-color: #cccccc; 
     color: #666666; 
-    cursor: not-allowed; 
+    cursor: not-allowed!important; 
     opacity: 0.6;
     border-color: #999999; 
 }

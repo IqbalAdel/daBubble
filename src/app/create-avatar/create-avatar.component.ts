@@ -9,13 +9,22 @@ import { UserService } from '../services/user.service';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { trigger, transition, style, animate } from '@angular/animations';
 @Component({
   selector: 'app-create-avatar',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule, HttpClientModule, FormsModule],
+  imports: [RouterOutlet, RouterModule, CommonModule, HttpClientModule, FormsModule ],
   templateUrl: './create-avatar.component.html',
-  styleUrls: ['./create-avatar.component.scss']
+  styleUrls: ['./create-avatar.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('1s', style({ opacity: 1 })),
+      ]),
+    ]),
+  ],
 })
 export class CreateAvatarComponent implements OnInit {
   user!: User;
@@ -23,6 +32,7 @@ export class CreateAvatarComponent implements OnInit {
   auth: Auth = inject(Auth);
   firestore: Firestore = inject(Firestore);
   storage: Storage = inject(Storage);
+  userCreated: boolean = false;
 
   avatars: string[] = [
     'assets/img/avatar-1.png',
@@ -97,7 +107,9 @@ export class CreateAvatarComponent implements OnInit {
 
     const channelId = 'pEylXqZMW1zKPIC0VDXL'; 
     cleanedUserData.channels.push(channelId);
+    this.userCreated = true;
 
+   
     try {
         const userCredential = await createUserWithEmailAndPassword(this.auth, this.user.email, this.user.password);
 
@@ -130,7 +142,7 @@ export class CreateAvatarComponent implements OnInit {
                 if (!userIds.includes(uid)) {
                     userIds.push(uid);
                     await setDoc(channelDocRef, { users: userIds }, { merge: true });
-                    // console.log(`User ${uid} added to channel ${channelId}`);
+                  
                 }
             } else {
                 console.warn(`Channel with ID ${channelId} not found!`);

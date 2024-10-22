@@ -38,6 +38,6 @@ export class SplashScreenComponent {
     setTimeout(() => {
       document.getElementById('splash-screen')?.classList.add('splash-hidden');
      
-    }, 4000);  // 5 Sekunden Verzögerung für die Splash-Animation
+    }, 3000);  // 5 Sekunden Verzögerung für die Splash-Animation
   }
 }

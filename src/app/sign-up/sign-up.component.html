@@ -1,89 +1,60 @@
-
-
 <div class="sign-up-container">
-    <button [routerLink]="['/']" class="go-back-container">
-        <img class="go-back" src="assets/img/arrow_back.svg" alt="Go back">
+  <button [routerLink]="['/']" class="go-back-container">
+    <img class="go-back" src="assets/img/arrow_back.svg" alt="Go back">
+  </button>
+  <h1>Konto erstellen</h1>
+  <h2>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</h2>
+  <form #signUpForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="input-container">
+      <img class="icon" src="assets/img/person_filled.svg" alt="" [class.hidden]="isNameFocused">
+      <img class="icon-focus" src="assets/img/person_filled_dark.png" alt="" [class.hidden]="!isNameFocused">
+      <input [(ngModel)]="user.name" name="name" #nameInput="ngModel" type="text"
+        [placeholder]="isNameFocused ? '' : 'Name und Nachname'" minlength="6" required (focus)="setFocus('name')"
+        (blur)="onBlur('name', user.name)" />
+    </div>
+    <div [ngStyle]="{'opacity': nameInput.invalid &&  nameInput.touched ? '1' : '0'}" class="error-message">
+      Bitte schreiben Sie einen Namen. (6 Zeichen)
+    </div>
+    <div class="input-container">
+      <img class="icon" src="assets/img/mail.svg" alt="" [class.hidden]="isEmailFocused">
+      <img class="icon-focus" src="assets/img/mail-dark.png" alt="" [class.hidden]="!isEmailFocused">
+      <input [(ngModel)]="user.email" name="email" type="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+        [placeholder]="isEmailFocused ? '' : 'beispielname@email.com'" required  (focus)="setFocus('email')"
+        (blur)="onBlur('email', user.email)"
+        #emailInput="ngModel" />
+    </div>
+    <div [ngStyle]="{'opacity': emailInput.invalid && emailInput.touched ? '1' : '0'}" class="error-message">
+      *Diese E-Mail-Adresse ist leider ungültig.
+    </div>
+    <div *ngIf="emailExistsError" class="error-message">
+      Diese E-Mail-Adresse wird bereits verwendet.
+    </div>
+    <div class="input-container">
+      <img class="icon" src="assets/img/lock.svg" alt="" [class.hidden]="isPasswordFocused">
+      <img class="icon-focus" src="assets/img/lock-dark.png" alt="" [class.hidden]="!isPasswordFocused">
+      <input [(ngModel)]="user.password" name="password" type="password" minlength="8"
+        [placeholder]=" isPasswordFocused ? '' : 'Passwort'" required (focus)="setFocus('password')"
+        (blur)="onBlur('password', user.password)"
+        #passwordInput="ngModel" />
+
+    </div>
+    <div [ngStyle]="{'opacity': passwordInput.invalid &&  passwordInput.touched ? '1' : '0'}" class="error-message">
+      Bitte geben Sie ein Passwort ein. (8 Zeichen)
+    </div>
+    <div class="checkbox-container">
+      <input [(ngModel)]="isPrivacyChecked" name="privacy" type="checkbox" id="checkbox" required
+        #privacyInput="ngModel" />
+      <label for="checkbox">Ich stimme der <span [routerLink]="['/data-protection']"
+          class="apolicy">Datenschutzerklärung</span> zu.</label>
+
+    </div>
+    <div [ngStyle]="{'opacity': privacyInput.invalid && (privacyInput.dirty || privacyInput.touched) ? '1' : '0'}"
+      class="error-message">
+      Sie müssen der Datenschutzerklärung zustimmen.
+    </div>
+    <button type="submit" [disabled]="!isFormValid()" class="button">
+      Weiter
     </button>
-    <h1>Konto erstellen</h1>
-    <h2>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</h2>
-    <form #signUpForm="ngForm" (ngSubmit)="onSubmit()">
-        <div class="input-container">
-          <img class="icon" src="assets/img/person_filled.svg" alt="" [class.hidden]="isNameFocused">
-          <img class="icon-focus" src="assets/img/person_filled_dark.png" alt="" [class.hidden]="!isNameFocused">
-          <input
-            [(ngModel)]="user.name"
-            name="name"
-            #nameInput="ngModel"
-            type="text"
-            [placeholder]="isNameFocused ? '' : 'Name und Nachname'"
-            minlength="6"
-            required
-            (focus)="isNameFocused = true"
-          />
-        </div>
-        <div [ngStyle]="{'opacity': nameInput.invalid &&  nameInput.touched ? '1' : '0'}" class="error-message">
-            Bitte schreiben Sie einen Namen. (6 Zeichen)
-          </div>
-        <div class="input-container">
-          <img class="icon" src="assets/img/mail.svg" alt="" [class.hidden]="isEmailFocused">
-          <img class="icon-focus" src="assets/img/mail-dark.png" alt="" [class.hidden]="!isEmailFocused">
-          <input
-            [(ngModel)]="user.email"
-            name="email"               
-            type="email"
-            pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
-            [placeholder]="isEmailFocused ? '' : 'beispielname@email.com'"
-            required
-            (focus)="isEmailFocused = true"
-            #emailInput="ngModel"
-          />
-        </div>
-        <div [ngStyle]="{'opacity': emailInput.invalid && emailInput.touched ? '1' : '0'}" class="error-message">
-            *Diese E-Mail-Adresse ist leider ungültig.
-          </div>
-          <div *ngIf="emailExistsError" class="error-message">
-            Diese E-Mail-Adresse wird bereits verwendet.
-          </div>
-        <div class="input-container">
-          <img class="icon" src="assets/img/lock.svg" alt="" [class.hidden]="isPasswordFocused" >
-            <img class="icon-focus" src="assets/img/lock-dark.png" alt="" [class.hidden]="!isPasswordFocused" >
-          <input
-            [(ngModel)]="user.password"
-            name="password"            
-            type="password"
-            minlength="8"
-            [placeholder]= " isPasswordFocused ? '' : 'Passwort'"
-            required
-            (focus)="isPasswordFocused = true"
-            #passwordInput="ngModel"
-          />
-         
-        </div>
-        <div [ngStyle]="{'opacity': passwordInput.invalid &&  passwordInput.touched ? '1' : '0'}" class="error-message">
-            Bitte geben Sie ein Passwort ein. (8 Zeichen)
-          </div>
-        <div class="checkbox-container">
-          <input
-            [(ngModel)]="isPrivacyChecked"
-            name="privacy"
-            type="checkbox"
-            id="checkbox"
-            required
-            #privacyInput="ngModel"
-          />
-          <label for="checkbox">Ich stimme der <span [routerLink]="['/data-protection']" class="apolicy">Datenschutzerklärung</span> zu.</label>
-          
-        </div>
-        <div [ngStyle]="{'opacity': privacyInput.invalid && (privacyInput.dirty || privacyInput.touched) ? '1' : '0'}" class="error-message">
-          Sie müssen der Datenschutzerklärung zustimmen.
-        </div>
-        <button
-          type="submit"
-          [disabled]="!isFormValid()"
-          class="button"
-        >
-          Weiter
-        </button>
-      </form>
-      
+  </form>
+
 </div>
