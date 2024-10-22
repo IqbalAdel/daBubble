@@ -53,7 +53,7 @@ export class LoginSectionComponent {
   signInWithGoogle() {
     this.authService.googleSignIn()
       .then(() => {
-        console.log('Successfully signed in with Google and user data stored in Firestore');
+        // console.log('Successfully signed in with Google and user data stored in Firestore');
         this.router.navigate(['/main']);
       })
       .catch((error) => {

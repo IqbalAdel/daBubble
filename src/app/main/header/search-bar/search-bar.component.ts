@@ -94,7 +94,7 @@ export class SearchBarComponent implements OnInit{
       this.searchFieldControl.valueChanges.subscribe(selectedId => {
         if (typeof selectedId === 'string') {
         this.filterOpen = true;
-          console.log('Selected ID:', selectedId);
+          // console.log('Selected ID:', selectedId);
         }
       });
 
@@ -180,10 +180,10 @@ export class SearchBarComponent implements OnInit{
   changeBottom(){
     setTimeout(() => {
       this.filterOpen = true;
-      console.log(this.filterOpen, 'is')
+      // console.log(this.filterOpen, 'is')
       
     }, 100);
-    console.log(this.filterOpen)
+    // console.log(this.filterOpen)
   }
 
   onBlur(){
