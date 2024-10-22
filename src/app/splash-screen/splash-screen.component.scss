@@ -101,7 +101,7 @@ h1 {
     }
     to {
       opacity: 1;
-      transform: translate(0, -40vh) ;
+      transform: translate(0, -40vh) scale(0.8);
       /* Nur nach oben, nicht zur Seite */
     }
   }
