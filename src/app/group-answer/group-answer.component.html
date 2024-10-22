@@ -30,7 +30,6 @@
     <div *ngFor="let chat of answerChats; let chatIndex = index">
       <div
         [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
-        <img src="assets/img/avatar-1.png" alt="">
         <!-- Spätere Bilder ebenfalls dynamisch -->
         <img [src]="chat.userImage" alt="">
         <div class="messages">
