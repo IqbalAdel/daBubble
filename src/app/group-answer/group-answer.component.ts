@@ -56,6 +56,8 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   chatText: string = '';  
   activeChatIndex: number | null = null; // Stellen Sie sicher, dass activeChatIndex definiert ist
   editedText: string = '';
+  screenWidth = 0;
+
   constructor(private route: ActivatedRoute, public userService: UserService,  private firebaseService: FirebaseService, private router: Router) {
     const channelsCollection = collection(this.firestore, 'channels');
 
@@ -70,6 +72,7 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
   
 
   async ngOnInit(): Promise<void> {
+    this.screenWidth = window.innerWidth;
     this.userService.setThreadStatus(true);
     // Überwache die URL-Parameteränderungen
     this.route.paramMap.subscribe(async params => {
@@ -89,6 +92,11 @@ export class GroupAnswerComponent implements OnInit, AfterViewInit {
     });
     document.addEventListener('click', this.handleOutsideClick);
 
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.screenWidth = window.innerWidth
   }
 
   ngOnDestroy(): void {

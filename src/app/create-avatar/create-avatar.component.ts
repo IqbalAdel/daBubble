@@ -116,7 +116,7 @@ export class CreateAvatarComponent implements OnInit {
           
             const userDocRef = doc(this.firestore, 'users', uid);
             await setDoc(userDocRef, cleanedUserData);
-            console.log('User added with ID: ', uid);
+            // console.log('User added with ID: ', uid);
 
           
             const channelDocRef = doc(this.firestore, 'channels', channelId);
@@ -130,7 +130,7 @@ export class CreateAvatarComponent implements OnInit {
                 if (!userIds.includes(uid)) {
                     userIds.push(uid);
                     await setDoc(channelDocRef, { users: userIds }, { merge: true });
-                    console.log(`User ${uid} added to channel ${channelId}`);
+                    // console.log(`User ${uid} added to channel ${channelId}`);
                 }
             } else {
                 console.warn(`Channel with ID ${channelId} not found!`);

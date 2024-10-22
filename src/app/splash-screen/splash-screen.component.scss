@@ -1,64 +1,131 @@
-
 @keyframes moveIn {
-    from {
-      opacity: 0;
-      transform: translateX(0); /* Start: außerhalb des Sichtbereichs auf der linken Seite */
-    }
-    to {
-      opacity: 1;
-      transform: translateX(+100%); /* End: sichtbar und an seiner Position */
-    }
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+    /* Start: außerhalb des Sichtbereichs auf der linken Seite */
   }
- 
-  
-  @keyframes containerMove {
+
+  to {
+    opacity: 1;
+    transform: translateX(+10%);
+    /* End: sichtbar und an seiner Position */
+  }
+}
+
+
+@keyframes containerMove {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+    /* Start: in der Mitte */
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-35vw, -35vh) scale(0.5);
+    /* Bewege zur oberen linken Ecke, skaliere auf 50% */
+  }
+}
+
+.splash-container {
+
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom, #6368cd, #363FE5);
+  /* Helleres Blau oben, dunkleres Blau unten */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  /* Verhindert Scrollbalken */
+  position: fixed;
+  /* Splashscreen bleibt immer über dem Rest der Seite */
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.logo-text-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  /* Die Verzögerung für den Start der Container-Animation */
+  animation: containerMove 1s ease-in forwards;
+  animation-delay: 3s;
+  /* Verzögerung für das Verschieben des Containers */
+}
+
+.logo {
+  height: 150px;
+  width: auto;
+
+  /* Die Animation für das Logo kann direkt beim Laden beginnen */
+
+}
+
+
+h1 {
+  font-size: 48px;
+  margin: 0;
+  color: white;
+
+  /* Damit es sich relativ zum Container bewegt */
+  white-space: nowrap;
+  /* Verhindert Umbruch des Textes */
+  animation: moveIn 1s ease-in forwards;
+  /* Animation für das gesamte Wort */
+}
+
+.splash {
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+  /* Übergang dauert 1 Sekunde */
+}
+
+.splash-hidden {
+  opacity: 0;
+  /* Splash-Screen wird unsichtbar */
+}
+
+@media screen and (max-width: 992px) {
+  .logo-text-container {
+    animation: containerMoveMobile 1s ease-in forwards;
+    animation-delay: 3s;
+  }
+
+  @keyframes containerMoveMobile {
     from {
       opacity: 1;
       transform: translate(0, 0);
     }
     to {
       opacity: 1;
-      transform: translate(-630px, -380px) scale(0.5); /* Passen Sie den Wert nach Bedarf an */
+      transform: translate(0, -40vh) scale(0.8);
+      /* Nur nach oben, nicht zur Seite */
     }
   }
-  
-  .splash-container {
-    
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(to bottom, #6368cd, #363FE5); /* Helleres Blau oben, dunkleres Blau unten */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .logo-text-container {
-    display: flex;
-   justify-content: center;
-    align-items: center;
-    color: white;
-    /* Die Verzögerung für den Start der Container-Animation */
-    animation: containerMove 1s ease-in forwards;
-    animation-delay: 3s; /* Verzögerung für das Verschieben des Containers */
-  }
-  
-  .logo {
-    height: 150px;
-    width: auto;
-    margin-right: 0;
-    /* Die Animation für das Logo kann direkt beim Laden beginnen */
-   
-  }
-  
+}
 
+@media screen and (max-width: 650px) {
   h1 {
-    font-size: 48px;
-    margin: 0;
-    color: white;
-    position: absolute; /* Damit es sich relativ zum Container bewegt */
-    
-    white-space: nowrap; /* Verhindert Umbruch des Textes */
-    animation: moveIn 1s ease-in forwards; /* Animation für das gesamte Wort */
-   
+    font-size: 40px;
   }
+
+  .logo {
+    height: 100px;
+  }
+}
+
+
+@media screen and (max-width: 500px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  .logo {
+    height: 70px;
+  }
+
+
+}

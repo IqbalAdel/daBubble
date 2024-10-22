@@ -1,3 +1,4 @@
+
 <div class="login-container">
     <div class="headline">
         <h1>Anmeldung</h1>
@@ -12,7 +13,7 @@
             <img class="icon-focus" src="assets/img/mail-dark.png" alt="" [class.hidden]="!isEmailFocused">
 
             <input [(ngModel)]="email" name="email" type="email"
-                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" [placeholder]="isEmailFocused ? '' : 'beispielname@email.com'" required (focus)="isEmailFocused = true"
+            pattern="[^@\s]+@[^@\s]+\.[^@\s]+" [placeholder]="isEmailFocused ? '' : 'beispielname@email.com'" required (focus)="isEmailFocused = true"
                 #emailInput="ngModel" />
         </div>
         <div class="error-message" [ngStyle]="{'opacity': emailInput.invalid && emailInput.touched ? '1' : '0'}">
@@ -43,7 +44,7 @@
             <button (click)="signInWithGoogle()">Anmelden mit Google</button>
         </div>
         <div class="login-button">
-            <button type="submit" class="login">Anmelden</button><button class="guest-login">Gäste-Login</button>
+            <button type="submit" class="login">Anmelden</button><button (click)="onGuestLogin()" class="guest-login">Gäste-Login</button>
         </div>
     </form>
 </div>

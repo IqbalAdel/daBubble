@@ -35,7 +35,7 @@ export class AuthService {
 sendPasswordReset(email: string): Promise < void> {
   return sendPasswordResetEmail(this.auth, email)
     .then(() => {
-      console.log('Password reset email sent.');
+      // console.log('Password reset email sent.');
     })
     .catch((error) => {
       console.error('Error sending password reset email:', error);
@@ -47,7 +47,7 @@ sendPasswordReset(email: string): Promise < void> {
 newPassword(oobCode: string, newPassword: string): Promise < void> {
   return firebaseConfirmPasswordReset(this.auth, oobCode, newPassword)
     .then(() => {
-      console.log('Password has been reset.');
+      // console.log('Password has been reset.');
     })
     .catch((error) => {
       console.error('Error resetting password:', error);
@@ -74,7 +74,7 @@ async googleSignIn(): Promise < void> {
       };
 
       await setDoc(userRef, userData, { merge: true }); 
-      console.log('User successfully signed in and stored in Firestore:', user);
+      // console.log('User successfully signed in and stored in Firestore:', user);
       
     }
   } catch(error) {
@@ -86,7 +86,7 @@ async googleSignIn(): Promise < void> {
 googleSignOut() {
   return signOut(this.auth)
     .then(() => {
-      console.log('User signed out');
+      // console.log('User signed out');
     })
     .catch((error) => {
       console.error('Error during sign out:', error);
@@ -101,7 +101,7 @@ resetPassword(email: string): Promise < void> {
 
   return firebaseSendPasswordResetEmail(this.auth, email, actionCodeSettings)
     .then(() => {
-      console.log('Password reset email sent.');
+      // console.log('Password reset email sent.');
     })
     .catch((error) => {
       console.error('Error sending password reset email:', error);
@@ -112,7 +112,7 @@ resetPassword(email: string): Promise < void> {
   try {
 
     const userCredential: UserCredential = await createUserWithEmailAndPassword(this.auth, email, password);
-    console.log('User signed up:', userCredential.user);
+    // console.log('User signed up:', userCredential.user);
 
 
     const uid = userCredential.user.uid;
@@ -133,7 +133,7 @@ resetPassword(email: string): Promise < void> {
   try {
 
     const userCredential: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
-    console.log('User signed in:', userCredential.user);
+    // console.log('User signed in:', userCredential.user);
 
     return userCredential; 
   } catch(error) {
@@ -145,7 +145,7 @@ resetPassword(email: string): Promise < void> {
   async signOut(): Promise < void> {
   try {
     await signOut(this.auth);
-    console.log('User signed out');
+    // console.log('User signed out');
   } catch(error) {
     console.error('Error signing out:', error);
   }
