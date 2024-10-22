@@ -31,7 +31,7 @@
             [(ngModel)]="user.email"
             name="email"               
             type="email"
-            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
             [placeholder]="isEmailFocused ? '' : 'beispielname@email.com'"
             required
             (focus)="isEmailFocused = true"

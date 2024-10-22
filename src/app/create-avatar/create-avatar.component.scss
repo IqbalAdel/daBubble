@@ -85,10 +85,10 @@
     justify-content: center;
     display: flex;
     align-items: center;
-    background-color: #797EF3;
-    width: 120px; 
-    height: 120px; 
-    border-radius: 50%;
+    // background-color: #797EF3;
+    // width: 120px; 
+    // height: 120px; 
+    border-radius: 100%;
     transition: box-shadow 0.3s ease;
     overflow: hidden; 
     &:hover {
@@ -100,8 +100,8 @@
 .my-avatar {
     display: flex;
     align-items: center;
-    width: 60%;
-    height: 60%;
+    width: 150px;
+    height: 150px;
     object-fit: cover; 
    
 }
