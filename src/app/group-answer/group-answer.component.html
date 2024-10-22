@@ -1,6 +1,6 @@
 <!-- group-answer.component.html -->
 <div class="main" *ngIf="(userService.threadOpenStatus$ | async)"
-  [ngClass]="{'collapsed': !userService.showGroupAnswer}">
+  [ngClass]="{'collapsed': !userService.showGroupAnswer, 'overlay':screenWidth > 992 && screenWidth < 1400}">
   <div class="header">
     <h1>Thread</h1>
     <span># {{ groupName }}</span>
@@ -28,7 +28,7 @@
     <div *ngFor="let chat of answerChats; let chatIndex = index">
       <div
         [ngClass]="{'my-message': chat.userName === loggedInUserName, 'complete-container': chat.userName !== loggedInUserName}">
-        <img [src]="chat.userImage" alt="">
+        <img src="assets/img/avatar-1.png" alt="">
         <div class="messages">
           <div class="name-and-time">
             <div class="name">{{ chat.userName || 'Unbekannter Benutzer' }}</div>
