@@ -15,7 +15,6 @@ import { SplashScreenComponent } from './splash-screen/splash-screen.component';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  showSplash = true;
   title = 'daBubble';
   constructor(private router: Router) { }
 

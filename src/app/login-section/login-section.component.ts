@@ -7,10 +7,11 @@ import { FormsModule } from '@angular/forms';
 import { Firestore, doc, getDoc, DocumentData } from '@angular/fire/firestore';
 import { UserCredential } from 'firebase/auth'; 
 import { UserService } from '../services/user.service';
+import { SplashScreenComponent } from '../splash-screen/splash-screen.component';
 @Component({
   selector: 'app-login-section',
   standalone: true,
-  imports: [MatCardModule, CommonModule, FormsModule, RouterModule],
+  imports: [MatCardModule, CommonModule, FormsModule, RouterModule, SplashScreenComponent], 
   templateUrl: './login-section.component.html',
   styleUrls: ['./login-section.component.scss'] 
 })
@@ -20,7 +21,13 @@ export class LoginSectionComponent {
   errorMessage: string = '';
   isPasswordFocused: boolean = false;
   isEmailFocused: boolean = false;
+  showSplash = true;
+
   constructor(private authService: AuthService, private router: Router, private userService: UserService) {}
+
+  
+
+
 
   async onLogin(): Promise<void> {
     if (this.email && this.password) {
@@ -40,9 +47,7 @@ export class LoginSectionComponent {
         this.errorMessage = 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.';
         console.error('Fehler beim Anmelden:', error);
       }
-    } else {
-      this.errorMessage = 'Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein.';
-    }
+    } 
   }
 
   signInWithGoogle() {
