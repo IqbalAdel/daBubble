@@ -73,6 +73,7 @@ export class HeaderComponent implements OnInit{
   @Output() userLeftChannel: EventEmitter<void> = new EventEmitter<void>();
   filterOpen = false;
   screenWidth: number = window.innerWidth;
+  userOnline = false;
  
   imgSrc:string ="assets/img/keyboard_arrow_down_v2.png";
   users: User[] = [];
@@ -119,7 +120,7 @@ export class HeaderComponent implements OnInit{
         this.firebaseService.setOnlineStatus(uid);
         if(user){
           this.user = new User(user);
-          this.test = true;
+          this.userOnline = true;
         }  
       }
     } catch (error) {

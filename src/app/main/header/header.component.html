@@ -17,7 +17,7 @@
         @if (user.img){
           <div class="image">
               <img src="{{user.img}}" alt="">
-              <div class="online-status" [ngClass]="!userService.getUserStatus(user.id) ? 'offline' : 'online'"></div>
+              <div class="online-status" [ngClass]="!userOnline ? 'offline' : 'online'"></div>
           </div>
         }
         <img class="icon" [src]="imgSrc">

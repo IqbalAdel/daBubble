@@ -31,18 +31,7 @@ export const routes: Routes = [
 
     ]
   },
- 
-  // { 
-  //   path: '', component: MainComponent, 
-  //   children: [
-  //     { path: '', component: LoginSectionComponent },
-  //     { path: 'sign-up', component: SignUpComponent },
-  //     { path: 'create-avatar', component: CreateAvatarComponent },
-  //     { path: 'reset-password', component: ResetPasswordComponent },
-  //     { path: 'new-password', component: NewPasswordComponent }
 
-  //   ] 
-  // },
 
   { 
     path: 'main', component: MainComponent, 

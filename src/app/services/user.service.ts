@@ -10,12 +10,13 @@ export class UserService {
 
   groupChatOpen = false;
   showGroupAnswer: boolean = false;
+  userOnline = false;
 
   userStatus: { [key: string]: boolean } = {};
   userStatusFetched: { [userId: string]: boolean } = {};
   retryCount: { [userId: string]: number } = {};
-  maxRetries = 5;
-  retryDelay = 1000;
+  maxRetries = 15;
+  retryDelay = 1500;
   private _threadOpenStatus: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   threadOpenStatus$ = this._threadOpenStatus.asObservable();
 
@@ -122,13 +123,12 @@ export class UserService {
 
     this.firebaseservice.getUserStatus(userId).subscribe(status => {
       if (status && status.state && status.state == 'online') {
-        this.userStatus[userId] = status.state === 'online';
-      } else if (this.retryCount[userId] < this.maxRetries) {
+        this.userStatus[userId] = true;
+      } 
+      if (this.retryCount[userId] < this.maxRetries) {
         this.retryCount[userId]++;
         setTimeout(() => this.fetchUserStatusWithRetries(userId), this.retryDelay);
-      } else {
-
-        this.userStatus[userId] = false;
+        
       }
     });
   }
