@@ -400,8 +400,7 @@ span {
 
   .list{
     transition: all 225ms ease-in-out;
-    height: 500px;
-    overflow-y: auto;
+    height: fit-content;
     &::-webkit-scrollbar {
         width: 4px;
     }
@@ -417,7 +416,6 @@ span {
     
       &.fade {
         opacity: 0;
-        height: 0;
       }
   }
 

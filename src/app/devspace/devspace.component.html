@@ -42,10 +42,18 @@
         </div>
 
         <div class="list" [ngClass]="{'fade': closedChannel}">
-            <ng-container >
+            <!-- <ng-container >
                 <div [ngStyle]="!openChannels ? {'display': 'none'} : {}" *ngFor="let channel of channels$ | async" class="group-chat"
                     [ngClass]="selectedChannelId === channel.id ? 'selected' : ''"
                     (click)="selectChannel(channel); navigateRouteChannel(channel.id)">
+                    <span>#</span> 
+                    {{ channel.name }}
+                </div>
+            </ng-container> -->
+            <ng-container>
+                <div [ngStyle]="!openChannels ? {'display': 'none'} : {}" *ngFor="let channel of currentUserChannels" class="group-chat"
+                    [ngClass]="{'selected': selectedChannelId === channel.id}"
+                    (click)="selectChannel(channel); navigateRouteChannel(channel.id!)">
                     <span>#</span> 
                     {{ channel.name }}
                 </div>
@@ -59,30 +67,27 @@
             </div>  
         </div>
 
-        <!-- <ng-container *ngIf="openChannels">
-            <div *ngFor="let channel of currentUserChannels" class="group-chat"
-                [ngClass]="{'selected': selectedChannelId === channel.id}"
-                (click)="selectChannel(channel); navigateRouteChannel(channel.id!)">
-                # {{ channel.name }}
-            </div>
-        </ng-container> -->
-
         
 
-        <div (click)="closeDirectMessages()" class="direct-messages"
-        (mouseover)="imgDropDown2 ='assets/arrow_drop_down-blue.svg'"
-        (mouseover)="imgDropDownRight2 ='assets/arrow_drop_down-right-blue.svg'"
-        (mouseover)="imgAccountCircle2 ='assets/account_circle_blue.svg'"
-        (mouseleave)="imgDropDown2 ='assets/arrow_drop_down.svg'"
-        (mouseleave)="imgDropDownRight2 ='assets/arrow_drop_down-right.svg'"
-        (mouseleave)="imgAccountCircle2 ='assets/account_circle.svg'"
-        (mousedown)="imgDropDown2 ='assets/arrow_drop_down-click.svg'"
-        (mousedown)="imgDropDownRight2 ='assets/arrow_drop_down-right-click.svg'"
-        >
-            <img [src]="openEmployees ? imgDropDown2 : imgDropDownRight2" alt="">
-            <div class="direct-messages-box">
-                <img [src]="imgAccountCircle2" alt="">
-                <h2>Direktnachrichten</h2>
+
+        <div class="channels">
+            <div class="channel-group" (click)="closeDirectMessages()"
+            (mouseover)="imgDropDown2 ='assets/arrow_drop_down-blue.svg'"
+            (mouseover)="imgDropDownRight2 ='assets/arrow_drop_down-right-blue.svg'"
+            (mouseover)="imgAccountCircle2 ='assets/account_circle_blue.svg'"
+            (mouseleave)="imgDropDown2 ='assets/arrow_drop_down.svg'"
+            (mouseleave)="imgDropDownRight2 ='assets/arrow_drop_down-right.svg'"
+            (mouseleave)="imgAccountCircle2 ='assets/account_circle.svg'"
+            (mousedown)="imgDropDown2 ='assets/arrow_drop_down-click.svg'"
+            (mousedown)="imgDropDownRight2 ='assets/arrow_drop_down-right-click.svg'"
+            
+            >
+                <img [src]="openEmployees ? imgDropDown2 : imgDropDownRight2" alt="">
+
+                <div class="channels-block">
+                    <img [src]="imgAccountCircle2" alt="">
+                    <h2>Direktnachrichten</h2>
+                </div>
             </div>
         </div>
 

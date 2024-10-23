@@ -16,16 +16,21 @@
             <span>Vollständiger Name</span>
         </div>
     </div>
-    <input [(ngModel)]="name" placeholder="{{user.name}}" type="text">
-    <div class="email">
-        <img src="assets/img/mail-profile.png" alt="">
-        <div>
-            <span>E-Mail-Adresse</span>
+    <form #form="ngForm" (ngSubmit)="saveData()">
+        <input name="name"  [(ngModel)]="name" placeholder="{{user.name}}" type="text">
+        <div class="email">
+            <img src="assets/img/mail-profile.png" alt="">
+            <div>
+                <span>E-Mail-Adresse</span>
+            </div>
         </div>
-    </div>
-    <input [(ngModel)]="email" placeholder="{{user.email}}" type="text">
-    <div class="buttons">
-        <button (click)="closeDialog()">Abbrechen</button>
-        <button (click)="saveData()">Speichern</button>
-    </div>
+        <input name="email"  (input)="markAsTouched(emailControl)"  (ngModelChange)="checkEmailName()"  [(ngModel)]="email" #emailControl="ngModel" placeholder="{{user.email}}" type="email">
+        <div *ngIf="emailControl.invalid && (emailControl.touched || emailControl.dirty) || emailInvalid" class="invalid-feedback">
+            <span>Bitte geben Sie eine gültige E-Mail-Adresse ein!</span>
+        </div>
+        <div class="buttons">
+            <button (click)="closeDialog()">Abbrechen</button>
+            <button [ngClass]="emailInvalid || !form.valid ? 'invalid' : 'valid'"  [disabled]="!form.valid || emailInvalid" type="submit">Speichern</button>
+        </div>
+    </form>
 </mat-card>

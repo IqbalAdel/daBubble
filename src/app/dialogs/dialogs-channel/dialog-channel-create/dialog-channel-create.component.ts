@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogChannelCreateAddMembersComponent } from '../dialog-channel-create-add-members/dialog-channel-create-add-members.component';
@@ -9,6 +9,9 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { DialogChannelCreateAddMemberMobileComponent } from '../dialog-channel-create-add-member-mobile/dialog-channel-create-add-member-mobile.component';
+import { collection } from 'firebase/firestore';
+import { collectionData, Firestore } from '@angular/fire/firestore';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-dialog-channel-create',
@@ -33,6 +36,9 @@ export class DialogChannelCreateComponent {
   name: string = '';
   description: string = '';
   showAddMemberMenu = false;
+  isChannelNameTaken = false;
+  channels$
+  firestore: Firestore = inject(Firestore);
   
 
 
@@ -42,6 +48,25 @@ export class DialogChannelCreateComponent {
     public dialogAddMembersClose: MatDialogRef<DialogChannelCreateAddMembersComponent>,
     private fire: FirebaseService,
   ) {    
+    const fireChannels = collection(this.firestore, 'channels');
+    this.channels$ = collectionData(fireChannels).pipe(
+      map(channels => channels.sort((a, b) => a['name'].localeCompare(b['name'])))
+    );
+    console.log(this.channels$)
+  }
+
+  checkChannelName(){
+    if (this.name.trim() === '') {
+      this.isChannelNameTaken = false;
+      return;
+    }
+
+    this.channels$.subscribe(channels => {
+      const lowerCasedName = this.name.trim().toLowerCase();
+      this.isChannelNameTaken = channels.some(channel => 
+        channel['name'].toLowerCase() === lowerCasedName
+      );
+    });
   }
 
   @HostListener('window:resize', ['$event'])

@@ -26,9 +26,32 @@ export class SignUpComponent {
   isNameFocused: boolean = false;
   constructor(private router: Router, private userService: UserService, private authService: AuthService) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
 
+  // Setze den Fokusstatus
+  setFocus(field: string): void {
+    if (field === 'name') {
+      this.isNameFocused = true;
+    } else if (field === 'email') {
+      this.isEmailFocused = true;
+    } else if (field === 'password') {
+      this.isPasswordFocused = true;
+    }
   }
+
+  // Handle das Blur-Ereignis
+  onBlur(field: string, value: string): void {
+    if (!value) {
+      if (field === 'name') {
+        this.isNameFocused = false;
+      } else if (field === 'email') {
+        this.isEmailFocused = false;
+      } else if (field === 'password') {
+        this.isPasswordFocused = false;
+      }
+    }
+  }
+
 
   async onSubmit(): Promise<void> {
     if (this.isFormValid()) {

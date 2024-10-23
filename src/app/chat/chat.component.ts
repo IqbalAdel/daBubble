@@ -1,6 +1,6 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
 import { User } from '../../models/user.class';
 import { UserService } from '../services/user.service';
@@ -10,8 +10,9 @@ import { GroupChatComponent } from '../group-chat/group-chat.component';
 import { CommonModule } from '@angular/common';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
+import { Channel } from '../../models/channel.class';
 
 export interface ChatMessage {
   text: string;
@@ -31,10 +32,22 @@ export interface ChatMessage {
   styleUrls: ['./chat.component.scss']
 })
 
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewInit {
 
   @ViewChild('messageInput') messageInput: any;
   @ViewChild('messageInput') messageInputRef!: ElementRef;
+  @ViewChild('myTextarea') myTextarea!: ElementRef;
+  @ViewChild('menuTrigger') menuTrigger!: MatMenuTrigger;
+  @ViewChild('menuTriggerChannel') menuTriggerChannel!: MatMenuTrigger;
+
+  ngAfterViewInit() {
+    // Set focus to the textarea after the view has been initialized
+    setTimeout(() => {
+      this.messageInputRef.nativeElement.focus();
+    }, 500);
+  }
+
+  
   @Output() notify: EventEmitter<void> = new EventEmitter<void>();
   @Output() sendChatMessage: EventEmitter<void> = new EventEmitter<void>();
   imgTextarea = ['assets/add.svg', 'assets/img/smiley/sentiment_satisfied.svg', 'assets/img/smiley/alternate_email.svg', 'assets/img/smiley/send.svg'];
@@ -53,18 +66,21 @@ export class ChatComponent implements OnInit {
   userName!: string;
   storage: Storage = inject(Storage);
   selectUsers: User[] = []
+  selectChannels: Channel[] = []
   selectedFile: File | null = null;
   selectedImageUrl: string | null = null;
   @ViewChild('fileInput') fileInput!: ElementRef;
   showEmojiPicker = false;
   isImageSelected: boolean = false;
+  channelTag = 'assets/tag.svg'
 
   constructor(
     private fireService: FirebaseService,
     private route: ActivatedRoute,
     userService: UserService,
     private firestore: Firestore,
-    private elementRef: ElementRef) {
+    private elementRef: ElementRef,
+  private router: Router) {
     this.userService = userService;
 
     this.fireService.getUsersData().subscribe((list) => {
@@ -78,6 +94,19 @@ export class ChatComponent implements OnInit {
           data['password'] || '',
           data['channels'] || [],
           data['chats'] || []
+        );
+      });
+    });
+    this.fireService.getChannelsData().subscribe((list) => {
+      this.selectChannels = list.map(element => {
+        const data = element;
+        return new Channel(
+          data['name'] || '',
+          data['description'] || '',
+          data['creator'] || '',
+          data['messages'] || [],
+          data['users'] || [],
+          data['id'] || '',
         );
       });
     });
@@ -98,20 +127,43 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  addUserToInput(name: string) {
-    const userName = '@' + name;
+  addUserOrChannelToInput(inputName: string, type:string) {
+    let name = ''
+    if(type == 'channel'){
+      name = inputName;
+    }
+    if(type == 'user'){
+      name = inputName;
+    }
     const textarea = this.messageInput.nativeElement;
     const startPos = textarea.selectionStart;
     const endPos = textarea.selectionEnd;
 
-    this.messages.push(textarea.value.substring(0, startPos) + userName + textarea.value.substring(endPos));
+    this.messages.push(textarea.value.substring(0, startPos) + name + textarea.value.substring(endPos));
     const finalMessage = this.messages.join('');
     textarea.value = finalMessage;
-    textarea.setSelectionRange(startPos + userName.length, startPos + userName.length);
+    textarea.setSelectionRange(startPos + name.length, startPos + name.length);
     this.messages = []
   }
 
 
+  onInputChange(event: Event) {
+    const target = event.target as HTMLTextAreaElement;
+    const value = target.value;
+
+    // Check if the last character typed is '@'
+    if (value.endsWith('@')) {
+      // Open the menu programmatically
+      this.menuTrigger.openMenu(); // This directly opens the menu
+      // Optionally, position the menu if needed
+    } else if(value.endsWith('#')){
+      this.menuTriggerChannel.openMenu();
+    } 
+    else {
+      this.menuTrigger.closeMenu(); // Close the menu if not
+      this.menuTriggerChannel.closeMenu();
+    }
+  }
 
   toggleEmojiPicker(): void {
     this.showEmojiPicker = !this.showEmojiPicker;
@@ -153,6 +205,14 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        setTimeout(() => {
+          this.messageInputRef.nativeElement.focus();
+        }, 50);
+      }
+    });
+
     this.routeSubscription = this.route.params.subscribe(params => {
       const id = params['id'];
       this.answerId = params['answerId'];

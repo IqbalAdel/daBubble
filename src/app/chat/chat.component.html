@@ -2,7 +2,7 @@
 
 <div class="textarea"   #autoScrollTextarea>
    
-    <textarea [(ngModel)]="messageContent" #scrollContainer [class.expanded]="isImageSelected" #messageInput rows="2" cols="50" [placeholder]="placeholderText"
+    <textarea (input)="onInputChange($event)" autofocus [(ngModel)]="messageContent" #scrollContainer [class.expanded]="isImageSelected" #messageInput rows="2" cols="50" [placeholder]="placeholderText"
         (keydown)="handleKeyDown($event, messageInput)"></textarea>
     
     <div *ngIf="selectedImageUrl" class="image-preview">
@@ -25,7 +25,25 @@
               [src]="imgTextarea[1]" 
               alt="Smiley">
             
+            <img mat-button [matMenuTriggerFor]="aboveChannelMenu"
+            #menuTriggerChannel = "matMenuTrigger"
+              (mouseover)="channelTag = 'assets/tag_hover.svg'" 
+              (mouseout)="channelTag = 'assets/tag.svg'" 
+              [src]="channelTag" 
+              alt="Channel-Tag Icon">
+
+            <mat-menu #aboveChannelMenu="matMenu" yPosition="above">
+                <div class="name-menu">
+                    @for (channel of selectChannels; track channel) {
+                        <button (click)="addUserOrChannelToInput(channel.name, 'channel')" mat-menu-item>
+                            {{channel.name}}
+                        </button>
+                    }
+                </div>
+            </mat-menu>
+
             <img mat-button [matMenuTriggerFor]="aboveMenu"
+            #menuTrigger = "matMenuTrigger"
               (mouseover)="addEmailContact(true)" 
               (mouseout)="addEmailContact(false)" 
               [src]="imgTextarea[2]" 
@@ -34,7 +52,7 @@
             <mat-menu #aboveMenu="matMenu" yPosition="above">
                 <div class="name-menu">
                     @for (user of selectUsers; track user) {
-                        <button (click)="addUserToInput(user.name)" mat-menu-item>
+                        <button (click)="addUserOrChannelToInput(user.name, 'user')" mat-menu-item>
                             <img src="{{user.img}}" alt="">
                             {{user.name}}
                         </button>

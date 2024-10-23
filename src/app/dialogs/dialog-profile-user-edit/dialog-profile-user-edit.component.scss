@@ -9,6 +9,8 @@
         margin-bottom: 10px;
         padding: 5px 0px 5px 10px;
         border: solid 1px #ADB0D9;
+        width: 100%;
+
         cursor: pointer;
         &:hover{
             border: solid 1px #444DF2;
@@ -45,6 +47,24 @@
     }
 }
 
+.invalid-feedback{
+    color: red;
+    font-size: 12px;
+    // margin-top: -10px;
+    // margin-left: 25px;
+}
+
+.invalid{
+    background-color: gray;
+}
+.valid{
+    cursor: pointer;
+    background-color: #444DF2;
+    &:hover{
+        background-color: #797EF3;
+    }
+}
+
 .email{
     @include d-flex($jc: flex-start, $dir: row, $ai: flex-start);
     img{
@@ -75,10 +95,10 @@
     margin-bottom: 20px;
     @include d-flex();
     button{
-        cursor: pointer;
         border-radius: 30px;
         @include widthHeight($w: 100px, $h: 33px);
         &:first-child{
+            cursor: pointer;
             color: #444DF2;
             font-weight: bold;
             border: 1px solid #444DF2;
@@ -93,13 +113,10 @@
         }
         &:last-child{
             color: white;
-            background-color: #444DF2;
             border: none;
             transition: background-color 125ms ease-in-out;
 
-            &:hover{
-                background-color: #797EF3;
-            }
+            
         }
     }
 }

@@ -14,7 +14,7 @@ import { SplashScreenComponent } from '../splash-screen/splash-screen.component'
 export class LoginComponent {
   errorMessage: string = '';
   isVisible: boolean = true;
-  showSplash = true;
+  showSplash = false;
 
   constructor(private router: Router) {}
 
@@ -22,7 +22,7 @@ export class LoginComponent {
 
     setTimeout(() => {
       this.showSplash = false;  // Splashscreen nach 5 Sekunden ausblenden
-    }, 4700);  // 5000 ms = 5 Sekunden
+    }, 3100);  // 5000 ms = 5 Sekunden
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {

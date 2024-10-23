@@ -11,6 +11,7 @@ import { User } from '../../../../models/user.class';
 import { UserService } from '../../../services/user.service';
 import { DialogChannelMembersComponent } from '../dialog-channel-members/dialog-channel-members.component';
 import { DialogChannelAddMemberMobileComponent } from '../dialog-channel-add-member-mobile/dialog-channel-add-member-mobile.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dialog-channel-edit',
@@ -70,6 +71,7 @@ export class DialogChannelEditComponent implements OnInit{
     public dialog: MatDialogRef<DialogChannelEditComponent>,
     private fire: FirebaseService,
     private userService: UserService,
+    private router: Router,
     @Inject(MAT_DIALOG_DATA) public data: { 
       channelID: string; 
       channelName: string; 
@@ -168,6 +170,7 @@ export class DialogChannelEditComponent implements OnInit{
     this.fire.deleteChannelFromUser(this.user.id, this.channelID)
     this.fire.deleteUserFromChannel(this.channelID, this.user.id)
     this.dialog.close();
+    this.router.navigate(['/new-message']);
   }
 
   openDialogAddMember(){

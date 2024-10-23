@@ -5,7 +5,7 @@ import { FirebaseService } from '../../services/firebase.service';
 import { UserService } from '../../services/user.service';
 import { User } from '../../../models/user.class';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-dialog-profile-user-edit',
@@ -38,6 +38,7 @@ export class DialogProfileUserEditComponent implements OnInit{
   name: string = "";
   email: string = "";
   userID: string = "";
+  emailInvalid = false;
 
   constructor( 
     public dialog: MatDialogRef<DialogProfileUserEditComponent>,
@@ -69,13 +70,36 @@ export class DialogProfileUserEditComponent implements OnInit{
     }
   }
 
-  async saveData(){
-    if(this.email.length > 0 || this.name.length >0 && this.userID){
-      await this.fire.updateUserData(this.userID, this.name, this.email )
-    }
+  async saveData() {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    const isEmailValid = this.email.length > 0 ? emailPattern.test(this.email) : true;
+
+    if ((this.email.length > 0 && isEmailValid) || this.name.length > 0) {
+        if (this.userID) {
+            await this.fire.updateUserData(this.userID, this.name, this.email);
+        }
+      } else {
+        console.error('Invalid email format');
+      }
     this.dialog.close();
+}
 
+checkEmailName(){
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmailValid = this.email.length > 0 ? emailPattern.test(this.email) : true;
+
+  if (this.email.length > 0 && isEmailValid) {
+    this.emailInvalid = false;
   }
+  else{
+    this.emailInvalid = true;
+  }
+}
+
+markAsTouched(control: NgModel) {
+  control.control.markAsTouched(); // Mark the control as touched
+  control.control.updateValueAndValidity(); // Update the validity state
+}
 
 }

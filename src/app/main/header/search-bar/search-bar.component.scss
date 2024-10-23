@@ -18,6 +18,10 @@ search-container {
         right: 75px;
         transform: scale(1.2);
 
+        @media(width < 410px){
+            display: none;
+        }
+
     }
 
     input{

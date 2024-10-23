@@ -186,6 +186,8 @@
     gap: 30px;
 }
 
+
+
 .solo-chat-completely {
     display: flex;
     flex-direction: column;
@@ -205,13 +207,14 @@
     padding: 20px;
     position: relative;
     cursor: pointer;
+    transition: all 225ms ease-in-out;
+    span {
+        color: white;
+        background-color: rgba(121, 126, 243, 1);
+    }
 
     &:hover {
         background-color: rgba(236, 238, 254, 1);
-
-        span {
-            background-color: white;
-        }
 
         .insert-smiley {
             display: flex;

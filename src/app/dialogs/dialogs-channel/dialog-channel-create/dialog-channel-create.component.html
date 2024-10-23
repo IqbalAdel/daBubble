@@ -10,13 +10,22 @@
     <form #form="ngForm" (ngSubmit)="onSubmit()">
         <div class="inputs">
             <span>Channel Name</span>
-            
-            <input [(ngModel)]="name" name="name" required placeholder="#  z.B. Kooperationsprojekte" type="text">
+            <div class="channel-name-container">
+                <input (ngModelChange)="checkChannelName()" [(ngModel)]="name" name="name" required placeholder="#  z.B. Kooperationsprojekte" type="text">
+                <div *ngIf="isChannelNameTaken && form.controls['name']?.touched" class="invalid-feedback">
+                    Channel name is already taken!
+                  </div>
+                
+                  <div *ngIf="form.controls['name']?.invalid && (form.controls['name']?.touched || form.controls['name']?.dirty)" class="invalid-feedback">
+                    Channel name is required!
+                  </div>
+            </div>
+              
             <span>Beschreibung <span>(optional)</span></span>
-            <input [(ngModel)]="description" name="description" required placeholder="Dein Text hier" type="text">
+            <input [(ngModel)]="description" name="description" placeholder="Dein Text hier" type="text">
         </div>
         <div class="buttons">
-            <button type="submit" [disabled]="!form.valid">
+            <button [ngClass]="!isChannelNameTaken && form.valid ? 'valid' : 'invalid'" type="submit" [disabled]="isChannelNameTaken || !form.valid">
                 <span>Erstellen</span>
             </button>
         </div>

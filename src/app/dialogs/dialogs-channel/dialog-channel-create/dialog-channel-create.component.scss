@@ -66,16 +66,31 @@
         color: white;
     }
     button{
-        cursor: pointer;
         border-radius: 30px;
         @include widthHeight($w: 110px, $h: 33px);
-        background-color: #444DF2;
         border: none;
         @include d-flex();
 
-        &:hover{
-            background-color: #797EF3;
-        }
+        
+    }
+}
+
+
+.invalid-feedback{
+    color: red;
+    font-size: 12px;
+    margin-top: -10px;
+    margin-left: 25px;
+}
+
+.invalid{
+    background-color: gray;
+}
+.valid{
+    cursor: pointer;
+    background-color: #444DF2;
+    &:hover{
+        background-color: #797EF3;
     }
 }
 
@@ -83,6 +98,11 @@
     color: white;
     margin-top: 11px;
     font-size: 14px;
+}
+
+.channel-name-container{
+    height: 100px;
+    width: 100%;
 }
 
 ::ng-deep .border-30 .mat-mdc-dialog-container {

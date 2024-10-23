@@ -30,7 +30,7 @@ export class DevspaceComponent implements OnInit{
   channelsIqbal: Channel[] = [];
   messages: any[] = [];
   selectedChatId: string | null = null;
-  currentUser: User = {
+  currentUser: User= {
     name: '',
     email: 'Test@gmx.de',
     id: '',
@@ -110,6 +110,7 @@ export class DevspaceComponent implements OnInit{
   async ngOnInit(): Promise<void>{
     await this.getUsers$();
     await this.getActiveUser();
+    this.getCurrentUserChannels();
     this.screenWidth = window.innerWidth;
     this.supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if(window.innerWidth <= 992){
@@ -195,7 +196,7 @@ export class DevspaceComponent implements OnInit{
     this.selectedUserId = userId;
     this.userService.setSelectedUserId(userId); 
     this.router.navigate(['/main/chat', userId]);
-    if(this.supportsTouch || window.innerWidth <= 992){
+    if(window.innerWidth <= 992){
       this.navigateToDirectChat.emit();
     }
     this.selectedChannelId = null;
@@ -218,6 +219,8 @@ export class DevspaceComponent implements OnInit{
   openDialog() {
     let dialogRef = this.dialog.open(DialogChannelCreateComponent, {
       panelClass: 'border-30',
+      height: '425px',
+      autoFocus: false,
     });
   }
 
@@ -228,7 +231,7 @@ export class DevspaceComponent implements OnInit{
   navigateRouteChannel(id: string) {
     if(id){
       this.router.navigate(['/main/group-chat', id]);
-      if(this.supportsTouch || window.innerWidth <= 992){
+      if(window.innerWidth <= 992){
         this.navigateToChannel.emit();
       }
     }
@@ -264,4 +267,29 @@ export class DevspaceComponent implements OnInit{
       console.error('Fehler beim Abrufen der Benutzerdaten:', error);
     }
   }
+
+  getCurrentUserChannels(){
+    try{
+      if (this.currentUser) {
+        this.firebaseService.getUserChannelsById(this.currentUser.id).subscribe((userDoc) => {
+          if(userDoc){
+            const userData = userDoc;
+            if (userData && userData.channels) {
+              this.currentUser.channels = userData.channels;
+    
+              this.firebaseService.getChannels().subscribe((channels) => {
+                this.currentUserChannels = channels.filter(channel => {
+                  const channelId = channel['id'];
+                  return channelId && this.currentUser.channels!.includes(channelId);
+                });
+              });
+            }
+          }
+          })
+        }
+       } catch(error){
+          console.error('Fehler beim Laden der Channels vom CurrentUser', error)
+        }
+  }
+  
 }

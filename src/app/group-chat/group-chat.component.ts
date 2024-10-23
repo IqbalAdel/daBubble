@@ -129,6 +129,7 @@ closeImageModal(): void {
     
   }
 
+
   ngAfterViewInit(): void {
     if(!this.isMobile){
       this.checkThreadStatus();

@@ -125,6 +125,10 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef);
   }
+  getChannelsData() {
+    const channelsRef = collection(this.firestore, 'channels');
+    return collectionData(channelsRef);
+  }
 
   getUsersDataTest(): Observable<any> {
     const usersRef = collection(this.firestore, 'users');
@@ -272,7 +276,8 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
           userData['email'] || '',
           userId,
           userData['img'] || '',
-          userData['password'] || ''
+          userData['password'] || '',
+          userData['channels'] || '',
         );
       } else {
         return null;
@@ -281,6 +286,36 @@ async updateMessage(channelId:string, messageId: string, newText: string): Promi
       return null;
     });
   }
+
+  getUserChannelsById(userId: string): Observable<User | null> {
+    return new Observable((observer) => {
+      const userDocRef = doc(this.firestore, 'users', userId);
+      
+      const unsubscribe = onSnapshot(userDocRef, docSnapshot => {
+        if (docSnapshot.exists()) {
+          const userData = docSnapshot.data();
+          const user = new User(
+            userData['name'] || '',
+            userData['email'] || '',
+            userId,
+            userData['img'] || '',
+            userData['password'] || '',
+            userData['channels'] || ''  
+          );
+          observer.next(user); 
+        } else {
+          observer.next(null);  
+        }
+      }, error => {
+        console.error("Error fetching user data: ", error);
+        observer.error(error);  
+      });
+  
+      return () => unsubscribe();
+    });
+  }
+
+  
 
   async deleteUserFromChannel(channelId:string, userId: string): Promise<void> {
     const channelDocRef = this.getChannelDocRef(channelId)

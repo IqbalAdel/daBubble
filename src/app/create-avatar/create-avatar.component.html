@@ -29,7 +29,8 @@
        
     </div>
 
+    <button class="info-for-user" *ngIf="userCreated">Konto erfolgreich erstellt!</button>
 
-
-    <button (click)="saveUser()" [disabled]="!isFormValid()" [routerLink]="['/']" class="button">Konto erstellen</button>
+    <button (click)="saveUser()" [disabled]="!isFormValid()"  class="button">Konto erstellen</button>
+    
 </div>
