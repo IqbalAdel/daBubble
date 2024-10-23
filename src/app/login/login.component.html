@@ -1,24 +1,24 @@
 <app-splash-screen class="splash-screen" *ngIf="showSplash"></app-splash-screen>
 <nav *ngIf="!showSplash">
-    <div class="logo">
-      <img [routerLink]="'/'" src="assets/img/Logo.svg" alt="">
-      <span>DABubble</span>
-    </div>
-    <div *ngIf="isVisible" class="sing-up-container">
-      <span class="info-text">Neu bei DABubble?</span>
-      <span [routerLink]="['/sign-up']" class="sign-up">Konto erstellen</span>
-    </div>
-  </nav>
-  <div class="content">
-    <mat-card >
-      <mat-card-content><router-outlet></router-outlet></mat-card-content>
-    </mat-card>
-    <div *ngIf="isVisible" class="sing-up-container-mobil">
-      <span class="info-text">Neu bei DABubble?</span>
-      <span [routerLink]="['/sign-up']" class="sign-up">Konto erstellen</span>
-    </div>
-    <div class="footer">
-      <a [routerLink]="['/inprint']">Impressum</a>
-      <a [routerLink]="['/data-protection']">Datenschutz</a>
-    </div>
+  <div class="logo">
+    <img [routerLink]="'/'" src="assets/img/Logo.svg" alt="">
+    <span>DABubble</span>
   </div>
+  <div *ngIf="isVisible" class="sing-up-container">
+    <span class="info-text">Neu bei DABubble?</span>
+    <span [routerLink]="['/sign-up']" class="sign-up">Konto erstellen</span>
+  </div>
+</nav>
+<div class="content">
+  <mat-card>
+    <mat-card-content><router-outlet></router-outlet></mat-card-content>
+  </mat-card>
+  <div *ngIf="isVisible" class="sing-up-container-mobil">
+    <span class="info-text">Neu bei DABubble?</span>
+    <span [routerLink]="['/sign-up']" class="sign-up">Konto erstellen</span>
+  </div>
+  <div class="footer">
+    <a [routerLink]="['/inprint']">Impressum</a>
+    <a [routerLink]="['/data-protection']">Datenschutz</a>
+  </div>
+</div>

@@ -30,6 +30,25 @@ export class NewPasswordComponent implements OnInit {
       });
     }
 
+    setFocus(field: string): void {
+      if (field === 'password') {
+        this.isPasswordFocused = true;
+      } else if (field === 'confirmPassword') {
+        this.isNewPasswordFocused = true;
+      }
+    }
+  
+    // Handle das Blur-Ereignis für beide Felder
+    onBlur(field: string, value: string): void {
+      if (!value) {  // Prüft, ob das entsprechende Feld leer ist
+        if (field === 'password') {
+          this.isPasswordFocused = false;  // Placeholder für "Neues Passwort"
+        } else if (field === 'confirmPassword') {
+          this.isNewPasswordFocused = false;  // Placeholder für "Neues Passwort bestätigen"
+        }
+      }
+    }
+
 
     resetPassword() {
       if (this.newPassword === this.confirmPassword && this.oobCode) {

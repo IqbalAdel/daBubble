@@ -23,6 +23,17 @@ export class ResetPasswordComponent {
     this.user = auth.currentUser;
   }
 
+  setFocusEmail(): void {
+    this.isEmailFocused = true;
+  }
+
+  // Handle das Blur-Ereignis für das E-Mail-Feld
+  onBlurEmail(): void {
+    if (!this.email) {  // Prüft, ob das E-Mail-Feld leer ist
+      this.isEmailFocused = false;  // Zeigt den Placeholder wieder an, wenn leer
+    }
+  }
+
   sendPasswordResetEmail() {
     this.authService.sendPasswordReset(this.email)
       .then(() => {

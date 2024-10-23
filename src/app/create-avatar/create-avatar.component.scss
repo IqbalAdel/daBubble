@@ -97,7 +97,7 @@
     position: absolute;
     right: 5%;
     bottom: 0;
-    font-size: 20px;
+    font-size: 18px;
     border-radius: 25px;
     padding: 8px;
     background-color: #444DF2;
@@ -213,21 +213,12 @@ button:disabled {
     border-color: #999999; 
 }
 .button:disabled:hover {
-    cursor: not-allowed;
+    cursor: not-allowed!important;
     background-color: #cccccc; 
     color: #666666; 
     border-color: #999999; 
 }
 
-.button:disabled:hover {
-    cursor: not-allowed;
-    background-color: #cccccc;
-    /* Bleibt grau */
-    color: #666666;
-    /* Bleibt grau */
-    border-color: #999999;
-    /* Bleibt wie eingestellt */
-}
 
 @media screen and (max-width:992px) {
     .select-avatar {

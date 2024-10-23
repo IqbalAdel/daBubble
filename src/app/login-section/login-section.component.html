@@ -1,4 +1,3 @@
-
 <div class="login-container">
     <div class="headline">
         <h1>Anmeldung</h1>
@@ -12,18 +11,21 @@
             <img class="icon" src="assets/img/mail.svg" alt="" [class.hidden]="isEmailFocused">
             <img class="icon-focus" src="assets/img/mail-dark.png" alt="" [class.hidden]="!isEmailFocused">
 
-            <input [(ngModel)]="email" name="email" type="email"
-            pattern="[^@\s]+@[^@\s]+\.[^@\s]+" [placeholder]="isEmailFocused ? '' : 'beispielname@email.com'" required (focus)="isEmailFocused = true"
+            <input [(ngModel)]="email" name="email" type="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                [placeholder]="isEmailFocused ? '' : 'beispielname@email.com'" required  (focus)="setFocus('email')" 
+                (blur)="onBlur('email', email)"
                 #emailInput="ngModel" />
         </div>
         <div class="error-message" [ngStyle]="{'opacity': emailInput.invalid && emailInput.touched ? '1' : '0'}">
             *Diese E-Mail-Adresse ist leider ungültig.
         </div>
         <div class="input-container">
-            <img class="icon" src="assets/img/lock.svg" alt="" [class.hidden]="isPasswordFocused" >
-            <img class="icon-focus" src="assets/img/lock-dark.png" alt="" [class.hidden]="!isPasswordFocused" >
+            <img class="icon" src="assets/img/lock.svg" alt="" [class.hidden]="isPasswordFocused">
+            <img class="icon-focus" src="assets/img/lock-dark.png" alt="" [class.hidden]="!isPasswordFocused">
 
-            <input [(ngModel)]="password" name="password" type="password" minlength="8" [placeholder]= " isPasswordFocused ? '' : 'Passwort'" required (focus)="isPasswordFocused = true"
+            <input [(ngModel)]="password" name="password" type="password" minlength="8"
+                [placeholder]=" isPasswordFocused ? '' : 'Passwort'" required (focus)="setFocus('password')" 
+                (blur)="onBlur('password', password)"
                 #passwordInput="ngModel">
         </div>
 
@@ -44,7 +46,8 @@
             <button (click)="signInWithGoogle()">Anmelden mit Google</button>
         </div>
         <div class="login-button">
-            <button type="submit" class="login">Anmelden</button><button (click)="onGuestLogin()" class="guest-login">Gäste-Login</button>
+            <button type="submit" class="login">Anmelden</button><button (click)="onGuestLogin()"
+                class="guest-login">Gäste-Login</button>
         </div>
     </form>
 </div>

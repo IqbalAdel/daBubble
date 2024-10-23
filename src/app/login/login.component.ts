@@ -14,7 +14,7 @@ import { SplashScreenComponent } from '../splash-screen/splash-screen.component'
 export class LoginComponent {
   errorMessage: string = '';
   isVisible: boolean = true;
-  showSplash = false;
+  showSplash = true;
 
   constructor(private router: Router) {}
 

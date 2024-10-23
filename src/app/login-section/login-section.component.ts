@@ -5,15 +5,15 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Firestore, doc, getDoc, DocumentData } from '@angular/fire/firestore';
-import { UserCredential } from 'firebase/auth'; 
+import { UserCredential } from 'firebase/auth';
 import { UserService } from '../services/user.service';
 import { SplashScreenComponent } from '../splash-screen/splash-screen.component';
 @Component({
   selector: 'app-login-section',
   standalone: true,
-  imports: [MatCardModule, CommonModule, FormsModule, RouterModule, SplashScreenComponent], 
+  imports: [MatCardModule, CommonModule, FormsModule, RouterModule, SplashScreenComponent],
   templateUrl: './login-section.component.html',
-  styleUrls: ['./login-section.component.scss'] 
+  styleUrls: ['./login-section.component.scss']
 })
 export class LoginSectionComponent {
   email: string = '';
@@ -23,10 +23,28 @@ export class LoginSectionComponent {
   isEmailFocused: boolean = false;
   showSplash = true;
 
-  constructor(private authService: AuthService, private router: Router, private userService: UserService) {}
+  constructor(private authService: AuthService, private router: Router, private userService: UserService) { }
 
-  
 
+  // Setze den Fokusstatus
+  setFocus(field: string): void {
+    if (field === 'email') {
+      this.isEmailFocused = true;
+    } else if (field === 'password') {
+      this.isPasswordFocused = true;
+    }
+  }
+
+  // Handle das Blur-Ereignis
+  onBlur(field: string, value: string): void {
+    if (!value) {
+      if (field === 'email') {
+        this.isEmailFocused = false;
+      } else if (field === 'password') {
+        this.isPasswordFocused = false;
+      }
+    }
+  }
 
 
   async onLogin(): Promise<void> {
@@ -47,7 +65,7 @@ export class LoginSectionComponent {
         this.errorMessage = 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.';
         console.error('Fehler beim Anmelden:', error);
       }
-    } 
+    }
   }
 
   async onGuestLogin(): Promise<void> {
@@ -55,16 +73,16 @@ export class LoginSectionComponent {
       // Gast-Benutzerdaten (kannst du anpassen)
       const guestEmail = 'Max@Mustermann.de';
       const guestPassword = 'mustermuster';
-  
+
       // Anmeldung des Gast-Users mit E-Mail und Passwort
       const userCredential = await this.authService.signIn(guestEmail, guestPassword);
-  
+
       if (userCredential) {
         const uid = userCredential.user.uid;
-  
+
         // Benutzerinformationen laden (basierend auf der ID des Gast-Users)
         await this.userService.loadUserById(uid);
-  
+
         // Navigation zu /main
         this.router.navigate(['/main']);
       } else {
